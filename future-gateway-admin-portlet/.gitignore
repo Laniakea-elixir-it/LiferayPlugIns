@@ -1,0 +1,74 @@
+# SASS cache
+.sass-cache
+
+
+# Gradle
+# ------
+.gradle
+/build
+/*/build
+.touch
+/*/gradlew
+/*/gradlew.bat
+/*/gradle
+
+# Node
+# ----
+/*/node_modules
+
+
+# Eclipse
+# -------
+*.classpath
+*.project
+*.settings
+/*/bin
+atlassian-ide-plugin.xml
+
+# NetBeans
+# --------
+.nb-gradle
+.nb-gradle-properties
+
+# Vim
+# ---
+*.sw[op]
+
+# Emacs
+# -----
+*~
+
+# Textmate
+# --------
+.textmate
+
+# Sublime Text
+# ------------
+*.sublime-*
+
+# jEnv
+# ----
+.java-version
+
+# OS X
+# ----
+.DS_Store
+
+# HPROF
+# -----
+*.hprof
+
+
+*.class
+classes
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+/*/.gitignore
