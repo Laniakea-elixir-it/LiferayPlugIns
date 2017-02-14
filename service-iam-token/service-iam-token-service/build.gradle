@@ -1,0 +1,38 @@
+apply plugin: 'checkstyle'
+checkstyle.toolVersion = '6.6'
+
+def checkStyleProps = ['baseDir': "$project.projectDir"]
+checkstyleMain {
+	configProperties = checkStyleProps
+}
+checkstyleTest {
+	configProperties = checkStyleProps
+}
+
+buildscript {
+	dependencies {
+		classpath group: "com.liferay", name: "com.liferay.gradle.plugins.service.builder", version: "latest.release"
+	}
+
+	repositories {
+		mavenLocal()
+
+		maven {
+			url "http://cdn.repository.liferay.com/nexus/content/groups/public"
+		}
+	}
+}
+
+dependencies {
+	compile group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
+	compile group: "com.liferay", name: "com.liferay.portal.spring.extender", version: "2.0.2"
+	compile group: "com.liferay", name: "com.liferay.osgi.util", version: "3.0.0"
+	compile project(":modules:service-iam-token:service-iam-token-api")
+	compile project(":modules:portal-security-sso-iam")
+}
+
+buildService {
+	apiDir = "../service-iam-token-api/src/main/java"
+	osgiModule = true
+	propsUtil = "com.liferay.portal.security.sso.iam.service.util.PropsUtil"
+}

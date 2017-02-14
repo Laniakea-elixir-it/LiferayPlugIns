@@ -1,0 +1,12 @@
+{
+    "name": "future-gateway-admin-portlet",
+    "version": "1.0.0",
+    "dependencies": {
+        "metal": "^1.0.0",
+        "metal-datatable": "^1.0.0",
+        "metal-ajax": "^1.0.0",
+        "metal-structs": "^1.0.0",
+        "metal-modal": "^1.0.0",
+        "metal-treeview": "^1.0.0"
+    }
+}

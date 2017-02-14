@@ -1,0 +1,42 @@
+Bundle-SymbolicName: com.liferay.portal.security.sso.iam
+Bundle-Version: 1.2.1
+Bundle-Name: Liferay Portal Security SSO IAM
+Bundle-Description: SSO module for INDIGO-DC IAM service. The IAM service is integrated using \
+        the OpenID Connect protocol
+Bundle-Category: security, authentication
+Bundle-Copyright: Copyright 2016, INFN - INDIGO-DataCloud
+Bundle-License: https://www.apache.org/licenses/LICENSE-2.0.html
+Export-Package:\
+        com.liferay.portal.security.sso.iam,\
+        com.liferay.portal.security.sso.iam.configuration,\
+        com.liferay.portal.security.sso.iam.constants
+Import-Package: \
+        !bsh.*,\
+        !com.nimbusds.*,\
+        !com.werken.*,\
+        !net.jcip.*,\
+        !net.minidev.*.\
+        !org.apache.commons.*,\
+        !org.apache.velocity.*,\
+        !org.bouncycastle.*,\
+        !org.joda.*,\
+        !org.opensaml.*,\
+        !org.owasp.*,\
+        !org.junit.*,\
+        *
+Private-Package: \
+        com.nimbusds.*,\
+        net.jcip.*,\
+        net.minidev.*,\
+        org.apache.commons.collections4.*,\
+        org.apache.commons.lang3.*,\
+        org.apache.commons.io.*,\
+        org.apache.velocity.*,\
+        org.owasp.*,\
+        org.bouncycastle.*,\
+        org.joda.*,\
+        org.opensaml.*,\
+        com.werken.*
+Liferay-Releng-Module-Group-Description:
+Liferay-Releng-Module-Group-Title: Security Frameworks
+

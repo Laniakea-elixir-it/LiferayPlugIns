@@ -1,0 +1,9 @@
+Bundle-SymbolicName: com.liferay.login.authentication.iam.web
+Bundle-Version: 1.2.1
+Bundle-Name: Login Authentication IAM Web
+Bundle-Description: Login extension for IAM authentication
+Bundle-Copyright: Copyright 2016, INFN - INDIGO-DataCloud
+Bundle-License: https://www.apache.org/licenses/LICENSE-2.0.html
+Liferay-Releng-Module-Group-Description:
+Liferay-Releng-Module-Group-Title: Login
+Web-ContextPath: /login-authentication-iam-web

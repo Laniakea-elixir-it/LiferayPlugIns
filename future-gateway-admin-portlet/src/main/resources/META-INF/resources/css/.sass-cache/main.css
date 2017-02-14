@@ -1,0 +1,82 @@
+.futuregateway_admin-portlet .title {
+  color: #428bca;
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.1;
+  max-width: 400px;
+  min-height: 160px;
+  margin-bottom: 40px; }
+
+.futuregateway_admin-portlet .title-logo {
+  max-height: 160px; }
+
+.futuregateway_admin-portlet .title-block {
+  height: 160px;
+  padding-top: 60px; }
+
+.futuregateway_admin-portlet .left-block {
+  float: left; }
+
+.futuregateway_admin-portlet .authorize {
+  margin: 0 auto;
+  max-width: 960px;
+  padding: 6em 4em; }
+  .futuregateway_admin-portlet .authorize p {
+    margin: 2em 0; }
+  .futuregateway_admin-portlet .authorize a.btn {
+    border-color: #1C75B9;
+    color: #1C75B9; }
+
+.futuregateway_admin-portlet .loading {
+  text-align: center;
+  font-style: italic;
+  color: gray; }
+
+.futuregateway_admin-portlet .loaded {
+  display: none; }
+
+div.modal-boot[role=dialog] {
+  display: none; }
+
+/* TreeView
+	 ========================================================================== */
+.treeview ul {
+  list-style: none; }
+
+.treeview .treeview-nodes {
+  margin: 0.5rem 0 0 2.1rem;
+  padding: 0; }
+
+.treeview .treeview-node {
+  margin-bottom: 0.5rem; }
+
+.treeview .treeview-node-main.hasChildren {
+  cursor: pointer; }
+
+.treeview .treeview-node-toggler {
+  border: 1px solid #000;
+  float: left;
+  font-size: 1.2rem;
+  height: 1rem;
+  margin-top: .4rem;
+  line-height: 0.7rem;
+  text-align: center;
+  width: 1rem; }
+
+.treeview .treeview-node-toggler:before {
+  content: '+'; }
+
+.treeview .treeview-node-wrapper.expanded > .treeview-node-main > .treeview-node-toggler:before {
+  content: '-'; }
+
+.treeview .treeview-node-name {
+  float: left;
+  font-size: 1.4rem;
+  margin-left: .8rem; }
+
+.treeview .treeview-node-wrapper > .treeview-nodes {
+  display: none; }
+
+.treeview .treeview-node-wrapper.expanded > .treeview-nodes {
+  display: block; }

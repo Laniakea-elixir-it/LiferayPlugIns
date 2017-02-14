@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" default-destroy-method="destroy" default-init-method="afterPropertiesSet" xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean class="com.liferay.portal.security.sso.iam.service.impl.TokenServiceImpl" id="com.liferay.portal.security.sso.iam.service.TokenService" />
+	<bean class="com.liferay.portal.security.sso.iam.service.persistence.impl.TokenPersistenceImpl" id="com.liferay.portal.security.sso.iam.service.persistence.TokenPersistence" parent="basePersistence">
+		<property name="dataSource" ref="fakeDataSource" />
+	</bean>
+</beans>
