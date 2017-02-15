@@ -282,9 +282,9 @@ public class FGServerManager {
         String rawCollection = getCollection(companyId,
                 FGServerConstants.INFRASTRUCTURE_COLLECTION,
                 iam.getUserToken(userId));
+        log.debug("Infrastructure json: " + rawCollection);
         JSONObject jsonInfras =
                 JSONFactoryUtil.createJSONObject(rawCollection);
-        log.debug("Infrastructure json: " + jsonInfras.toJSONString());
         JSONArray jAInfras = jsonInfras.getJSONArray(
                 FGServerConstants.INFRASTRUCTURE_COLLECTION);
         log.debug("Available " + jAInfras.length() + " infrastructures");
@@ -316,7 +316,7 @@ public class FGServerManager {
      * @throws PortalException Cannot retrieve the information
      * @throws IOException Cannot open the connection
      */
-    public HttpURLConnection getFGConnection(final long companyId,
+    public final HttpURLConnection getFGConnection(final long companyId,
             final String collection, final String resourceId,
             final String token, final String method, final String contentType)
                     throws PortalException, IOException {

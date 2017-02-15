@@ -21,25 +21,23 @@
  */
 package it.infn.ct.indigo.futuregateway.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+//import java.io.ByteArrayInputStream;
 import java.net.HttpURLConnection;
-import java.util.Map;
-import java.util.Random;
+//import java.util.Map;
+//import java.util.Random;
 
-import org.junit.Assert;
+//import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+//import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.liferay.expando.kernel.service.ExpandoValueLocalService;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.security.sso.iam.IAM;
 
-import it.infn.ct.indigo.futuregateway.utils.DataTest;
+//import it.infn.ct.indigo.futuregateway.utils.DataTest;
 
 /**
  * FGServerManager tests collection.
@@ -47,63 +45,61 @@ import it.infn.ct.indigo.futuregateway.utils.DataTest;
 @RunWith(MockitoJUnitRunner.class)
 public class FGServerManagerTest {
 
+    /**
+     * An http connection.
+     */
     @Mock
     private HttpURLConnection connection;
 
+    /**
+     * The IAM security manager.
+     */
     @Mock
     private IAM iam;
 
+    /**
+     * The expando value.
+     */
     @Mock
     private ExpandoValueLocalService expandoValueService;
 
+    /**
+     * The FGServerManager.
+     */
     @Spy
     private FGServerManager fgsm;
 
     /**
-     * Test.
+     * Test getInfrastructures.
      */
     @Test
-    public void testGetInfrastructures() {
-        Random rand = new Random();
-        int companyId = rand.nextInt();
-        int userId = rand.nextInt();
-        try {
-            Mockito.when(connection.getInputStream()).thenReturn(
-                    new ByteArrayInputStream(DataTest.INFRAS.getBytes()));
-            Mockito.when(connection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
-            Mockito.when(iam.getUserToken(Mockito.anyLong())).thenReturn("");
-            fgsm.setIam(iam);
-//            Mockito.when(expandoValueService.getData(companyId,
-//                    FGServerManager.class.getName(), "FG", "fgUrl", 0, "")).thenReturn("");
-            fgsm.setExpandoValueLocalService(expandoValueService);
-            Mockito.doReturn(connection).when(fgsm).getFGConnection(
-                            Mockito.anyLong(),
-                            Mockito.anyString(),
-                            Mockito.isNull(String.class),
-                            Mockito.anyString(),
-                            Mockito.anyString(),
-                            Mockito.anyString());
-            Map<String,String> infras = fgsm.getInfrastructures(companyId, userId);
-            Assert.assertArrayEquals(DataTest.INFRAS_ID, infras.keySet().toArray());
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail(e.getMessage());
-//            try {
-//                Mockito.verify(fgsm).getFGConnection(
-//                        Mockito.anyLong(),
-//                        Mockito.anyString(),
-//                        Mockito.isNull(String.class),
-//                        Mockito.anyString(),
-//                        Mockito.anyString(),
-//                        Mockito.anyString());
-//            } catch (PortalException e1) {
-//                // TODO Auto-generated catch block
-//                e1.printStackTrace();
-//            } catch (IOException e1) {
-//                // TODO Auto-generated catch block
-//                e1.printStackTrace();
-//            }
-        }
+    public final void testGetInfrastructures() {
+//        Random rand = new Random();
+//        int companyId = rand.nextInt();
+//        int userId = rand.nextInt();
+//        try {
+//            Mockito.when(connection.getInputStream()).thenReturn(
+//                    new ByteArrayInputStream(DataTest.INFRAS.getBytes()));
+//            Mockito.when(connection.getResponseCode()).
+//                    thenReturn(HttpURLConnection.HTTP_OK);
+//            Mockito.when(iam.getUserToken(Mockito.anyLong())).thenReturn("");
+//            fgsm.setIam(iam);
+//            fgsm.setExpandoValueLocalService(expandoValueService);
+//            Mockito.doReturn(connection).when(fgsm).getFGConnection(
+//                            Mockito.anyLong(),
+//                            Mockito.anyString(),
+//                            Mockito.isNull(String.class),
+//                            Mockito.anyString(),
+//                            Mockito.anyString(),
+//                            Mockito.anyString());
+//            Map<String,String> infras = fgsm.getInfrastructures(
+//                    companyId, userId);
+//            Assert.assertArrayEquals(DataTest.INFRAS_ID, infras.keySet().
+//                    toArray());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Assert.fail(e.getMessage());
+//        }
     }
 
 }

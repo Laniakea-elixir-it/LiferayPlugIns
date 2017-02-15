@@ -65,7 +65,7 @@ public class IAMImplTest {
      */
 //    @Test
 //    public final void testAddOrUpdateUser() {
-//        fail("Not yet implemented"); // TODO
+//        fail("Not yet implemented");
 //    }
 
     /**
@@ -77,7 +77,7 @@ public class IAMImplTest {
      */
 //    @Test
 //    public final void testGetLoginRedirect() {
-//        fail("Not yet implemented"); // TODO
+//        fail("Not yet implemented");
 //    }
 
     /**
@@ -101,7 +101,7 @@ public class IAMImplTest {
      */
 //    @Test
 //    public final void testGetUserToken() {
-//        fail("Not yet implemented"); // TODO
+//        fail("Not yet implemented");
 //    }
 
     /**
@@ -130,7 +130,7 @@ public class IAMImplTest {
      */
 //    @Test
 //    public final void testGetTokenUser() {
-//        fail("Not yet implemented"); // TODO
+//        fail("Not yet implemented");
 //    }
 
     /**
@@ -142,7 +142,7 @@ public class IAMImplTest {
      */
 //    @Test
 //    public final void testGetTokenSubjectLongString() {
-//        fail("Not yet implemented"); // TODO
+//        fail("Not yet implemented");
 //    }
 
     /**
@@ -154,6 +154,6 @@ public class IAMImplTest {
      */
 //    @Test
 //    public final void testGetTokenSubjectLongLong() {
-//        fail("Not yet implemented"); // TODO
+//        fail("Not yet implemented");
 //    }
 }

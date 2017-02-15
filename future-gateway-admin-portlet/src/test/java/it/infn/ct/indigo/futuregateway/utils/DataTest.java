@@ -21,7 +21,18 @@
  */
 package it.infn.ct.indigo.futuregateway.utils;
 
-public class DataTest {
+/**
+ * Data for unit test.
+ */
+public final class DataTest {
+    /**
+     * Prevent instantiation.
+     */
+    private DataTest() {
+    }
+    /**
+     * Infrastructure json.
+     */
     public static final String INFRAS = "{\"infrastructures\":[{"
             + "\"id\": \"123\",\"name\": \"infra1\",\"date\": "
             + "\"2015-08-11T12:12:00.421Z\",\"enabled\": true,\"virtual\": "
@@ -31,8 +42,11 @@ public class DataTest {
             + "\"enabled\": false,\"virtual\": true,\"_links\": [{"
             + "\"rel\": \"self\",\"href\": \"/v1.0/infrastructures/456\""
             + "}]}],\"_links\": [{\"rel\": \"self\",\"href\": "
-            + "\"/v1.0/infrastructures?page=1\",},{\"rel\": \"next\","
-            + "\"href\": \"/v1.0/infrastructures?page=2\",}]}";
-    
+            + "\"/v1.0/infrastructures?page=1\"},{\"rel\": \"next\","
+            + "\"href\": \"/v1.0/infrastructures?page=2\"}]}";
+
+    /**
+     * ID from the infrastructure json.
+     */
     public static final String[] INFRAS_ID = {"123", "456"};
 }

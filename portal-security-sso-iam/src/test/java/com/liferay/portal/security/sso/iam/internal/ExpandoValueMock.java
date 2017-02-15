@@ -43,7 +43,12 @@ import com.liferay.portal.kernel.service.ServiceContext;
  */
 public final class ExpandoValueMock implements ExpandoValue {
 
-    @Override
+    /**
+	 * Serial version.
+	 */
+	private static final long serialVersionUID = -3774468533175013671L;
+
+	@Override
     public Object clone() {
         return new ExpandoValueMock();
     }
