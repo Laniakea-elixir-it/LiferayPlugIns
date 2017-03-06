@@ -242,7 +242,7 @@ public class FGServerManager {
      * @throws PortalException Cannot retrieve the server endpoint
      * @throws IOException Connect communicate with the server
      */
-    public final String getCollection(final long companyId,
+    public String getCollection(final long companyId,
             final String collection, final String token)
                     throws PortalException, IOException {
         HttpURLConnection connection = getFGConnection(

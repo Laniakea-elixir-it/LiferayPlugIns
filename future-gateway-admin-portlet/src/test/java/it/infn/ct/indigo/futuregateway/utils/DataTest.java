@@ -48,5 +48,5 @@ public final class DataTest {
     /**
      * ID from the infrastructure json.
      */
-    public static final String[] INFRAS_ID = {"123", "456"};
+    public static final String[] INFRAS_ID = {"123"};
 }
