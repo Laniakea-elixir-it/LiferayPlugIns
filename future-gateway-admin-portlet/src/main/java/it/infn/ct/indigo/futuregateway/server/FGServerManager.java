@@ -316,7 +316,7 @@ public class FGServerManager {
      * @throws PortalException Cannot retrieve the information
      * @throws IOException Cannot open the connection
      */
-    public final HttpURLConnection getFGConnection(final long companyId,
+    public HttpURLConnection getFGConnection(final long companyId,
             final String collection, final String resourceId,
             final String token, final String method, final String contentType)
                     throws PortalException, IOException {
@@ -329,9 +329,9 @@ public class FGServerManager {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setDoOutput(true);
         connection.setRequestMethod(method);
-        connection.setRequestProperty("Content-Type", contentType);
         connection.setRequestProperty("Authorization",
                 "Bearer " + token);
+        connection.setRequestProperty("Content-Type", contentType);
         return connection;
     }
 
@@ -421,7 +421,7 @@ public class FGServerManager {
      * @param companyId The id of the instance owning the table
      * @throws Exception If the table cannot be created
      */
-    protected final void setupExpando(final long companyId) throws Exception {
+    private final void setupExpando(final long companyId) throws Exception {
         ExpandoTable table = null;
         try {
             table = expandoTableService.addTable(

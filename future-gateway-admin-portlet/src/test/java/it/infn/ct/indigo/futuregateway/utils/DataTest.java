@@ -31,7 +31,7 @@ public final class DataTest {
     private DataTest() {
     }
     /**
-     * Infrastructure json.
+     * Infrastructure collection json.
      */
     public static final String INFRAS = "{\"infrastructures\":[{"
             + "\"id\": \"123\",\"name\": \"infra1\",\"date\": "
@@ -49,4 +49,23 @@ public final class DataTest {
      * ID from the infrastructure json.
      */
     public static final String[] INFRAS_ID = {"123"};
+
+    /**
+     * New infrastructure json.
+     */
+    public static final String INFRA_RES = "{\"name\": \"infra1\","
+            + "\"enabled\": true,\"virtual\": false,}";
+
+    /**
+     * Created infrastructure json.
+     */
+    public static final String INFRA_RES_CREATED = "{\"id\": \"123\","
+            + "\"name\": \"infra1\",\"enabled\": true,"
+            + "\"virtual\": false,}";
+
+    /**
+     * String to insert in temporary files.
+     * These are used to test the upload 
+     */
+    public static final String[] FILES_CONT = {"File1Test", "File2Test"};
 }
