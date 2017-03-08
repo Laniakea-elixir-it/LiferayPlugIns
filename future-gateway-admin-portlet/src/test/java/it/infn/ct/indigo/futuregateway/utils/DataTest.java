@@ -65,7 +65,7 @@ public final class DataTest {
 
     /**
      * String to insert in temporary files.
-     * These are used to test the upload 
+     * These are used to test the upload
      */
     public static final String[] FILES_CONT = {"File1Test", "File2Test"};
 }

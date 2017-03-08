@@ -19,7 +19,30 @@
  * the License.
  **********************************************************************
  */
+package it.infn.ct.indigo.futuregateway.portlet.action;
+
+import org.junit.Before;
+import org.junit.Test;
+
 /**
- * Classes collecting information and interacting with the Future Gateway.
+ * FGAddAppMVCActionCommand tests collection.
  */
-package it.infn.ct.indigo.futuregateway.server;
+public class FGAddAppMVCActionCommandTest {
+
+    /**
+     * Prepare the environment.
+     * @throws Exception In case of a problem to replicate Liferay context
+     */
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    /**
+     * Test the process action.
+     */
+    @Test
+    public void test() {
+//        fail("Not yet implemented");
+    }
+
+}

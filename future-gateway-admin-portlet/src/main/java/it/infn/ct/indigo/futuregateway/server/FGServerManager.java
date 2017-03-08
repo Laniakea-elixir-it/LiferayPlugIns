@@ -421,7 +421,7 @@ public class FGServerManager {
      * @param companyId The id of the instance owning the table
      * @throws Exception If the table cannot be created
      */
-    private final void setupExpando(final long companyId) throws Exception {
+    private void setupExpando(final long companyId) throws Exception {
         ExpandoTable table = null;
         try {
             table = expandoTableService.addTable(

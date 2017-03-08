@@ -20,6 +20,6 @@
  **********************************************************************
  */
 /**
- * Classes collecting information and interacting with the Future Gateway.
+ * Package containing the portlet actions.
  */
 package it.infn.ct.indigo.futuregateway.server;

@@ -90,7 +90,7 @@ public class FGServerManagerTest {
      * @throws Exception If the expando service field cannot be replaced
      */
     @Before
-    public final void preparation() throws Exception {
+    public final void setUp() throws Exception {
         JSONFactoryUtil jsonFactoryUtil = new JSONFactoryUtil();
         jsonFactoryUtil.setJSONFactory(new JSONFactoryImpl());
         Mockito.when(expandoValueService.getData(
@@ -269,24 +269,34 @@ public class FGServerManagerTest {
             fgsm.submitFilesResource(0,
                     FGServerConstants.INFRASTRUCTURE_COLLECTION, "",
                     files, "");
+            System.out.println(baos);
             String[] stream = baos.toString().split("\\r?\\n");
-            System.out.println(baos.toString());
-            String file1 = stream[1].split(";")[2].trim();
-            file1 = file1.substring(file1.indexOf('"') + 1, file1.lastIndexOf('"'));
-            String file2 = stream[7].split(";")[2].trim();
-            file2 = file2.substring(file2.indexOf('"') + 1, file2.lastIndexOf('"'));
-            Assert.assertNotNull(files.get(file1));
-            int idFile1 = Integer.parseInt(file1.substring(0, 1));
-            Assert.assertNotNull(files.get(file2));
-            int idFile2 = Integer.parseInt(file2.substring(0, 1));
-            Assert.assertEquals(DataTest.FILES_CONT[idFile1], stream[5]);
-            Assert.assertEquals(DataTest.FILES_CONT[idFile2], stream[11]);
+            int fileId = -1;
+            boolean fileContentLine = false;
+            for (String line: stream) {
+                if (line.contains("form-data")) {
+                    String[] formElements = line.split(";");
+                    String fileName =
+                            formElements[formElements.length - 1].trim();
+                    fileName = fileName.substring(
+                            fileName.indexOf('"')
+                            + 1, fileName.lastIndexOf('"'));
+                    Assert.assertNotNull(files.get(fileName));
+                    fileId = Integer.parseInt(fileName.substring(0, 1));
+                }
+                if (fileContentLine) {
+                    Assert.assertEquals(DataTest.FILES_CONT[fileId], line);
+                    fileContentLine = false;
+                }
+                if (line.isEmpty()) {
+                    fileContentLine = true;
+                }
+            }
         } catch (IllegalArgumentException | IOException | PortalException e) {
             Assert.fail(e.getMessage());
         }
-        
     }
-    
+
     /**
      * Test submitFilesResource.
      * @exception IOException  When the connection does not work
@@ -310,13 +320,17 @@ public class FGServerManagerTest {
         } catch (IllegalArgumentException | PortalException e) {
             Assert.fail(e.getMessage());
         }
-        
     }
 
+    /**
+     * Create temporary files for transfer test.
+     * @return A map of file names and file objects
+     * @throws IOException If temporary files cannot be created
+     */
     private Map<String, File> temporaryRandomFiles()
             throws IOException {
-        Map<String, File> files= new HashMap<>();
-        for(int i=0; i < DataTest.FILES_CONT.length; i++) {
+        Map<String, File> files = new HashMap<>();
+        for (int i = 0; i < DataTest.FILES_CONT.length; i++) {
             Path tempFile = Files.createTempFile(Integer.toString(i), null);
             tempFile.toFile().deleteOnExit();
             Files.write(tempFile, DataTest.FILES_CONT[i].getBytes(),
