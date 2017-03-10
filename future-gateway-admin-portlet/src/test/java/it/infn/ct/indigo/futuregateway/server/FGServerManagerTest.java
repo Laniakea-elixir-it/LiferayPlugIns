@@ -269,7 +269,6 @@ public class FGServerManagerTest {
             fgsm.submitFilesResource(0,
                     FGServerConstants.INFRASTRUCTURE_COLLECTION, "",
                     files, "");
-            System.out.println(baos);
             String[] stream = baos.toString().split("\\r?\\n");
             int fileId = -1;
             boolean fileContentLine = false;

@@ -153,7 +153,7 @@ public class FGServerManager {
      * @return The Id of the new resource
      * @throws Exception The resource cannot be added
      */
-    public final String addResource(final long companyId,
+    public String addResource(final long companyId,
             final String collection, final String resource,
             final long userId)
                     throws Exception {
