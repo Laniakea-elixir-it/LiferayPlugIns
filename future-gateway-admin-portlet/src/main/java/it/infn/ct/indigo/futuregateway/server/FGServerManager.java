@@ -224,7 +224,7 @@ public class FGServerManager {
      * @param userId The id of the user performing the action
      * @throws Exception Impossible to retrieve the user token
      */
-    public final void submitFilesResource(final long companyId,
+    public void submitFilesResource(final long companyId,
             final String collection, final String resourceId,
             final Map<String, File> files, final long userId)
                     throws Exception {
@@ -275,7 +275,7 @@ public class FGServerManager {
      * @return A map of enabled infrastructures. The map contains id and name
      * @throws Exception Cannot communicate with the server
      */
-    public final Map<String, String> getInfrastructures(
+    public Map<String, String> getInfrastructures(
             final long companyId, final long userId)
                     throws Exception {
         Map<String, String> mapInfras = new HashMap<>();

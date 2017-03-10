@@ -21,6 +21,14 @@
  */
 package it.infn.ct.indigo.futuregateway.portlet.action;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
@@ -32,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -48,6 +57,7 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
+import it.infn.ct.indigo.futuregateway.server.FGServerConstants;
 import it.infn.ct.indigo.futuregateway.server.FGServerManager;
 
 /**
@@ -126,13 +136,6 @@ public class FGAddAppMVCActionCommandTest {
         jsonFactoryUtil.setJSONFactory(new JSONFactoryImpl());
         PortalUtil pu = new PortalUtil();
         pu.setPortal(portalImpl);
-    }
-
-    /**
-     * Test the process action.
-     */
-    @Test
-    public final void testDoProcessAction() {
         Mockito.when(themeDisplay.getCompanyId()).thenReturn(0L);
         Mockito.when(themeDisplay.getUserId()).thenReturn(0L);
         Mockito.when(themeDisplay.getLayout()).thenReturn(layout);
@@ -149,6 +152,30 @@ public class FGAddAppMVCActionCommandTest {
             thenReturn(themeDisplay);
         Mockito.when(actionRequest.getParameter("redirect")).
             thenReturn(null);
+        Mockito.when(
+                portalImpl.getUploadPortletRequest(
+                        Mockito.any(PortletRequest.class))).
+            thenReturn(uploadRequest);
+        Mockito.when(
+                portalImpl.getHttpServletRequest(
+                        Mockito.any(PortletRequest.class))).
+            thenReturn(httpRequest);
+        Mockito.when(
+                portalImpl.getOriginalServletRequest(
+                        Mockito.any(HttpServletRequest.class))).
+            thenReturn(httpRequest);
+        Mockito.when(liferayRequest.getPortletName()).thenReturn("");
+        Mockito.when(
+                portalImpl.getLiferayPortletRequest(
+                        Mockito.any(PortletRequest.class))).
+            thenReturn(liferayRequest);
+    }
+
+    /**
+     * Test the process action.
+     */
+    @Test
+    public final void testDoProcessAction() {
         Mockito.when(actionRequest.getParameter("fg-app-name")).
             thenReturn("fg-app-name");
         Mockito.when(actionRequest.getParameter("fg-app-description")).
@@ -171,30 +198,18 @@ public class FGAddAppMVCActionCommandTest {
         String[] infras = {"fg-app-infrastructure-1"};
         Mockito.when(httpRequest.getParameterValues("fg-app-infrastructure")).
             thenReturn(infras);
-        String[] fileUrls = {"fg-app-file-url-1"};
+        String[] fileUrls = {"http://test.com/fg-app-file-url-1"};
         Mockito.when(httpRequest.getParameterValues("fg-app-file-url")).
             thenReturn(fileUrls);
         Mockito.when(uploadRequest.getFiles(Mockito.anyString())).
-            thenReturn(null);
+            thenReturn(new File[1]);
+        String[] fileNames = new String[1];
         Mockito.when(uploadRequest.getFileNames(Mockito.anyString())).
-            thenReturn(null);
+            thenReturn(fileNames);
         Mockito.when(
                 portalImpl.getUploadPortletRequest(
                         Mockito.any(PortletRequest.class))).
             thenReturn(uploadRequest);
-        Mockito.when(
-                portalImpl.getHttpServletRequest(
-                        Mockito.any(PortletRequest.class))).
-            thenReturn(httpRequest);
-        Mockito.when(
-                portalImpl.getOriginalServletRequest(
-                        Mockito.any(HttpServletRequest.class))).
-            thenReturn(httpRequest);
-        Mockito.when(liferayRequest.getPortletName()).thenReturn("");
-        Mockito.when(
-                portalImpl.getLiferayPortletRequest(
-                        Mockito.any(PortletRequest.class))).
-            thenReturn(liferayRequest);
         try {
             Mockito.when(
                     fgSManager.addResource(
@@ -233,9 +248,116 @@ public class FGAddAppMVCActionCommandTest {
                     "fg-app-parameter-value-1",
                     jObj.getJSONArray("parameters").
                     getJSONObject(0).get("value"));
+            Assert.assertEquals(
+                    "http://test.com/fg-app-file-url-1",
+                    jObj.getJSONArray("files").
+                    getString(0));
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
     }
 
+    /**
+     * Test the process action with a file error.
+     */
+    @Test
+    public final void testDoProcessActionWithErrorOnFile() {
+        Mockito.when(actionRequest.getParameter("fg-app-name")).
+            thenReturn("fg-app-name");
+        Mockito.when(actionRequest.getParameter("fg-app-description")).
+            thenReturn("fg-app-description");
+        Mockito.when(actionRequest.getParameter("fg-app-enabled")).
+            thenReturn("true");
+        Mockito.when(actionRequest.getParameter("fg-app-outcome")).
+            thenReturn("fg-app-outcome");
+        String[] paramNames = {"fg-app-parameter-name-1"};
+        Mockito.when(httpRequest.getParameterValues("fg-app-parameter-name")).
+            thenReturn(paramNames);
+        String[] paramValues = {"fg-app-parameter-value-1"};
+        Mockito.when(httpRequest.getParameterValues("fg-app-parameter-value")).
+            thenReturn(paramValues);
+        String[] paramDescriptions = {"fg-app-parameter-description-1"};
+        Mockito.when(
+                httpRequest.getParameterValues(
+                        "fg-app-parameter-description")).
+            thenReturn(paramDescriptions);
+        String[] infras = {"fg-app-infrastructure-1"};
+        Mockito.when(httpRequest.getParameterValues("fg-app-infrastructure")).
+            thenReturn(infras);
+        String[] fileUrls = {"fg-app-file-url-1"};
+        Mockito.when(httpRequest.getParameterValues("fg-app-file-url")).
+            thenReturn(fileUrls);
+        Mockito.when(uploadRequest.getFiles(Mockito.anyString())).
+            thenReturn(null);
+        String[] fileNames = {"file1"};
+        Mockito.when(uploadRequest.getFileNames(Mockito.anyString())).
+            thenReturn(fileNames);
+        Map<String, String> infraMap = new HashMap<>();
+        infraMap.put("1", "infra1");
+        try {
+            Path tempFile = Files.createTempFile(null, null);
+            tempFile.toFile().deleteOnExit();
+            Files.write(tempFile, fileNames[0].getBytes(),
+                    StandardOpenOption.WRITE);
+            File[] files = new File[1];
+            files[0] = tempFile.toFile();
+            Mockito.when(uploadRequest.getFiles(Mockito.anyString())).
+                thenReturn(files);
+            Mockito.when(
+                    fgSManager.addResource(
+                            Mockito.anyLong(), Mockito.anyString(),
+                            Mockito.anyString(), Mockito.anyLong())).
+                thenReturn("");
+            Mockito.doThrow(new IOException()).when(fgSManager).
+                submitFilesResource(Mockito.anyLong(), Mockito.anyString(),
+                        Mockito.anyString(),
+                        ArgumentMatchers.<Map<String, File>>any(),
+                        Mockito.anyLong());
+            Mockito.when(fgSManager.getInfrastructures(
+                    Mockito.anyLong(), Mockito.anyLong())).
+                thenReturn(infraMap);
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
+        FGAddAppMVCActionCommand fgAAMAC = new FGAddAppMVCActionCommand();
+        fgAAMAC.setFGServerManeger(fgSManager);
+        try {
+            fgAAMAC.doProcessAction(actionRequest, actionResponse);
+            ArgumentCaptor<String> json = ArgumentCaptor.forClass(
+                    String.class);
+            Mockito.verify(fgSManager).addResource(
+                    Mockito.anyLong(), Mockito.anyString(),
+                    json.capture(), Mockito.anyLong());
+            JSONObject jObj = JSONFactoryUtil.createJSONObject(
+                    json.getValue());
+            Assert.assertEquals("fg-app-name", jObj.getString("name"));
+            Assert.assertEquals(
+                    "fg-app-description", jObj.getString("description"));
+            Assert.assertEquals("fg-app-outcome", jObj.getString("outcome"));
+            Assert.assertEquals("true", jObj.getString("enabled"));
+            Assert.assertEquals(infras[0], jObj.getJSONArray("infrastructures").
+                    getString(0));
+            Assert.assertEquals(
+                    "fg-app-parameter-name-1", jObj.getJSONArray("parameters").
+                    getJSONObject(0).get("name"));
+            Assert.assertEquals(
+                    "fg-app-parameter-description-1",
+                    jObj.getJSONArray("parameters").
+                    getJSONObject(0).get("description"));
+            Assert.assertEquals(
+                    "fg-app-parameter-value-1",
+                    jObj.getJSONArray("parameters").
+                    getJSONObject(0).get("value"));
+            ArgumentCaptor<Object> obInfra = ArgumentCaptor.forClass(
+                    Object.class);
+            Mockito.verify(actionRequest).setAttribute(
+                    Mockito.eq(FGServerConstants.INFRASTRUCTURE_COLLECTION),
+                    obInfra.capture());
+            Assert.assertEquals(infraMap,
+                    (Map<String, String>) obInfra.getValue());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail(e.getMessage());
+        }
+    }
 }
