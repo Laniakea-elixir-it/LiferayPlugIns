@@ -108,4 +108,7 @@ upgrade it is better to remove the previous version of LiferayIAM modules. This 
 The modules should not be present anymore but the configuration is still stored so after the installation of the new modules the authentication
 will return to work as before.
 
+## FutureGateway customisable application module
 
+For each application it is possible to determine the parameter list with a template. The parameter list is based on the template-parameters.json file located in the application directory.
+Syntax of template-parameters.json file is shortly described on Customisable application module git repository website
