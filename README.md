@@ -2,8 +2,8 @@
 
 LiferayPlugins is a set of Liferay modules for the interaction with INDIGO-DataCloud services.
 It consist of a set of modules for the authentication using the INDIGO-DATACLOUD IAM service,
-formerly known as [LiferayIAM][1], and a module implementing the administration panel for the FutureGateway,
-formerly known as [Admin-portlet][2].
+formerly known as [LiferayIAM][1], module implementing the administration panel for the FutureGateway,
+formerly known as [Admin-portlet][2], and Customisable application portlet.
 
 In the INDIGO-DATACLOUD infrastructure model, IAM is the central authentication and authorisation
 service and it has been developed inside the project to support the requirements of the supported communities.

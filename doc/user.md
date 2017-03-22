@@ -49,3 +49,8 @@ Finally, in the right bottom of the applications and infrastructures tab a butto
 add a new resource. The button will open a new page with a form, depending on the resource type, containing all the possible fields.
 
 Currently, resource search, filter and modify is not supported but it will be added in future releases of the modules.
+
+## FutureGateway customisable application module
+
+Customisable application portlet provides direct access to selected applications and allows the user to list all submitted tasks and check their status.
+To submit new tasks it is needed only to press *Launch request* button, fill all required fields in a *submission panel* popup window and confirm it.
