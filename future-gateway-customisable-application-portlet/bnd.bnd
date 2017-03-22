@@ -1,6 +1,6 @@
 Bundle-Name: FutureGateway customisable.application.portlet
 Bundle-SymbolicName: customisable.application.portlet
-Bundle-Version: 1.1.1
+Bundle-Version: 2.0.0
 Export-Package:\
     it.infn.ct.indigo.portlet,\
     it.infn.ct.indigo.portlet.configuration
