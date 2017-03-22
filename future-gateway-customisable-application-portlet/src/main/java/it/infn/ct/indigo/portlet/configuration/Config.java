@@ -1,80 +1,95 @@
 package it.infn.ct.indigo.portlet.configuration;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * Configuration class.
+ */
 public class Config {
-    private final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss,SSS");
-    private final String PARAMETERS_JSON_FILE = "/parameters.json";
-    private final String TEMPLATE_PARAMETERS_JSON_FILE = "/template-parameters.json";
-    private final String PROPERTY = "content";
+    /**
+     * JSON File name.
+     */
+    private final String parametersJsonFile = "/parameters.json";
+    /**
+     * Template name.
+     */
+    private final String templateParametersJsonFile =
+            "/template-parameters.json";
+    /**
+     * Property.
+     */
+    private final String property = "content";
 
-    private String logEvent(String text) {
-        String log = sdf.format(new Date()) + " " + text;
-        System.out.println(log);
-        return log;
-    }
 
-    public void createParamFile(String path, String json) {
-        path = path + PARAMETERS_JSON_FILE;
-        
-        File file = new File(path);
+    /**
+     * Create param file.
+     * @param path Path to store the file
+     * @param json The content in json format
+     */
+    public final void createParamFile(final String path, final String json) {
+        String filePath = path + parametersJsonFile;
+
+        File file = new File(filePath);
         PrintWriter printWriter = null;
         try {
             printWriter = new PrintWriter(file);
             printWriter.print(json);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             if (printWriter != null) {
                 printWriter.close();
             }
         }
     }
 
-    private String readFile(String path) {
+    /**
+     * Read the file to a string.
+     * @param path The path to the file
+     * @return The file content
+     */
+    private String readFile(final String path) {
         String content = null;
         try {
-            if(new File(path).isFile()) {
+            if (new File(path).isFile()) {
                 content = new String(Files.readAllBytes(Paths.get(path)));
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return content;
     }
 
-    public String readJsonFile(String path) {
-        if(path == null) {
+    /**
+     * Read a file and check the json content.
+     * @param path Path to the file
+     * @return the file content
+     */
+    public final String readJsonFile(final String path) {
+        if (path == null) {
             return null;
         }
 
-        String jsonContent = readFile(path + TEMPLATE_PARAMETERS_JSON_FILE);
+        String jsonContent = readFile(path + templateParametersJsonFile);
         JsonObject obj = new JsonObject();
-        if(jsonContent == null) {
-            obj.add(PROPERTY, null);
-        }
-        else {
+        if (jsonContent == null) {
+            obj.add(property, null);
+        } else {
             JsonParser parser = new JsonParser();
             try {
-                obj.add(PROPERTY, parser.parse(jsonContent).getAsJsonObject());
-            }
-            catch(com.google.gson.JsonSyntaxException e) {
+                obj.add(property, parser.parse(jsonContent).getAsJsonObject());
+            } catch (com.google.gson.JsonSyntaxException e) {
                 e.printStackTrace();
-                obj.add(PROPERTY, null);
+                obj.add(property, null);
             }
         }
         return obj.toString();
