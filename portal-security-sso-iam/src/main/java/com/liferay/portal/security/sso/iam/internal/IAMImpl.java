@@ -137,8 +137,8 @@ public class IAMImpl implements IAM {
     @Override
     public final User addOrUpdateUser(
             final HttpSession session, final long companyId,
-            final String authorizationCode, final String returnRequestUri,
-            final List<String> scopes) throws Exception {
+            final String authorizationCode, final String returnRequestUri)
+                    throws Exception {
         log.debug("Add or update a new user");
         IAMEndPoints iamEP = new IAMEndPoints(getIAMConfiguration(companyId));
         AuthorizationCode authCode = new AuthorizationCode(authorizationCode);
@@ -223,13 +223,13 @@ public class IAMImpl implements IAM {
 
     @Override
     public final String getLoginRedirect(final long companyId,
-            final String returnRequestUri, final List<String> scopes,
+            final String returnRequestUri,
             final boolean isRefreshTokenRequested)
             throws Exception {
         IAMConfiguration iamConf = getIAMConfiguration(companyId);
         IAMEndPoints iamEP = new IAMEndPoints(iamConf);
-        String fullScopes = StringUtil.merge(scopes, " ") + " " + iamConf
-                .oauthExtraScopes();
+        String fullScopes = StringUtil.merge(IAMConstants.SCOPES_LOGIN, " ")
+                + " " + iamConf.oauthExtraScopes();
         if (isRefreshTokenRequested) {
             fullScopes = fullScopes.concat(" offline_access");
         }
@@ -264,7 +264,8 @@ public class IAMImpl implements IAM {
         token = accessToken.getData();
         log.debug("Requested the token for the user " + userId + " and it is "
                 + token);
-        if (!isValidToken(user.getCompanyId(), token)) {
+        if (Validator.isNull(token)
+                || !isValidToken(user.getCompanyId(), token)) {
             token = updateUserToken(user);
         }
         return token;
@@ -566,10 +567,10 @@ public class IAMImpl implements IAM {
         expandoValueLocalService.addValue(companyId, User.class.getName(),
                 ExpandoTableConstants.DEFAULT_TABLE_NAME, "iamUserID", user
                         .getUserId(), userInfo.getSubject().getValue());
-        expandoValueLocalService.addValue(companyId, User.class.getName(),
-                ExpandoTableConstants.DEFAULT_TABLE_NAME, "iamAccessToken",
-                user.getUserId(), bearerAccessToken.getValue());
         if (Validator.isNotNull(refreshToken)) {
+            expandoValueLocalService.addValue(companyId, User.class.getName(),
+                    ExpandoTableConstants.DEFAULT_TABLE_NAME, "iamAccessToken",
+                    user.getUserId(), bearerAccessToken.getValue());
             expandoValueLocalService.addValue(companyId, User.class
                     .getName(), ExpandoTableConstants.DEFAULT_TABLE_NAME,
                     "iamRefreshToken", user.getUserId(), refreshToken
@@ -714,6 +715,7 @@ public class IAMImpl implements IAM {
                 user.getCompanyId(), User.class.getName(),
                 ExpandoTableConstants.DEFAULT_TABLE_NAME, "iamRefreshToken",
                 user.getUserId());
+        IAMConfiguration iamConf = getIAMConfiguration(user.getCompanyId());
         RefreshToken refreshToken = new RefreshToken(refreshTokenEV.getData());
         AuthorizationGrant refreshTokenGrant = new RefreshTokenGrant(
                 refreshToken);
@@ -726,8 +728,11 @@ public class IAMImpl implements IAM {
         }
         ClientAuthentication clientAuth = new ClientSecretBasic(iamEP
                 .getClientID(), iamEP.getSecret());
+        String fullScopes = StringUtil.merge(IAMConstants.SCOPES_LOGIN, " ")
+                + " " + iamConf.oauthExtraScopes() + " offline_access";
+
         TokenRequest request = new TokenRequest(iamEP.getTokenURI(),
-                clientAuth, refreshTokenGrant);
+                clientAuth, refreshTokenGrant, Scope.parse(fullScopes));
         TokenResponse response;
         try {
             response = TokenResponse.parse(request.toHTTPRequest().send());
@@ -829,4 +834,5 @@ public class IAMImpl implements IAM {
      * Logger.
      */
     private final Log log = LogFactoryUtil.getLog(IAMImpl.class);
+
 }

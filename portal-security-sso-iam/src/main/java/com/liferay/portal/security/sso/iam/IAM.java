@@ -22,7 +22,6 @@
 
 package com.liferay.portal.security.sso.iam;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -51,16 +50,14 @@ public interface IAM {
      *            IAM authorisation code
      * @param returnRequestUri
      *            URI where the user is redirect after the authentication
-     * @param scopes
-     *            The list of requested scopes
      *
      * @return The user
      * @throws Exception
      *             If there are problem to authenticate or identify the user
      */
     User addOrUpdateUser(HttpSession session, long companyId,
-            String authorizationCode, String returnRequestUri,
-            List<String> scopes) throws Exception;
+            String authorizationCode, String returnRequestUri)
+                    throws Exception;
 
     /**
      * Get the IAM URL where the user has to be re-direct
@@ -70,8 +67,6 @@ public interface IAM {
      *            Company Id
      * @param returnRequestUri
      *            URI where the user is redirect after the authentication
-     * @param scopes
-     *            The list of requested scopes
      * @param isRefreshTokenRequested
      *            True if the associated user has not a refresh token, false
      *            otherwise
@@ -80,8 +75,7 @@ public interface IAM {
      *             If there is a configuration problem
      */
     String getLoginRedirect(long companyId, String returnRequestUri,
-            List<String> scopes, boolean isRefreshTokenRequested)
-            throws Exception;
+            boolean isRefreshTokenRequested) throws Exception;
 
     /**
      * Verifies if the IAM authentication is enabled.

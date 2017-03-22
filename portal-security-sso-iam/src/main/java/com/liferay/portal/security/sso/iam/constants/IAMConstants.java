@@ -22,6 +22,9 @@
 
 package com.liferay.portal.security.sso.iam.constants;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author Marco Fargetta
  */
@@ -31,6 +34,11 @@ public final class IAMConstants {
      */
     public static final String SERVICE_NAME =
             "com.liferay.portal.security.sso.iam";
+    /**
+     * Login scopes for the OpenIDConnect.
+     */
+    public static final List<String> SCOPES_LOGIN = Arrays.asList("openid",
+            "profile", "email");
 
     /**
      * Default constructor to avoid instances.

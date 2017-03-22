@@ -43,7 +43,7 @@ User can look at the resource details by clicking the id. This will open a modal
 and a button to delete the resource, although the user should be enabled in the FutureGateway to delete the resources. The modal windows is shown
 in the following figure:
 
-![FG application details](img/FGapplicationdetails.png)
+![FG application details](img/FGapplicationsdetails.png)
 
 Finally, in the right bottom of the applications and infrastructures tab a button with a `+` sign open an insert page where the user can
 add a new resource. The button will open a new page with a form, depending on the resource type, containing all the possible fields.

@@ -44,11 +44,11 @@ import com.liferay.portal.kernel.service.ServiceContext;
 public final class ExpandoValueMock implements ExpandoValue {
 
     /**
-	 * Serial version.
-	 */
-	private static final long serialVersionUID = -3774468533175013671L;
+     * Serial version.
+     */
+    private static final long serialVersionUID = -3774468533175013671L;
 
-	@Override
+    @Override
     public Object clone() {
         return new ExpandoValueMock();
     }
@@ -372,7 +372,8 @@ public final class ExpandoValueMock implements ExpandoValue {
     }
 
     @Override
-    public String[] getStringArray(final Locale locale) throws PortalException {
+    public String[] getStringArray(final Locale locale)
+            throws PortalException {
         return null;
     }
 
@@ -459,31 +460,28 @@ public final class ExpandoValueMock implements ExpandoValue {
     }
 
     @Override
-    public void setString(
-            final String data, final Locale locale, final Locale defaultLocale)
-                    throws PortalException {
-    }
-
-    @Override
-    public void setStringArray(final String[] data) throws PortalException {
-    }
-
-    @Override
-    public void setStringArray(
-            final String[] data, final Locale locale,
+    public void setString(final String data, final Locale locale,
             final Locale defaultLocale) throws PortalException {
     }
 
     @Override
-    public void setStringArrayMap(
-            final Map<Locale, String[]> dataMap, final Locale defaultLocale)
-                    throws PortalException {
+    public void setStringArray(final String[] data)
+            throws PortalException {
     }
 
     @Override
-    public void setStringMap(
-            final Map<Locale, String> dataMap, final Locale defaultLocale)
-                    throws PortalException {
+    public void setStringArray(final String[] data, final Locale locale,
+            final Locale defaultLocale) throws PortalException {
+    }
+
+    @Override
+    public void setStringArrayMap(final Map<Locale, String[]> dataMap,
+            final Locale defaultLocale) throws PortalException {
+    }
+
+    @Override
+    public void setStringMap(final Map<Locale, String> dataMap,
+            final Locale defaultLocale) throws PortalException {
     }
 
     /**

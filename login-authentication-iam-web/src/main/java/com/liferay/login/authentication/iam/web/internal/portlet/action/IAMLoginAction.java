@@ -22,6 +22,16 @@
 
 package com.liferay.login.authentication.iam.web.internal.portlet.action;
 
+import javax.portlet.PortletMode;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -40,18 +50,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.security.sso.iam.IAM;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.portlet.PortletMode;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletURL;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Marco Fargetta
@@ -77,7 +75,7 @@ public class IAMLoginAction extends BaseStrutsAction {
             String returnRequestUri = getReturnRequestUri(request);
 
             String loginRedirect = iam.getLoginRedirect(themeDisplay
-                    .getCompanyId(), returnRequestUri, SCOPES_LOGIN, false);
+                    .getCompanyId(), returnRequestUri, false);
 
             response.sendRedirect(loginRedirect);
         } else if (cmd.equals("token")) {
@@ -92,11 +90,11 @@ public class IAMLoginAction extends BaseStrutsAction {
                 try {
                     user = iam.addOrUpdateUser(session, themeDisplay
                             .getCompanyId(), authorizationCode,
-                            returnRequestUri, SCOPES_LOGIN);
+                            returnRequestUri);
                     if (!iam.hasRefreshToken(user)) {
                         String loginRedirect = iam.getLoginRedirect(
                                 themeDisplay.getCompanyId(), returnRequestUri,
-                                SCOPES_LOGIN, true);
+                                true);
 
                         response.sendRedirect(loginRedirect);
                         return super.execute(request, response);
@@ -230,12 +228,6 @@ public class IAMLoginAction extends BaseStrutsAction {
      */
     private static final String REDIRECT_URI =
             "/portal/iam_openidconnect?cmd=token";
-
-    /**
-     * Login scopes for the OpenIDConnect.
-     */
-    private static final List<String> SCOPES_LOGIN = Arrays.asList("openid",
-            "profile", "email");
 
     /**
      * The iam component.
