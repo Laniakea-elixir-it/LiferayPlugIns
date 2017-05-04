@@ -1,5 +1,5 @@
 Bundle-SymbolicName: future.gateway.admin.portlet
 Bundle-Name: FutureGateway Admin
-Bundle-Version: 2.0.0
+Bundle-Version: 2.0.1
 Liferay-Export-JS-Submodules: *
 -includeresource: package.json

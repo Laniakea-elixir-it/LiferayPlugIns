@@ -1,5 +1,5 @@
 Bundle-SymbolicName: com.liferay.portal.security.sso.iam
-Bundle-Version: 2.0.0
+Bundle-Version: 2.0.1
 Bundle-Name: Liferay Portal Security SSO IAM
 Bundle-Description: SSO module for INDIGO-DC IAM service. The IAM service is integrated using \
         the OpenID Connect protocol
