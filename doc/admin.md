@@ -17,6 +17,8 @@ the five jar modules included in the release:
 
 The module upload page is available in `Liferay > Control Panel > Apps > App Manager`.
 
+Some javascript in the modules could not load properly, to avoid problems configure Liferay with the property `javascript.fast.load=false`. 
+
 After the modules are deployed the new IAM authentication configuration should be available in the control panel going
 to `Liferay > Control Panel > Configuration > Instance Settings`, under the section *authentication*. The following picture
 shows the configuration made with the IAM-Test instance:
