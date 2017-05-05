@@ -22,8 +22,8 @@
 package it.infn.ct.indigo.futuregateway.server;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -32,11 +32,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -174,7 +174,7 @@ public class FGServerManager {
      */
     public final void submitFilesResource(final long companyId,
             final String collection, final String resourceId,
-            final Map<String, File> files, final String token)
+            final Map<String, InputStream> files, final String token)
                     throws PortalException, IOException {
         String boundary = Long.toHexString(System.currentTimeMillis());
         String crlf = "\r\n";
@@ -200,9 +200,9 @@ public class FGServerManager {
                 writer.append("Content-Transfer-Encoding: binary").
                     append(crlf);
                 writer.append(crlf).flush();
-                Files.copy(files.get(fName).toPath(), output);
-                output.flush();
+                IOUtils.copy(files.get(fName), output);
                 writer.append(crlf).flush();
+                files.get(fName).close();
             }
             writer.append("--" + boundary + "--").append(crlf).flush();
         }
@@ -226,7 +226,7 @@ public class FGServerManager {
      */
     public void submitFilesResource(final long companyId,
             final String collection, final String resourceId,
-            final Map<String, File> files, final long userId)
+            final Map<String, InputStream> files, final long userId)
                     throws Exception {
         submitFilesResource(companyId, collection, resourceId,
                 files, iam.getUserToken(userId));

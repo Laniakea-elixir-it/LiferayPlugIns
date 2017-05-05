@@ -23,8 +23,9 @@ package it.infn.ct.indigo.futuregateway.server;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
@@ -256,7 +257,7 @@ public class FGServerManagerTest {
     @Test
     public final void testSubmitFilesResource() {
         try {
-            Map<String, File> files = temporaryRandomFiles();
+            Map<String, InputStream> files = temporaryRandomFiles();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             Mockito.when(connection.getResponseCode()).
                 thenReturn(HttpURLConnection.HTTP_OK);
@@ -303,7 +304,7 @@ public class FGServerManagerTest {
     @Test(expected = IOException.class)
     public final void testSubmitFilesResourceWithError() throws IOException {
         try {
-            Map<String, File> files = temporaryRandomFiles();
+            Map<String, InputStream> files = temporaryRandomFiles();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             Mockito.when(connection.getResponseCode()).
                 thenReturn(HttpURLConnection.HTTP_INTERNAL_ERROR);
@@ -326,15 +327,16 @@ public class FGServerManagerTest {
      * @return A map of file names and file objects
      * @throws IOException If temporary files cannot be created
      */
-    private Map<String, File> temporaryRandomFiles()
+    private Map<String, InputStream> temporaryRandomFiles()
             throws IOException {
-        Map<String, File> files = new HashMap<>();
+        Map<String, InputStream> files = new HashMap<>();
         for (int i = 0; i < DataTest.FILES_CONT.length; i++) {
             Path tempFile = Files.createTempFile(Integer.toString(i), null);
             tempFile.toFile().deleteOnExit();
             Files.write(tempFile, DataTest.FILES_CONT[i].getBytes(),
                     StandardOpenOption.WRITE);
-            files.put(tempFile.getFileName().toString(), tempFile.toFile());
+            files.put(tempFile.getFileName().toString(),
+                    new FileInputStream(tempFile.toFile()));
         }
         return files;
     }

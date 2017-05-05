@@ -21,8 +21,9 @@
  */
 package it.infn.ct.indigo.futuregateway.portlet.action;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -173,9 +174,10 @@ public class FGAddAppMVCActionCommandTest {
 
     /**
      * Test the process action.
+     * @throws Exception In case of problem to create temporary files
      */
     @Test
-    public final void testDoProcessAction() {
+    public final void testDoProcessAction() throws Exception {
         Mockito.when(actionRequest.getParameter("fg-app-name")).
             thenReturn("fg-app-name");
         Mockito.when(actionRequest.getParameter("fg-app-description")).
@@ -201,8 +203,9 @@ public class FGAddAppMVCActionCommandTest {
         String[] fileUrls = {"http://test.com/fg-app-file-url-1"};
         Mockito.when(httpRequest.getParameterValues("fg-app-file-url")).
             thenReturn(fileUrls);
-        Mockito.when(uploadRequest.getFiles(Mockito.anyString())).
-            thenReturn(new File[1]);
+        Mockito.when(uploadRequest.getFilesAsStream(
+                Mockito.anyString(), Mockito.anyBoolean())).
+            thenReturn(null);
         String[] fileNames = new String[1];
         Mockito.when(uploadRequest.getFileNames(Mockito.anyString())).
             thenReturn(fileNames);
@@ -259,9 +262,10 @@ public class FGAddAppMVCActionCommandTest {
 
     /**
      * Test the process action with a file error.
+     * @throws Exception In case of problem to create temporary files
      */
     @Test
-    public final void testDoProcessActionWithErrorOnFile() {
+    public final void testDoProcessActionWithErrorOnFile() throws Exception {
         Mockito.when(actionRequest.getParameter("fg-app-name")).
             thenReturn("fg-app-name");
         Mockito.when(actionRequest.getParameter("fg-app-description")).
@@ -287,7 +291,8 @@ public class FGAddAppMVCActionCommandTest {
         String[] fileUrls = {"fg-app-file-url-1"};
         Mockito.when(httpRequest.getParameterValues("fg-app-file-url")).
             thenReturn(fileUrls);
-        Mockito.when(uploadRequest.getFiles(Mockito.anyString())).
+        Mockito.when(uploadRequest.getFilesAsStream(
+                Mockito.anyString(), Mockito.anyBoolean())).
             thenReturn(null);
         String[] fileNames = {"file1"};
         Mockito.when(uploadRequest.getFileNames(Mockito.anyString())).
@@ -299,9 +304,10 @@ public class FGAddAppMVCActionCommandTest {
             tempFile.toFile().deleteOnExit();
             Files.write(tempFile, fileNames[0].getBytes(),
                     StandardOpenOption.WRITE);
-            File[] files = new File[1];
-            files[0] = tempFile.toFile();
-            Mockito.when(uploadRequest.getFiles(Mockito.anyString())).
+            InputStream[] files = new InputStream[1];
+            files[0] = new FileInputStream(tempFile.toFile());
+            Mockito.when(uploadRequest.getFilesAsStream(
+                    Mockito.anyString(), Mockito.anyBoolean())).
                 thenReturn(files);
             Mockito.when(
                     fgSManager.addResource(
@@ -311,7 +317,7 @@ public class FGAddAppMVCActionCommandTest {
             Mockito.doThrow(new IOException()).when(fgSManager).
                 submitFilesResource(Mockito.anyLong(), Mockito.anyString(),
                         Mockito.anyString(),
-                        ArgumentMatchers.<Map<String, File>>any(),
+                        ArgumentMatchers.<Map<String, InputStream>>any(),
                         Mockito.anyLong());
             Mockito.when(fgSManager.getInfrastructures(
                     Mockito.anyLong(), Mockito.anyLong())).
