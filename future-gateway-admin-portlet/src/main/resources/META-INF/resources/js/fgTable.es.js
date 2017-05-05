@@ -118,39 +118,41 @@ class FgTable {
   static convertToNodes(json) {
     var nodes = new Array();
     var childrenList;
-    Object.keys(json).forEach(function(key) {
-      if (typeof json[key] !== null && typeof json[key] === 'object') {
-        if (Array.isArray(json[key])) {
-          childrenList = new Array();
-          var arrayElem = 0;
-          json[key].forEach(function(childElem) {
-            if (typeof childElem !== null &&
-                typeof childElem === 'object') {
-              childrenList.push({
-                name: arrayElem++,
-                children: FgTable.convertToNodes(childElem),
-              });
+    if (json != null) {
+      Object.keys(json).forEach(function(key) {
+        if (typeof json[key] !== null && typeof json[key] === 'object') {
+          if (Array.isArray(json[key])) {
+            childrenList = new Array();
+            var arrayElem = 0;
+            json[key].forEach(function(childElem) {
+              if (typeof childElem !== null &&
+                  typeof childElem === 'object') {
+                childrenList.push({
+                  name: arrayElem++,
+                  children: FgTable.convertToNodes(childElem),
+                });
+              } else {
+                childrenList.push({name: childElem});
+              }
+            });
+            if (childrenList.length > 0) {
+              nodes.push({name: key, children: childrenList});
             } else {
-              childrenList.push({name: childElem});
+              nodes.push({name: key, children: [{name: 'N/A'}]});
             }
-          });
-          if (childrenList.length > 0) {
-            nodes.push({name: key, children: childrenList});
           } else {
-            nodes.push({name: key, children: [{name: 'N/A'}]});
+            nodes.push(
+                {
+                  name: key,
+                  children: FgTable.convertToNodes(json[key]),
+                }
+            );
           }
         } else {
-          nodes.push(
-              {
-                name: key,
-                children: FgTable.convertToNodes(json[key]),
-              }
-          );
+          nodes.push({name: key, children: [{name: json[key]}]});
         }
-      } else {
-        nodes.push({name: key, children: [{name: json[key]}]});
-      }
-    });
+      });
+    }
     return nodes;
   }
 };

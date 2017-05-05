@@ -21,8 +21,8 @@
  */
 package it.infn.ct.indigo.futuregateway.portlet.action;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,9 +93,9 @@ public class FGAddAppMVCActionCommand extends BaseMVCActionCommand {
                 "fg-app-file-url");
         UploadPortletRequest upr = PortalUtil.
                 getUploadPortletRequest(actionRequest);
-        File[] files = upr.getFiles("fg-app-file-update");
+        InputStream[] files = upr.getFilesAsStream("fg-app-file-update", true);
         String[] fileNames = upr.getFileNames("fg-app-file-update");
-        Map<String, File> fileToTransfer = new HashMap<>();
+        Map<String, InputStream> fileToTransfer = new HashMap<>();
 
         JSONObject jApp = JSONFactoryUtil.createJSONObject();
         jApp.put("name", name);
