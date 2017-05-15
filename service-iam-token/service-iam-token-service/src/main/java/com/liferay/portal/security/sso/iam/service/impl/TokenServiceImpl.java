@@ -87,7 +87,7 @@ public class TokenServiceImpl extends TokenServiceBaseImpl {
             ti.setSubject(iam.getTokenSubject(
                     serviceContext.getCompanyId(), getUserId()));
         } catch (Exception e) {
-            ti.setError("User wiht id '" + getUserId()
+            ti.setError("User with id '" + getUserId()
                     + "' has not access token");
         }
         return ti;
