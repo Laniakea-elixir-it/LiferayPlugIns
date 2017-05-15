@@ -1,5 +1,5 @@
 Bundle-SymbolicName: com.liferay.portal.settings.authentication.iam.web
-Bundle-Version: 2.0.1
+Bundle-Version: 2.0.2
 Bundle-Name: Liferay Portal Settings Authentication IAM Web
 Bundle-Description: Liferay Portal Settings Authentication Web interface for INDIGO-DC IAM service. \
 	This make use of OpenID Connect protocol for the authentication

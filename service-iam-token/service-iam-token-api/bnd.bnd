@@ -1,5 +1,5 @@
 Bundle-SymbolicName: com.liferay.portal.security.sso.iam.api
-Bundle-Version: 2.0.1
+Bundle-Version: 2.0.2
 Bundle-Name: IAM Tokens Manager API
 Bundle-Description: Remote API to manage tokens released by IAM service and allow their use to portlet and other application
 Bundle-Copyright: Copyright 2016, INFN - INDIGO-DataCloud

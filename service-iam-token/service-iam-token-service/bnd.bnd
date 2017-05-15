@@ -1,5 +1,5 @@
 Bundle-SymbolicName: com.liferay.portal.security.sso.iam.service
-Bundle-Version: 2.0.1
+Bundle-Version: 2.0.2
 Bundle-Name: IAM Tokens Manager Service
 Bundle-Description: Manages token released by IAM service and allows their use to portlet and other application
 Bundle-Copyright: Copyright 2016, INFN - INDIGO-DataCloud
