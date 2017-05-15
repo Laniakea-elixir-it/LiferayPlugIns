@@ -74,8 +74,10 @@ public class IAMLoginAction extends BaseStrutsAction {
         if (cmd.equals("login")) {
             String returnRequestUri = getReturnRequestUri(request);
 
+            // Note: last version of orchestrator always require the
+            // offline_access option
             String loginRedirect = iam.getLoginRedirect(themeDisplay
-                    .getCompanyId(), returnRequestUri, false);
+                    .getCompanyId(), returnRequestUri, true);
 
             response.sendRedirect(loginRedirect);
         } else if (cmd.equals("token")) {
