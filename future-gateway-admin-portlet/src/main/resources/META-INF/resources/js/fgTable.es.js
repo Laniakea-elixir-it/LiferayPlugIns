@@ -6,6 +6,7 @@ import Datatable from 'metal-datatable/src/Datatable';
 import Modal from 'metal-modal/src/Modal';
 import Ajax from 'metal-ajax/src/Ajax';
 import TreeView from 'metal-treeview/src/Treeview';
+import Pagination from 'metal-pagination/src/Pagination';
 
 
 class FgTable {
@@ -14,9 +15,11 @@ class FgTable {
     this.apiUrl = apiUrl;
     this.tableIdentifier = tableIdentifier;
     this.token = token;
+
   }
 
-  render(resource, columns, detailsCallback, waitElement) {
+  render(resource, columns, detailsCallback, pageCallback,
+      waitElement, page=0, pageSize = 15) {
     if (this.token == null) {
       Dom.toggleClasses(waitElement, 'loaded');
       Dom.append(
@@ -37,6 +40,7 @@ class FgTable {
     var tableBlock = this.tableIdentifier;
     resourcesCall.then(function(data) {
       var tableData = JSON.parse(data.response)[resource];
+      var totalPages = Math.ceil(tableData.length / pageSize);
       tableData.forEach(function(entry) {
         Object.keys(entry).forEach(function(keyEntry) {
           if (columns.indexOf(keyEntry) < 0) {
@@ -54,14 +58,31 @@ class FgTable {
           delete(entry[keyEntry]);
         });
       });
-      Dom.toggleClasses(waitElement, 'loaded');
-      var dt = new Datatable(
+      Dom.addClasses(waitElement, 'loaded');
+      Dom.removeChildren(tableBlock);
+      var datatable = new Datatable(
           {
-            data: tableData.reverse(),
+            data: tableData.reverse().slice(
+                pageSize * page,
+                pageSize * (page + 1)),
             displayColumnsType: false,
             formatColumns: unsortColumns,
-          },
-        tableBlock);
+          }, tableBlock);
+      if (totalPages > 1) {
+        var pagination = new Pagination(
+            {
+              circular: false,
+              page: page,
+              total: totalPages,
+            },
+          tableBlock);
+        pagination.on(
+            Pagination.Events.CHANGE_REQUEST,
+            function(event) {
+              window[pageCallback](event.state.page);
+            }
+         );
+      }
     });
   }
 
