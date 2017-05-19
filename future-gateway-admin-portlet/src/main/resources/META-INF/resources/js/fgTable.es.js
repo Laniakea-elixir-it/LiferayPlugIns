@@ -15,11 +15,14 @@ class FgTable {
     this.apiUrl = apiUrl;
     this.tableIdentifier = tableIdentifier;
     this.token = token;
-
   }
 
   render(resource, columns, detailsCallback, pageCallback,
       waitElement, page=0, pageSize = 15) {
+    this.resource = resource;
+    this.columns = columns;
+    this.pageCallback = pageCallback;
+
     if (this.token == null) {
       Dom.toggleClasses(waitElement, 'loaded');
       Dom.append(
@@ -37,7 +40,6 @@ class FgTable {
         this.apiUrl + '/' + resource,
         'GET', null, headers, null
     );
-    var tableBlock = this.tableIdentifier;
     resourcesCall.then(function(data) {
       var tableData = JSON.parse(data.response)[resource];
       var totalPages = Math.ceil(tableData.length / pageSize);
@@ -58,32 +60,41 @@ class FgTable {
           delete(entry[keyEntry]);
         });
       });
+      this.tableData = JSON.stringify(tableData.reverse());
       Dom.addClasses(waitElement, 'loaded');
-      Dom.removeChildren(tableBlock);
-      var datatable = new Datatable(
+      Dom.removeChildren(this.tableIdentifier);
+      this.dataTable = new Datatable(
           {
-            data: tableData.reverse().slice(
+            data: tableData.slice(
                 pageSize * page,
                 pageSize * (page + 1)),
             displayColumnsType: false,
             formatColumns: unsortColumns,
-          }, tableBlock);
+          }, this.tableIdentifier);
       if (totalPages > 1) {
-        var pagination = new Pagination(
+        this.pagination = new Pagination(
             {
               circular: false,
               page: page,
               total: totalPages,
             },
-          tableBlock);
-        pagination.on(
+            this.tableIdentifier);
+        this.pagination.on(
             Pagination.Events.CHANGE_REQUEST,
             function(event) {
               window[pageCallback](event.state.page);
             }
          );
       }
-    });
+    }.bind(this));
+  }
+
+  update(resource, columns, filter,
+      page=0, pageSize = 15) {
+    var tabledata = JSON.parse(this.tableData);
+    this.dataTable.setState({data: tabledata.slice(
+        pageSize * page,
+        pageSize * (page + 1)),});
   }
 
   showDetails(id, resource, deleteCallback) {
@@ -134,6 +145,15 @@ class FgTable {
     resourceDetailsCall.then(function() {
       window.location.reload();
     });
+  }
+
+  activateFilter(filterElement, filterCallback) {
+    Dom.on(
+        document.getElementById(filterElement),
+        'input',
+        function(event) {
+          window[filterCallback](event.target.value)
+        });
   }
 
   static convertToNodes(json) {

@@ -66,6 +66,7 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
             '/iam.token/get-token',
             function(obj) {
                 table = new Table('${FGURL}', document.getElementById('<portlet:namespace />ResourcesTable'), obj.token);
+				table.activateFilter('<portlet:namespace />fgResourceFilter', '<portlet:namespace />filterResources');
                 table.render(resource, columns, '<portlet:namespace />resourceDetails',
                              '<portlet:namespace />movePage',
                              document.getElementById('<portlet:namespace />waitLoad'));
@@ -92,10 +93,17 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
         window,
         '<portlet:namespace />movePage',
         function (page) {
-        	table.render(resource, columns, '<portlet:namespace />resourceDetails',
-        	             '<portlet:namespace />movePage',
-        	             document.getElementById('<portlet:namespace />waitLoad'), page);
+        	table.update(resource, columns, '', page);
         },
         []);
         
+    Liferay.provide(
+        window,
+        '<portlet:namespace />filterResources',
+        function (filter) {
+        	if (filter.length>3) {
+        	table.update(resource, columns, filter);
+	        }
+        },
+        []);
 </aui:script>

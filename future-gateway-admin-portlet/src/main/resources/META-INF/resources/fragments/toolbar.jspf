@@ -41,8 +41,6 @@
     </aui:nav>
 
     <aui:nav-bar-search>
-                <aui:form action="" name="searchFm">
-                        <liferay-ui:input-search markupView="lexicon" />
-                </aui:form>
-        </aui:nav-bar-search>
+        <liferay-ui:input-search id="fgResourceFilter" markupView="lexicon" />
+    </aui:nav-bar-search>
 </aui:nav-bar>
