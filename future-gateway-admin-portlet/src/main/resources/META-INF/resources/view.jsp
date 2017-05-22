@@ -93,7 +93,7 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
         window,
         '<portlet:namespace />movePage',
         function (page) {
-        	table.update(resource, columns, '', page);
+            table.update(resource, columns, page);
         },
         []);
         
@@ -101,9 +101,8 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
         window,
         '<portlet:namespace />filterResources',
         function (filter) {
-        	if (filter.length>3) {
-        	table.update(resource, columns, filter);
-	        }
+            table.setFilter(filter);
+            table.update(resource, columns);
         },
         []);
 </aui:script>

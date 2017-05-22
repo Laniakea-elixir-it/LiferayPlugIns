@@ -89,12 +89,32 @@ class FgTable {
     }.bind(this));
   }
 
-  update(resource, columns, filter,
+  update(resource, columns,
       page=0, pageSize = 15) {
-    var tabledata = JSON.parse(this.tableData);
-    this.dataTable.setState({data: tabledata.slice(
+    var tableData = JSON.parse(this.tableData);
+    var filter = this.filter;
+    if (filter) {
+      let filteredData = [];
+      let boolean
+      tableData.forEach(function(entry){
+        if (columns.some(function(keyEntry){
+          if (typeof entry[keyEntry.capitalize()] === 'string' || entry[keyEntry.capitalize()] instanceof String) {
+            return entry[keyEntry.capitalize()].includes(filter);
+          }
+          return false;
+        })) {
+          filteredData.push(entry);
+        }
+      });
+      tableData = filteredData;
+    }
+    this.dataTable.setState({data: tableData.slice(
         pageSize * page,
         pageSize * (page + 1)),});
+    this.pagination.setState({
+      page: page,
+      total: Math.ceil(tableData.length / pageSize),
+      });
   }
 
   showDetails(id, resource, deleteCallback) {
@@ -154,6 +174,10 @@ class FgTable {
         function(event) {
           window[filterCallback](event.target.value)
         });
+  }
+
+  setFilter(filter) {
+    this.filter = filter;
   }
 
   static convertToNodes(json) {
