@@ -96,9 +96,10 @@ class FgTable {
     if (filter) {
       let filteredData = [];
       let boolean
-      tableData.forEach(function(entry){
-        if (columns.some(function(keyEntry){
-          if (typeof entry[keyEntry.capitalize()] === 'string' || entry[keyEntry.capitalize()] instanceof String) {
+      tableData.forEach(function(entry) {
+        if (columns.some(function(keyEntry) {
+          if (typeof entry[keyEntry.capitalize()] === 'string' ||
+                entry[keyEntry.capitalize()] instanceof String) {
             return entry[keyEntry.capitalize()].includes(filter);
           }
           return false;
@@ -114,7 +115,7 @@ class FgTable {
     this.pagination.setState({
       page: page,
       total: Math.ceil(tableData.length / pageSize),
-      });
+    });
   }
 
   showDetails(id, resource, deleteCallback) {
