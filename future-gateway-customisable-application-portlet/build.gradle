@@ -16,6 +16,7 @@ checkstyleTest {
 apply plugin: 'jacoco'
 
 dependencies {
+    compile group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
 	compile group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "2.0.0"
 	compile group: "com.liferay.portal", name: "com.liferay.util.taglib", version: "2.0.0"
 	compile group: "javax.portlet", name: "portlet-api", version: "2.0"
@@ -23,4 +24,5 @@ dependencies {
 	compile group: "jstl", name: "jstl", version: "1.2"
 	compile group: "org.osgi", name: "org.osgi.compendium", version: "5.0.0"
 	compile group: 'com.google.code.gson', name: 'gson', version: '2.6.2'
+	compileOnly project(":modules:future-gateway-admin-portlet")
 }

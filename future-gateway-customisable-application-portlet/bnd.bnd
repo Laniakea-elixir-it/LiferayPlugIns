@@ -2,8 +2,9 @@ Bundle-Name: FutureGateway customisable.application.portlet
 Bundle-SymbolicName: customisable.application.portlet
 Bundle-Version: 2.0.2
 Export-Package:\
-    it.infn.ct.indigo.portlet,\
-    it.infn.ct.indigo.portlet.configuration
+    it.infn.ct.indigo.customisableApp.configuration,\
+    it.infn.ct.indigo.customisableApp.portlet,\
+    it.infn.ct.indigo.customisableApp.portlet.configuration
 Import-Package:\
     !com.google.gson.*,\
     !com.google.gson.annotations.*,\
@@ -19,3 +20,4 @@ Private-Package: \
     com.google.gson.stream.*
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title:
+-metatype: *

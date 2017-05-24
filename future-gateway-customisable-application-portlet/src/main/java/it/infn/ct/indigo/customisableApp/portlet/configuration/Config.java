@@ -1,4 +1,4 @@
-package it.infn.ct.indigo.portlet.configuration;
+package it.infn.ct.indigo.customisableApp.portlet.configuration;
 
 import java.io.File;
 import java.io.IOException;

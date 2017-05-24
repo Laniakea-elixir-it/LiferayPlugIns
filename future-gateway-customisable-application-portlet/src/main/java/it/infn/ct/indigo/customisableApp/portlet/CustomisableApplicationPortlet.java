@@ -1,4 +1,4 @@
-package it.infn.ct.indigo.portlet;
+package it.infn.ct.indigo.customisableApp.portlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,26 +11,37 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.util.ParamUtil;
 
-import it.infn.ct.indigo.portlet.configuration.Config;
+import aQute.bnd.annotation.component.Activate;
+import aQute.bnd.annotation.component.Modified;
+import it.infn.ct.indigo.customisableApp.portlet.configuration.Config;
+import it.infn.ct.indigo.futuregateway.portlet.FutureGatewayAdminPortlet;
+import it.infn.ct.indigo.futuregateway.server.FGServerManager;
 
 /**
  * Main portlet class for the customisable application.
  */
 @Component(
+        configurationPid = "it.infn.ct.indigo.customisableApp.configuration."
+                + "CustomisableApplicationConfiguration",
         immediate = true,
         property = {
                 "com.liferay.portlet.display-category=INFN",
                 "com.liferay.portlet.header-portlet-javascript=/js/fg-api.js",
                 "com.liferay.portlet.instanceable=true",
+                "javax.portlet.name=CustomisableApplication",
                 "javax.portlet.display-name=Customisable application Portlet",
                 "javax.portlet.init-param.template-path=/",
+                "javax.portlet.init-param.config-template=/configuration.jsp",
                 "javax.portlet.init-param.view-template=/view.jsp",
                 "javax.portlet.resource-bundle=content.Language",
                 "javax.portlet.security-role-ref=power-user,user"
@@ -80,4 +91,21 @@ public class CustomisableApplicationPortlet extends MVCPortlet {
                     throws IOException, PortletException {
         super.doView(renderRequest, renderResponse);
     }
+    /**
+     * Sets the FG Server manager.
+     * This is used to get information of the service and for interactions.
+     *
+     * @param fgServerManeger The FG Server manager
+     */
+    @Reference(unbind = "-")
+    protected final void setFGServerManeger(
+            final FGServerManager fgServerManeger) {
+        this.fgServerManager = fgServerManeger;
+    }
+
+    /**
+     * The reference to the FG Server manager.
+     */
+    private FGServerManager fgServerManager;
+}
 }
