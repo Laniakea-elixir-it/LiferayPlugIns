@@ -16,23 +16,19 @@ import org.osgi.service.component.annotations.Reference;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 
-import aQute.bnd.annotation.component.Activate;
-import aQute.bnd.annotation.component.Modified;
 import it.infn.ct.indigo.customisableApp.portlet.configuration.Config;
-import it.infn.ct.indigo.futuregateway.portlet.FutureGatewayAdminPortlet;
 import it.infn.ct.indigo.futuregateway.server.FGServerManager;
 
 /**
  * Main portlet class for the customisable application.
  */
 @Component(
-        configurationPid = "it.infn.ct.indigo.customisableApp.configuration."
-                + "CustomisableApplicationConfiguration",
         immediate = true,
         property = {
                 "com.liferay.portlet.display-category=INFN",
@@ -89,8 +85,17 @@ public class CustomisableApplicationPortlet extends MVCPortlet {
     public final void doView(final RenderRequest renderRequest,
             final RenderResponse renderResponse)
                     throws IOException, PortletException {
+        ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
+
+        try {
+            renderRequest.setAttribute("FGEndPoint", fgServerManager.getFGUrl(themeDisplay.getCompanyId()));
+        } catch(PortalException pe) {
+
+        }
+        
         super.doView(renderRequest, renderResponse);
     }
+
     /**
      * Sets the FG Server manager.
      * This is used to get information of the service and for interactions.
@@ -107,5 +112,5 @@ public class CustomisableApplicationPortlet extends MVCPortlet {
      * The reference to the FG Server manager.
      */
     private FGServerManager fgServerManager;
-}
+
 }

@@ -33,7 +33,10 @@
                     headers: {
                         'Authorization':'Bearer ' + token
                     },
-                    url: webapp_settings.apiserver_url
+                    url: webapp_settings.apiserver_endpoint ?
+                        webapp_settings.apiserver_endpoint +'/'
+                        +'applications' :
+                        webapp_settings.apiserver_url
                         +webapp_settings.apiserver_path +'/'
                         +webapp_settings.apiserver_ver +'/'
                         +'applications',

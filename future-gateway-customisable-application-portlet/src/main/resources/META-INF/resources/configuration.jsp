@@ -1,4 +1,8 @@
 <%@ include file="/init.jsp" %>
+<%@ page import="com.liferay.portal.kernel.util.Constants" %>
+
+<liferay-portlet:actionURL portletConfiguration="<%= true %>" var="configurationActionURL" />
+<liferay-portlet:renderURL portletConfiguration="<%= true %>" var="configurationRenderURL" />
 
         <script type="text/javascript">
             /*
@@ -18,19 +22,22 @@
             var jsonArr; 
 
             var webapp_settings = {
-                apiserver_url: ''
-               ,apiserver_path : '/apis'
-               ,apiserver_ver  : 'v1.0'
-               ,app_id         : 0               
+                apiserver_url: '',
+                apiserver_path: '/apis',
+                apiserver_ver: 'v1.0',
+                app_id: 0,
+                apiserver_endpoint: '${FGEndPoint}'
             };
             function changeApp(app_name, app_id) {
-                $('#requestButton').prop('disabled', false);
+                $('#<portlet:namespace />requestButton').removeClass('disabled');
+                $('#<portlet:namespace />requestButton').prop('disabled', false);
                 $('#jsonButton').prop('disabled', false);
                 $('#appButton').html(app_name + ' <span class="caret"></span>');
                 for(var i=0; i<defaultApps.applications.length; i++) {
                     if(defaultApps.applications[i].id == app_id) {
                         application = defaultApps.applications[i];
                         webapp_settings.app_id = defaultApps.applications[i].id;
+                        $('#<portlet:namespace />applicationId').val(app_id);
                     }
                 }
                 callServer("json", getPath(application));
@@ -99,13 +106,13 @@
                 var ans = $('input[name="optradio"]:checked').val();
                 switch(ans) {
                     case "old":
-                        myJson = defaultJson;                        
-                        printJsonArray();
+                        myJson = defaultJson;
+                        $('#<portlet:namespace />jsonApp').val(defaultJson);
                         break;
                     case "new":
                         var newJson = $('#jsonArea2').val();
-                        myJson = JSON.parse(newJson);;
-                        printJsonArray();
+                        myJson = JSON.parse(newJson);
+                        $('#<portlet:namespace />jsonApp').val(newJson);
                         break;
                     default:
                         break;
@@ -133,12 +140,17 @@
                 <liferay-ui:message key="customisable.application.portlet.jsonConfig"/>
             </button>
         </div>
-        <center>
-            <button type="button" id="requestButton" class="btn btn-primary btn-lg" onClick="openModal()" disabled>
-                <liferay-ui:message key="customisable.application.portlet.configSave"/>
-            </button>
-        </center>
 
+		<aui:form action="<%= configurationActionURL %>" method="post" name="fm">
+        	<center>
+            	<aui:button type="submit" name="configSave" value="customisable.application.portlet.configSave" id="requestButton" class="btn btn-primary btn-lg" disabled="true"/>
+	        </center>
+	        <aui:input name="applicationId" id="applicationId" type="hidden" value="" />
+	        <aui:input name="jsonApp" id="jsonApp" type="hidden" value="" />
+	        <aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
+            <aui:input name="redirect" type="hidden" value="<%= configurationRenderURL %>" />
+	        
+		</aui:form>
         <!-- Submit record table (begin) -->    
         <div id="jobsDiv" data-modify="false"> 
         </div>        

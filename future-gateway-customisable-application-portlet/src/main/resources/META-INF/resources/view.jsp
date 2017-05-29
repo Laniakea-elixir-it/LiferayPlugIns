@@ -21,7 +21,8 @@
                 apiserver_url: ''
                ,apiserver_path : '/apis'
                ,apiserver_ver  : 'v1.0'
-               ,app_id         : 0               
+               ,app_id         : 0
+               ,apiserver_endpoint: '${FGEndPoint}'
             };
             function changeApp(app_name, app_id) {
                 $('#requestButton').prop('disabled', false);
@@ -280,6 +281,8 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <p><h3>Customisable application web tool</h3></p>
+                <h1>AppId: <i><%= appId %></i></h1>
+                <h1></h1>
             </div>
         <div class="panel-body">
         <p style="float: left"><span class="glyphicon glyphicon-hand-right"></span> Please remember to sign in to use portlet</p>
