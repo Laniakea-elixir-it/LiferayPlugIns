@@ -18,34 +18,45 @@ import com.liferay.portal.kernel.util.WebKeys;
 
 import it.infn.ct.indigo.futuregateway.server.FGServerManager;
 
+/**
+ * Configuration manager for the portlet instance.
+ */
 @Component(
         property = {
                 "javax.portlet.name=CustomisableApplication"
         },
         service = ConfigurationAction.class
 )
-public class CustomisableApplicationAction extends DefaultConfigurationAction{
+public class CustomisableApplicationAction extends DefaultConfigurationAction {
 
     @Override
-    public void include(PortletConfig portletConfig, HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
-        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-
+    public final void include(final PortletConfig portletConfig,
+            final HttpServletRequest request,
+            final HttpServletResponse response)
+                    throws Exception {
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(
+                WebKeys.THEME_DISPLAY);
         try {
-            request.setAttribute("FGEndPoint", fgServerManager.getFGUrl(themeDisplay.getCompanyId()));
-        } catch(PortalException pe) {
+            request.setAttribute(
+                    "FGEndPoint",
+                    fgServerManager.getFGUrl(themeDisplay.getCompanyId()));
+        } catch (PortalException pe) {
             request.setAttribute("FGEndPoint", "This is it");
         }
         super.include(portletConfig, request, response);
     }
 
-    
-    @Override
-    public void processAction(PortletConfig portletConfig, ActionRequest actionRequest, ActionResponse actionResponse)
-            throws Exception {
 
-        setPreference(actionRequest, "applicationId", ParamUtil.getString(actionRequest, "applicationId"));
-        setPreference(actionRequest, "jsonApp", ParamUtil.getString(actionRequest, "jsonApp"));
+    @Override
+    public final void processAction(final PortletConfig portletConfig,
+            final ActionRequest actionRequest,
+            final ActionResponse actionResponse)
+                    throws Exception {
+
+        setPreference(actionRequest, "applicationId",
+                ParamUtil.getString(actionRequest, "applicationId"));
+        setPreference(actionRequest, "jsonApp",
+                ParamUtil.getString(actionRequest, "jsonApp"));
         super.processAction(portletConfig, actionRequest, actionResponse);
     }
 

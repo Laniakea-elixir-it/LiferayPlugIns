@@ -85,14 +85,17 @@ public class CustomisableApplicationPortlet extends MVCPortlet {
     public final void doView(final RenderRequest renderRequest,
             final RenderResponse renderResponse)
                     throws IOException, PortletException {
-        ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
+        ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(
+                WebKeys.THEME_DISPLAY);
 
         try {
-            renderRequest.setAttribute("FGEndPoint", fgServerManager.getFGUrl(themeDisplay.getCompanyId()));
-        } catch(PortalException pe) {
+            renderRequest.setAttribute(
+                    "FGEndPoint",
+                    fgServerManager.getFGUrl(themeDisplay.getCompanyId()));
+        } catch (PortalException pe) {
 
         }
-        
+
         super.doView(renderRequest, renderResponse);
     }
 
