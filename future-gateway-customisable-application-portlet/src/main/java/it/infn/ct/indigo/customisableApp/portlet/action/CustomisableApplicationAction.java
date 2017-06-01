@@ -55,8 +55,10 @@ public class CustomisableApplicationAction extends DefaultConfigurationAction {
 
         setPreference(actionRequest, "applicationId",
                 ParamUtil.getString(actionRequest, "applicationId"));
-        setPreference(actionRequest, "jsonApp",
-                ParamUtil.getString(actionRequest, "jsonApp"));
+        String jsonApp = ParamUtil.getString(actionRequest, "jsonApp");
+        if (jsonApp != null && !jsonApp.isEmpty()) {
+            setPreference(actionRequest, "jsonApp", jsonApp);
+        }
         super.processAction(portletConfig, actionRequest, actionResponse);
     }
 

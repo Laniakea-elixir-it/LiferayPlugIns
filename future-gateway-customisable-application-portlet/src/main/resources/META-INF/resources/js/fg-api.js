@@ -17,14 +17,7 @@
                     return 0;
                 }
             }
-            function getPath(current_app) {
-                for(var j=0; j<current_app.input_files.length; j++){
-                    if(current_app.input_files[j].name == "parameters.json"){
-                        return current_app.input_files[j].path;
-                    }
-                }
-                return null;
-            }
+
             function getApplicationsJson() {
                 var res = null;
                 $.ajax({                     
@@ -304,7 +297,7 @@
                });               
             }
             /*
-             * Helper function returnin the number of jobs
+             * Helper function return in the number of jobs
              */
             function getNumJobs() {
                 return  Math.floor(($('#jobTable tr').size()-1)/2);
@@ -325,8 +318,8 @@
                             +'<strong>WARNING!</strong> Unable to get job details.'
                             +'</div>';
                 job_description = $('#jobDescription').val();
-                $('#modal-content').html('');
-                // 1st call to register job                
+                // 1st call to register job
+                console.log("This is what I am sending: " + JSON.stringify(job_desc))
                 $.ajax({
                     url:  webapp_settings.apiserver_url
                          +webapp_settings.apiserver_path +'/'
@@ -340,7 +333,10 @@
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(job_desc),                          
                     success: function(data) {
-                        // 2nd call finalize and start submission                                                        
+                        // 2nd call to provide the paramter file and start submission                                                        
+                      var dataToSend = new FormData();
+                      console.log("These are the parameter; " + JSON.stringify(paramJson));
+                      dataToSend.append(parameterFile, new Blob([JSON.stringify(paramJson)], {type: 'application/json'}));
                         $.ajax({
                             url: webapp_settings.apiserver_url
                                 +webapp_settings.apiserver_path +'/'
@@ -350,21 +346,19 @@
                                 'Authorization':'Bearer ' + token
                             },
                             cache: false,
-                            dataType: "json",
-                            contentType: "application/json; charset=utf-8",
-                            data: JSON.stringify({}),
+                            contentType: false,
+                            processData: false,
+                            data: dataToSend,
                             success: function(data) {
                                    $('#jobTable').remove();
                                    prepareJobTable();
                                 }, 
                             error: function(jqXHR, textStatus, errorThrown) {
-                                    $('#modal-content').html(job_failed);
                                     alert(jqXHR.status);
                                 }
                         });
                     }, 
                     error: function(jqXHR, textStatus, errorThrown) {
-                            $('#modal-content').html(job_failed);
                             alert(jqXHR.status);
                         }                   
                 });                                
@@ -440,7 +434,7 @@
                 job_desc = { application : webapp_settings.app_id
                             ,description : job_usrdesc
                             ,output_files: []
-                            ,input_files : []
+                            ,input_files : [ { name: parameterFile } ]
                            };
                 submit(job_desc);
             }

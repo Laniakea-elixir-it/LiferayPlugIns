@@ -13,5 +13,7 @@
 <portlet:resourceURL var="resourceURL"/>
 
 <%
-String appId = portletPreferences.getValue("applicationId", "N/A");
+String appId = portletPreferences.getValue("applicationId", null);
+String jsonApp = portletPreferences.getValue("jsonApp", null).replace(System.getProperty("line.separator"), "");
+String parameterFile = "parameters.json";
 %>

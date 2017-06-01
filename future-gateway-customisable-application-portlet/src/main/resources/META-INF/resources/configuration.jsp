@@ -107,7 +107,7 @@
                 switch(ans) {
                     case "old":
                         myJson = defaultJson;
-                        $('#<portlet:namespace />jsonApp').val(defaultJson);
+                        $('#<portlet:namespace />jsonApp').val("");
                         break;
                     case "new":
                         var newJson = $('#jsonArea2').val();

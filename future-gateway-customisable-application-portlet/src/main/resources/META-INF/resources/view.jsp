@@ -6,7 +6,8 @@
              */
             var paramJson = { parameters: {} };
             var defaultApps;
-            var myJson = paramJson ;
+            var myJson = JSON.parse('<%= jsonApp %>') ;
+            var parameterFile = '<%= parameterFile %>';
             var defaultJson = myJson;
             var application;
             
@@ -21,7 +22,7 @@
                 apiserver_url: ''
                ,apiserver_path : '/apis'
                ,apiserver_ver  : 'v1.0'
-               ,app_id         : 0
+               ,app_id         : '<%= appId %>'
                ,apiserver_endpoint: '${FGEndPoint}'
             };
             function changeApp(app_name, app_id) {
@@ -35,20 +36,6 @@
                     }
                 }
                 callServer("json", getPath(application));
-            }
-            function welcome() {
-                defaultApps = getApplicationsJson();
-                $('#jobsDiv').html('');
-                var content = '';
-                for(var i=0; i<defaultApps.applications.length; i++) {
-                    content += '<li><a href="javascript:void(0)" onClick="changeApp(\'';
-                    content += defaultApps.applications[i].name+'\',\''+defaultApps.applications[i].id+'\')">';
-                    content += defaultApps.applications[i].name+'</a></li>';
-                    $('#dropmenu').html(content);
-                }
-                if(defaultApps.applications.length > 0) {
-                    application = defaultApps.applications[0];
-                }
             }
             /*
              * Change variable below to change delay of check status loop
@@ -79,7 +66,7 @@
             function printDefault() {
                 out = '<p><b>job identifier </b></br>';
                 out += '<input type="text" maxlength="50" id="jobDescription" class="form-control"></p>';
-                document.getElementById("modalContent").innerHTML = out;
+                document.getElementById("<portlet:namespace/>appSubmitForm").innerHTML = out;
             }
             function printJsonArray() {
                 jsonArr = {};
@@ -187,7 +174,7 @@
                     out += globalOut;
                     out += '</div>';
                 }
-                var myDiv = document.getElementById("modalContent");
+                var myDiv = document.getElementById("<portlet:namespace/>appSubmitForm");
                 myDiv.innerHTML = myDiv.innerHTML + out;
             }
             function getParams() {
@@ -208,14 +195,12 @@
                             paramJson.parameters[jsonArr[i].name] = out;
                     }
                 }
-                callServer("submit", getPath(application));
             }
             function callServer(call, opt) {
                 switch(call) {
                     case "submit":
                         var myData = {
                             <portlet:namespace />json: JSON.stringify(paramJson),
-                            <portlet:namespace />path: opt
                         };
                         AUI().use('aui-io-request', function(A){
                             A.io.request('<%=resourceURL.toString()%>', {
@@ -279,36 +264,22 @@
     
         </script>
         <div class="panel panel-default">
-            <div class="panel-heading">
-                <p><h3>Customisable application web tool</h3></p>
-                <h1>AppId: <i><%= appId %></i></h1>
-                <h1></h1>
-            </div>
         <div class="panel-body">
-        <p style="float: left"><span class="glyphicon glyphicon-hand-right"></span> Please remember to sign in to use portlet</p>
-        <div align="right">
-            <div class="btn-group">
-                <button type="button" id="appButton" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                    App Config
-                    <span class="caret"></span>
-                </button>
-                <ul id="dropmenu" class="dropdown-menu" role="menu">
-                </ul>
-            </div>
-            <button type="button" id="jsonButton" class="btn btn-primary" data-toggle="modal" data-target="#jsonConfig" disabled>
-                JSON Config
-            </button>
-        </div>
-        <h3>
-            <div align="center" id="mainTitle">
-                Customisable application portlet
-            </div>
-        </h3>
-        <center>
-            <button type="button" id="requestButton" class="btn btn-primary btn-lg" onClick="openModal()" disabled>
-                Launch request
-            </button>
-        </center>
+		<c:choose>
+		<c:when test="<%= appId == null || appId.isEmpty() %>" >
+            <h3>
+                <div align="center" id="mainTitle">
+                    <liferay-ui:message key="customisable.application.portlet.configReq" />
+                </div>
+	        </h3>
+        </c:when>
+        <c:otherwise>
+            <div id="<portlet:namespace/>appSubmitForm"></div>
+            <center>                
+                <button type="button" class="btn btn-primary" onClick="submitJob()" id="submitButton">Submit</button>
+            </center>
+        </c:otherwise>
+        </c:choose>
 
         <!-- Submit record table (begin) -->    
         <div id="jobsDiv" data-modify="false"> 
@@ -319,26 +290,6 @@
         </div> 
         <div class="panel-footer"></div>
 
-        <!-- Modal (begin) -->
-        <div class="modal fade  modal-hidden" id="helloTesterModal" tabindex="-1" role="dialog" aria-labelledby="HelloTester"> 
-            <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Submission panel</h4>
-              </div>
-              <div class="modal-body" id="modalContent" style="max-height: calc(100vh - 210px); overflow-y: auto;">
-              </div>
-              <div class="modal-footer">
-                <center>                
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onClick="submitJob()" id="submitButton">Submit</button>
-                </center>
-              </div>
-            </div>
-          </div>
-        </div>   
-        <!-- Modal (end) -->
 
         <!-- Confirm Modal Dialog (begin) -->                       
         <div class="modal fade modal-hidden" id="confirmDelete" role="dialog" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
@@ -360,53 +311,6 @@
             </div>
           </div>
       </div>
-
-        <!-- JSON Config (begin) -->                       
-        <div class="modal fade modal-hidden" id="jsonConfig" role="dialog" aria-labelledby="json configuration dialog" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">JSON Config</h4>
-              </div>
-              <div class="modal-body" style="max-height: calc(100vh - 210px); overflow-y: auto;">
-                  <form>
-                      <div class="radio">
-                          <label><input type="radio" name="optradio" value="old" checked>
-                              <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#jsonTextArea1" onClick="filljsonArea1()">default json</button>
-                              object can not be changed
-                          </label>
-                      </div>
-                      <div id="jsonTextArea1" class="collapse">
-                          <div class="form-group">
-                              <textarea class="form-control" rows="50" id="jsonArea1">
-                              </textarea>
-                          </div>
-                      </div>
-                      <div class="radio">
-                          <label><input type="radio" name="optradio" value="new">
-                              <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#jsonTextArea2">new json</button>
-                              customizable object
-                          </label>
-                      </div>
-                      <div id=jsonTextArea2 class="collapse">
-                          <div class="form-group">
-                              <textarea class="form-control" rows="50" id="jsonArea2">
-                              </textarea>
-                          </div>
-                      </div>
-                  </form>
-              </div>                
-              <div class="modal-footer">
-                  <center>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" onClick="changeJson()">OK</button>
-                </center>
-              </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
           <div class="modal fade modal-hidden" id="information" role="dialog" aria-labelledby="information dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -435,7 +339,6 @@
                     if(obj.token != undefined) {
                         token = obj.token;
                     }
-                    welcome();
                     printJsonArray();
                 }
             );

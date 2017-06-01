@@ -33,7 +33,7 @@ import it.infn.ct.indigo.futuregateway.server.FGServerManager;
         property = {
                 "com.liferay.portlet.display-category=INFN",
                 "com.liferay.portlet.header-portlet-javascript=/js/fg-api.js",
-                "com.liferay.portlet.instanceable=true",
+                "com.liferay.portlet.instanceable=false",
                 "javax.portlet.name=CustomisableApplication",
                 "javax.portlet.display-name=Customisable application Portlet",
                 "javax.portlet.init-param.template-path=/",
