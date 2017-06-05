@@ -14,6 +14,6 @@
 
 <%
 String appId = portletPreferences.getValue("applicationId", null);
-String jsonApp = portletPreferences.getValue("jsonApp", null).replace(System.getProperty("line.separator"), "");
+String jsonApp = portletPreferences.getValue("jsonApp", "").replace(System.getProperty("line.separator"), "");
 String parameterFile = "parameters.json";
 %>

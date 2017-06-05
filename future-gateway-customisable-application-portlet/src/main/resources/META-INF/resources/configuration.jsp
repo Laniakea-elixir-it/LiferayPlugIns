@@ -40,7 +40,6 @@
                         $('#<portlet:namespace />applicationId').val(app_id);
                     }
                 }
-                callServer("json", getPath(application));
             }
             function welcome() {
                 defaultApps = getApplicationsJson();
@@ -50,6 +49,10 @@
                     content += '<li><a href="javascript:void(0)" onClick="changeApp(\'';
                     content += defaultApps.applications[i].name+'\',\''+defaultApps.applications[i].id+'\')">';
                     content += defaultApps.applications[i].name+'</a></li>';
+                    if (defaultApps.applications[i].id == '<%= appId %>') {
+                      $('#appButton').html(defaultApps.applications[i].name + ' <span class="caret"></span>');
+                      $('#jsonButton').prop('disabled', false);
+                    }
                 }
                 $('#dropmenu').html(content);
                 if(defaultApps.applications.length > 0) {
@@ -57,50 +60,6 @@
                 }
             }
 
-            function callServer(call, opt) {
-                switch(call) {
-                    case "submit":
-                        var myData = {
-                            <portlet:namespace />json: JSON.stringify(paramJson),
-                            <portlet:namespace />path: opt
-                        };
-                        AUI().use('aui-io-request', function(A){
-                            A.io.request('<%=resourceURL.toString()%>', {
-                                dataType: 'json',
-                                method: 'post',
-                                data: myData
-                            });
-                        });
-                        break;
-                    case "json":
-                        var myData = {<portlet:namespace />jarray: opt};
-                        AUI().use('aui-io-request', function(A){
-                                A.io.request('<%=resourceURL.toString()%>', {
-                                dataType: 'json',
-                                method: 'post',
-                                data: myData,
-                                on: {
-                                    success: function() {
-                                        var content = this.get('responseData');
-                                        //console.log(content);
-                                        myJson = { parameters: {} };
-                                        if((content != null) && (content.content != null)) { 
-                                            myJson = content.content;
-                                        }
-
-                                        defaultJson = myJson;
-                                        var appJson = JSON.stringify(defaultJson, null, 2);
-                                        $('#jsonArea1').val(appJson);
-                                        $('#jsonArea2').val(appJson);
-                                        printJsonArray();
-                                        prepareJobTable();
-                                    }
-                                }
-                            });
-                        });
-                        break;
-                }
-            }
 
             function changeJson() {
                 var ans = $('input[name="optradio"]:checked').val();
@@ -178,7 +137,7 @@
                       </div>
                       <div id="jsonTextArea1" class="collapse">
                           <div class="form-group">
-                              <textarea class="form-control" rows="50" id="jsonArea1">
+                              <textarea class="form-control" rows="50" id="jsonArea1" readonly="readonly">
                               </textarea>
                           </div>
                       </div>
@@ -235,7 +194,6 @@
                         token = obj.token;
                     }
                     welcome();
-                    printJsonArray();
                 }
             );
         

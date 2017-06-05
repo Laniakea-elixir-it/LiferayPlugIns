@@ -51,37 +51,6 @@ public class CustomisableApplicationPortlet extends MVCPortlet {
     private Config config = new Config();
 
     @Override
-    public final void serveResource(final ResourceRequest resourceRequest,
-            final ResourceResponse resourceResponse)
-                    throws IOException, PortletException {
-        try {
-            String json = ParamUtil.getString(resourceRequest, "json");
-            String path = ParamUtil.getString(resourceRequest, "path");
-            String jarray = ParamUtil.getString(resourceRequest, "jarray");
-
-            // create parameter.json file
-            if (!json.equals("")) {
-                JsonObject jsonObject = new Gson().fromJson(
-                        json, JsonObject.class);
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                String out = gson.toJson(jsonObject);
-
-                config.createParamFile(path, out);
-            }
-
-            // get application configuration: i.a. path to parameters.json
-            if (!jarray.equals("")) {
-                String ans = config.readJsonFile(jarray);
-                PrintWriter writer = resourceResponse.getWriter();
-                writer.write(ans);
-            }
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-        }
-        super.serveResource(resourceRequest, resourceResponse);
-    }
-
-    @Override
     public final void doView(final RenderRequest renderRequest,
             final RenderResponse renderResponse)
                     throws IOException, PortletException {
