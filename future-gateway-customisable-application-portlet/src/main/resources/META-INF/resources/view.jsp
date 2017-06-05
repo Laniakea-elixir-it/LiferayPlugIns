@@ -54,7 +54,7 @@
                     $(this).find('.modal-title').text($title);
                     $('#job_id').attr('data-value', $job_id)
                     $('#confirmJobDel').show();
-                    $('#cancelJobDel').text('Cancel')
+                    $('#cancelJobDel').text('Cancel');
                 });
                 // Form confirm (yes/ok) handler, submits form 
                 $('#confirmDelete').find('.modal-footer #confirmJobDel').on('click', function(e){
@@ -340,6 +340,7 @@
                         token = obj.token;
                     }
                     printJsonArray();
+                    prepareJobTable();
                 }
             );
         

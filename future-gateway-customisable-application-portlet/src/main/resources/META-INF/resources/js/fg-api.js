@@ -289,8 +289,8 @@
                             fillJobTable(data.tasks.sort( predicatBy("date") ), 0);
                         }
                         else
-                    emptyJobTable();
-                    }, 
+                          emptyJobTable();
+                        }, 
                     error: function(jqXHR, textStatus, errorThrown) {
                             alert(jqXHR.status);
                         }                   
