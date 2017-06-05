@@ -318,8 +318,6 @@
                             +'<strong>WARNING!</strong> Unable to get job details.'
                             +'</div>';
                 job_description = $('#jobDescription').val();
-                // 1st call to register job
-                console.log("This is what I am sending: " + JSON.stringify(job_desc))
                 $.ajax({
                     url:  webapp_settings.apiserver_url
                          +webapp_settings.apiserver_path +'/'
@@ -333,10 +331,9 @@
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(job_desc),                          
                     success: function(data) {
-                        // 2nd call to provide the paramter file and start submission                                                        
+                        // 2nd call to provide the parameter file and start submission                                                        
                       var dataToSend = new FormData();
-                      console.log("These are the parameter; " + JSON.stringify(paramJson));
-                      dataToSend.append(parameterFile, new Blob([JSON.stringify(paramJson)], {type: 'application/json'}));
+                      dataToSend.append("file[]", new Blob([JSON.stringify(paramJson)], {type: 'application/json'}), parameterFile);
                         $.ajax({
                             url: webapp_settings.apiserver_url
                                 +webapp_settings.apiserver_path +'/'
@@ -389,7 +386,6 @@
                                     success: function(data) {
                                         jstatus=$('#'+data.id).find("td").eq(3).html();
                                         if(jstatus != data.jstatus) {
-                                            console.log("change detected: "+jstatus+"->"+data.status);
                                             if(data.status == 'DONE')
                                                 prepareJobTable();
                                             else 
@@ -398,7 +394,6 @@
                                         }
                                     }, 
                                     error: function(jqXHR, textStatus, errorThrown) {
-                                            console.log(jqXHR.status);
                                             if(jqXHR.status == 404) {
                                                 prepareJobTable();
                                             }
