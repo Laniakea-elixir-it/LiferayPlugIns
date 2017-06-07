@@ -130,7 +130,7 @@
               <div class="modal-body" style="max-height: calc(100vh - 210px); overflow-y: auto;">
                   <form>
                       <div class="radio">
-                          <label><input type="radio" name="optradio" value="old" checked>
+                          <label><input type="radio" name="optradio" value="old" <%= jsonApp.isEmpty() ?  "checked" : "" %>>
                               <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#jsonTextArea1" onClick="filljsonArea1()">default json</button>
                               object can not be changed
                           </label>
@@ -142,7 +142,7 @@
                           </div>
                       </div>
                       <div class="radio">
-                          <label><input type="radio" name="optradio" value="new">
+                          <label><input type="radio" name="optradio" value="new" <%= jsonApp.isEmpty() ?  "" : "checked" %>>
                               <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#jsonTextArea2">new json</button>
                               customizable object
                           </label>
@@ -196,7 +196,5 @@
                     welcome();
                 }
             );
-        
-          var json2 = JSON.stringify(defaultJson, null, 2);
-          $('#jsonArea2').val(json2);
+          $('#jsonArea2').val('<%= jsonApp %>');
       </script>
