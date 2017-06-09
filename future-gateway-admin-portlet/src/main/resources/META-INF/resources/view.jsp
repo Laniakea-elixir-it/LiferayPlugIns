@@ -77,7 +77,18 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
         window,
         '<portlet:namespace />resourceDetails',
         function (id, resource) {
-            table.showDetails(id, resource, '<portlet:namespace />resourceDelete');
+            table.showDetails(id, resource,
+                [{
+                    name: '<liferay-ui:message key="fg-res-modify"/>',
+                    callback: '<portlet:namespace />resourceModify',
+                    style: 'warning',
+                 },
+                 {
+                    name: '<liferay-ui:message key="fg-res-delete"/>',
+                    callback: '<portlet:namespace />resourceDelete',
+                    style: 'danger'
+                 },
+                 ]);
         },
         []);
 
@@ -85,7 +96,15 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
         window,
         '<portlet:namespace />resourceDelete',
         function (id, resource) {
-            table.delete(id, resource, '<portlet:namespace />resourceDelete');
+            table.delete(id, resource);
+        },
+        []);
+
+    Liferay.provide(
+        window,
+        '<portlet:namespace />resourceModify',
+        function (id, resource) {
+            alert('Not implemented yet, sorry!');
         },
         []);
 

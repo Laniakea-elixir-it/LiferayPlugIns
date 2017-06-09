@@ -118,7 +118,7 @@ class FgTable {
     });
   }
 
-  showDetails(id, resource, deleteCallback) {
+  showDetails(id, resource, buttons) {
     if (this.token.substring(0, 4) == 'User' ||
         this.token.substring(0, 7) == 'No JSON') {
       var modalError = new Modal({
@@ -138,15 +138,21 @@ class FgTable {
     resourceDetailsCall.then(function(data) {
       var date = new Date();
       var resourceId = resource + id + date.getTime();
+      var footer_buttons = '';
+      
+      buttons.forEach(function(button) {
+        footer_buttons += '<button type="button" onClick="' + button['callback'] +
+        '(\'' + id + '\',\'' + resource +
+        '\')" class="btn btn-' + button['style'] + '">' + button['name'].capitalize() + '</button>';
+      });
+      
       var modalTask = new Modal({
         elementClasses: 'modal-boot',
         header: '<h4 class="modal-title">' +
           resource.substring(0, resource.length - 1).capitalize() +
           ': ' + id + '</h4>',
         body: '<div id="' + resourceId + '"></div>',
-        footer: '<button type="button" onClick="' + deleteCallback +
-            '(\'' + id + '\',\'' + resource +
-            '\')" class="btn btn-danger">Delete</button>',
+        footer: footer_buttons,
       });
 
       new TreeView({
