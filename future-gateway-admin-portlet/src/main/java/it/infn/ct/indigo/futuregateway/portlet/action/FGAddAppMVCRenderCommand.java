@@ -50,7 +50,8 @@ import it.infn.ct.indigo.futuregateway.server.FGServerManager;
         property = {
                 "javax.portlet.name="
                         + FutureGatewayAdminPortletKeys.FUTURE_GATEWAY_ADMIN,
-                "mvc.command.name=/fg/addApp"
+                "mvc.command.name=/fg/addApp",
+                "mvc.command.name=/fg/modifyApp",
         },
         service = MVCRenderCommand.class
 )

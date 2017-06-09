@@ -35,6 +35,15 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
 <c:choose>
     <c:when test="${param.toolbarItem eq 'view-all-apps'}">
         <liferay-util:include page="/applications.jsp" servletContext="<%= application %>" />
+        <portlet:renderURL var="viewAppsURL">
+            <portlet:param name="toolbarItem" value="<%= "view-all-apps" %>" />
+        </portlet:renderURL>
+
+        <portlet:renderURL var="modifyURL">
+            <portlet:param name="mvcRenderCommandName" value="/fg/modifyApp" />
+            <portlet:param name="redirect" value="<%= viewAppsURL %>" />
+        </portlet:renderURL>
+        
         <script>
             var resource = 'applications';
             var columns = ['id', 'name', 'enabled', 'outcome'];
@@ -42,6 +51,16 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
     </c:when>
     <c:when test="${param.toolbarItem eq 'view-all-infras'}">
         <liferay-util:include page="/infrastructures.jsp" servletContext="<%= application %>" />
+        <portlet:renderURL var="viewInfrasURL">
+            <portlet:param name="toolbarItem" value="<%= "view-all-infras" %>" />
+            <portlet:param name="resourceId" value="resourceIdToReplace" />
+        </portlet:renderURL>
+
+        <portlet:renderURL var="modifyURL">
+            <portlet:param name="mvcRenderCommandName" value="/fg/modifyInfra" />
+            <portlet:param name="redirect" value="<%= viewInfrasURL %>" />
+            <portlet:param name="resourceId" value="resourceIdToReplace" />
+        </portlet:renderURL>
         <script>
             var resource = 'infrastructures';
             var columns = ['id', 'name', 'enabled', 'virtual'];
@@ -49,6 +68,15 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
     </c:when>
     <c:otherwise>
         <liferay-util:include page="/tasks.jsp" servletContext="<%= application %>" />
+        <portlet:renderURL var="viewTasksURL">
+            <portlet:param name="toolbarItem" value="" />
+        </portlet:renderURL>
+
+        <portlet:renderURL var="modifyURL">
+            <portlet:param name="mvcRenderCommandName" value="/fg/modifyTask" />
+            <portlet:param name="redirect" value="<%= viewTasksURL %>" />
+            <portlet:param name="resourceId" value="resourceIdToReplace" />
+        </portlet:renderURL>
         <script>
             var resource = 'tasks';
             var columns = ['id', 'date', 'status', 'description'];
@@ -104,7 +132,7 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
         window,
         '<portlet:namespace />resourceModify',
         function (id, resource) {
-            alert('Not implemented yet, sorry!');
+            window.location.href = '${modifyURL}'.replace('resourceIdToReplace', id);
         },
         []);
 
