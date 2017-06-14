@@ -29,7 +29,11 @@ String redirect = ParamUtil.getString(request, "redirect");
 portletDisplay.setShowBackIcon(true);
 portletDisplay.setURLBack(redirect);
 
-renderResponse.setTitle(LanguageUtil.get(request, "fg-add-infra"));
+if(request.getAttribute("infra_id") == null ) {
+    renderResponse.setTitle(LanguageUtil.get(request, "fg-add-infra"));
+} else {
+    renderResponse.setTitle(LanguageUtil.get(request, "fg-edit-infra"));
+}
 %>
 
 <portlet:actionURL name="/fg/addInfra" var="addInfraActionURL" />
@@ -38,20 +42,31 @@ renderResponse.setTitle(LanguageUtil.get(request, "fg-add-infra"));
 <aui:form action="<%= addInfraActionURL %>" cssClass="container-fluid-1280" method="post" name="fm">
     <aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.ADD %>" />
     <aui:input name="redirect" type="hidden" value="<%= redirect %>" />
+    <aui:input name="infra_id" type="hidden" value="${infra_id}" />
     <aui:fieldset-group markupView="lexicon">
         <div class="row">
             <aui:fieldset cssClass="col-md-6">
-                <aui:input name="fg-infra-name">
+                <aui:input name="fg-infra-name" value="${infra_name}">
                     <aui:validator name="required" />
                 </aui:input>
-                <aui:input name="fg-infra-enabled" type="checkbox" checked="true"/>
-                <aui:input name="fg-infra-virtual" type="checkbox" checked="false"/>
-                <aui:input name="fg-infra-description" type="textarea">
-                </aui:input>
+                <aui:input name="fg-infra-enabled" type="checkbox" checked="${infra_enabled}"/>
+                <aui:input name="fg-infra-virtual" type="checkbox" checked="${infra_virtual}"/>
+                <aui:input name="fg-infra-description" type="textarea" value="${infra_description}"/>
             </aui:fieldset>
             <aui:fieldset cssClass="col-md-5" label="fg-infra-parameters">
-                <div id="<portlet:namespace />paramContainer"></div>
-                <aui:button name="add_parameter" value="+" onClick="<%= renderResponse.getNamespace() + "addParameter()" %>" />
+                <div id="<portlet:namespace />paramContainer">
+                    <c:forEach items="${infra_parameters_values}" var="iParam">
+                        <div id="<portlet:namespace />paramkey${iParam.key}" >
+                            <hr/>
+                            <aui:input name="fg-infra-parameter-name" value="${iParam.key}"/>
+                            <aui:input name="fg-infra-parameter-value" value="${iParam.value}"/>
+                            <aui:input name="fg-infra-parameter-description" type="textarea" value="${infra_parameters_descriptions[iParam.key]}"/>
+                            <aui:button cssClass="btn-danger" name="add_parameter" value="-" onClick="${renderResponse.getNamespace()}removeParameter('paramkey${iParam.key}')" />
+                            <hr/>
+                        </div>
+                    </c:forEach>
+                </div>
+                <aui:button name="add_parameter" value="+" onClick="${renderResponse.getNamespace()}addParameter()" />
             </aui:fieldset>
         </div>
     </aui:fieldset-group>

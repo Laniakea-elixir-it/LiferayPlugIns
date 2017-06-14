@@ -22,7 +22,10 @@
 package it.infn.ct.indigo.futuregateway.portlet.action;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
@@ -31,11 +34,16 @@ import javax.portlet.RenderResponse;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import it.infn.ct.indigo.futuregateway.constants.FutureGatewayAdminPortletKeys;
@@ -55,12 +63,13 @@ import it.infn.ct.indigo.futuregateway.server.FGServerManager;
         },
         service = MVCRenderCommand.class
 )
-public class FGAddAppMVCRenderCommand implements MVCRenderCommand {
+public class FGEditAppMVCRenderCommand implements MVCRenderCommand {
 
     @Override
     public final String render(
             final RenderRequest renderRequest,
             final RenderResponse renderResponse) throws PortletException {
+        String appId;
 
         ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(
                 WebKeys.THEME_DISPLAY);
@@ -82,6 +91,63 @@ public class FGAddAppMVCRenderCommand implements MVCRenderCommand {
                 throw new PortletException(e);
             }
         }
+        appId = ParamUtil.getString(
+                renderRequest,
+                FGServerConstants.VIEW_EDIT_RESOURCE_ID,
+                null);
+        if (appId != null) {
+            try {
+                String application = fgServerManager.getResource(
+                        PortalUtil.getCompanyId(renderRequest),
+                        FGServerConstants.APPLICATION_COLLECTION,
+                        appId, PortalUtil.getUserId(renderRequest));
+                JSONObject appJ = JSONFactoryUtil.createJSONObject(application);
+                renderRequest.setAttribute("app_id", appJ.getString("id"));
+                renderRequest.setAttribute("app_name", appJ.getString("name"));
+                renderRequest.setAttribute("app_description",
+                        appJ.getString("description"));
+                renderRequest.setAttribute("app_enabled",
+                        appJ.getBoolean("enabled"));
+                renderRequest.setAttribute("app_outcome",
+                        appJ.getString("outcome"));
+                Map<String, String> paramValues = new HashMap<>();
+                Map<String, String> paramDescs = new HashMap<>();
+                JSONArray params = appJ.getJSONArray("parameters");
+                if (params != null) {
+                    for (int i = 0; i < params.length(); i++) {
+                        JSONObject par = params.getJSONObject(i);
+                        paramValues.put(par.getString("name"),
+                                par.getString("value"));
+                        paramDescs.put(par.getString("name"),
+                                par.getString("description"));
+                    }
+                }
+                renderRequest.setAttribute("app_parameters_values",
+                        paramValues);
+                renderRequest.setAttribute("app_parameters_descriptions",
+                        paramDescs);
+                JSONArray files = appJ.getJSONArray("files");
+                Set<String> fileNames = new HashSet<>();
+                if (files != null) {
+                    for (int i = 0; i < files.length(); i++) {
+                        fileNames.add(
+                                files.getJSONObject(i).getString("name"));
+                    }
+                }
+                renderRequest.setAttribute("app_file_names", fileNames);
+                JSONArray infras = appJ.getJSONArray("infrastructures");
+                Set<String> infraIds = new HashSet<>();
+                if (infras != null) {
+                    for (int i = 0; i < infras.length(); i++) {
+                        infraIds.add(infras.getString(i));
+                    }
+                }
+                renderRequest.setAttribute("app_infras", infraIds);
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
+                SessionErrors.add(renderRequest, FGServerManager.class);
+            }
+        }
         return "/add_application.jsp";
     }
 
@@ -100,7 +166,7 @@ public class FGAddAppMVCRenderCommand implements MVCRenderCommand {
     /**
      * The logger.
      */
-    private Log log = LogFactoryUtil.getLog(FGAddAppMVCRenderCommand.class);
+    private Log log = LogFactoryUtil.getLog(FGEditAppMVCRenderCommand.class);
 
     /**
      * The reference to the FG Server manager.

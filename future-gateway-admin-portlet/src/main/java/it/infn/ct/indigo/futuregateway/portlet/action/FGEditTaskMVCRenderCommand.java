@@ -42,11 +42,12 @@ import it.infn.ct.indigo.futuregateway.constants.FutureGatewayAdminPortletKeys;
         property = {
                 "javax.portlet.name="
                         + FutureGatewayAdminPortletKeys.FUTURE_GATEWAY_ADMIN,
-                "mvc.command.name=/fg/addInfra"
+                "mvc.command.name=/fg/addInfra",
+                "mvc.command.name=/fg/modifyTask",
         },
         service = MVCRenderCommand.class
 )
-public class FGAddInfraMVCRenderCommand implements MVCRenderCommand {
+public class FGEditTaskMVCRenderCommand implements MVCRenderCommand {
 
     @Override
     public final String render(

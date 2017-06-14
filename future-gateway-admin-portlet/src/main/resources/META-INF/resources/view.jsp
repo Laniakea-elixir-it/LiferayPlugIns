@@ -42,6 +42,7 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
         <portlet:renderURL var="modifyURL">
             <portlet:param name="mvcRenderCommandName" value="/fg/modifyApp" />
             <portlet:param name="redirect" value="<%= viewAppsURL %>" />
+            <portlet:param name="resourceId" value="resourceIdToReplace" />
         </portlet:renderURL>
         
         <script>
@@ -53,7 +54,6 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
         <liferay-util:include page="/infrastructures.jsp" servletContext="<%= application %>" />
         <portlet:renderURL var="viewInfrasURL">
             <portlet:param name="toolbarItem" value="<%= "view-all-infras" %>" />
-            <portlet:param name="resourceId" value="resourceIdToReplace" />
         </portlet:renderURL>
 
         <portlet:renderURL var="modifyURL">
@@ -132,7 +132,7 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
         window,
         '<portlet:namespace />resourceModify',
         function (id, resource) {
-            window.location.href = '${modifyURL}'.replace('resourceIdToReplace', id);
+            window.location.href = '${modifyURL}'.split('resourceIdToReplace').join(id);
         },
         []);
 

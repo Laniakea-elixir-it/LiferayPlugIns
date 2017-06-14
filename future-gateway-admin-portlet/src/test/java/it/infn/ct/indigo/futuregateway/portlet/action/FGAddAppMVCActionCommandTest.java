@@ -222,7 +222,7 @@ public class FGAddAppMVCActionCommandTest {
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
-        FGAddAppMVCActionCommand fgAAMAC = new FGAddAppMVCActionCommand();
+        FGEditAppMVCActionCommand fgAAMAC = new FGEditAppMVCActionCommand();
         fgAAMAC.setFGServerManeger(fgSManager);
         try {
             fgAAMAC.doProcessAction(actionRequest, actionResponse);
@@ -325,7 +325,7 @@ public class FGAddAppMVCActionCommandTest {
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
-        FGAddAppMVCActionCommand fgAAMAC = new FGAddAppMVCActionCommand();
+        FGEditAppMVCActionCommand fgAAMAC = new FGEditAppMVCActionCommand();
         fgAAMAC.setFGServerManeger(fgSManager);
         try {
             fgAAMAC.doProcessAction(actionRequest, actionResponse);

@@ -138,21 +138,22 @@ class FgTable {
     resourceDetailsCall.then(function(data) {
       var date = new Date();
       var resourceId = resource + id + date.getTime();
-      var footer_buttons = '';
-      
+      var footerButtons = '';
+
       buttons.forEach(function(button) {
-        footer_buttons += '<button type="button" onClick="' + button['callback'] +
-        '(\'' + id + '\',\'' + resource +
-        '\')" class="btn btn-' + button['style'] + '">' + button['name'].capitalize() + '</button>';
+        footerButtons += '<button type="button" onClick="' +
+          button['callback'] + '(\'' + id + '\',\'' + resource +
+          '\')" class="btn btn-' + button['style'] + '">' +
+          button['name'].capitalize() + '</button>';
       });
-      
+
       var modalTask = new Modal({
         elementClasses: 'modal-boot',
         header: '<h4 class="modal-title">' +
           resource.substring(0, resource.length - 1).capitalize() +
           ': ' + id + '</h4>',
         body: '<div id="' + resourceId + '"></div>',
-        footer: footer_buttons,
+        footer: footerButtons,
       });
 
       new TreeView({

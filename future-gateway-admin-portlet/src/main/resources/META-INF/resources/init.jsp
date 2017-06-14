@@ -43,6 +43,7 @@
 <%@ page import="it.infn.ct.indigo.futuregateway.server.FGServerConstants"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.util.Map"%>
+<%@ page import="java.util.Set"%>
 <liferay-theme:defineObjects />
 
 <portlet:defineObjects />

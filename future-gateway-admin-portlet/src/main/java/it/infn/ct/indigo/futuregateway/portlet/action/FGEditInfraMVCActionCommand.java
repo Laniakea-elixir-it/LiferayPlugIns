@@ -57,7 +57,7 @@ import it.infn.ct.indigo.futuregateway.server.FGServerManager;
         },
         service = MVCActionCommand.class
 )
-public class FGAddInfraMVCActionCommand extends BaseMVCActionCommand {
+public class FGEditInfraMVCActionCommand extends BaseMVCActionCommand {
 
     @Override
     protected final void doProcessAction(final ActionRequest actionRequest,
@@ -127,7 +127,7 @@ public class FGAddInfraMVCActionCommand extends BaseMVCActionCommand {
     /**
      * The logger.
      */
-    private Log log = LogFactoryUtil.getLog(FGAddAppMVCRenderCommand.class);
+    private Log log = LogFactoryUtil.getLog(FGEditInfraMVCActionCommand.class);
 
     /**
      * The reference to the FG Server manager.

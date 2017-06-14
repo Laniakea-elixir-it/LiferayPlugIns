@@ -268,6 +268,61 @@ public class FGServerManager {
     }
 
     /**
+     * Retrieves a resource from the FG service.
+     *
+     * @param companyId The id of the instance
+     * @param collection The name of the collection to post the new resource
+     * @param resourceId The id of the resource to retrieve
+     * @param userId The id of the user performing the action
+     * @return The full raw collection in json format
+     * @throws Exception Impossible to retrieve the user token
+     */
+    public String getResource(final long companyId,
+            final String collection, final String resourceId,
+            final long userId)
+                    throws Exception {
+        return getResource(companyId, collection,
+                resourceId, iam.getUserToken(userId));
+    }
+
+    /**
+     * Retrieves a resource from the FG service.
+     *
+     * @param companyId The id of the instance
+     * @param collection The name of the collection to post the new resource
+     * @param resourceId The id of the resource to retrieve
+     * @param token The authorisation token for the user
+     * @return The full raw collection in json format
+     * @throws PortalException Cannot retrieve the server endpoint
+     * @throws IOException Connect communicate with the server
+     */
+    public String getResource(final long companyId,
+            final String collection, final String resourceId,
+            final String token)
+                    throws PortalException, IOException {
+        HttpURLConnection connection = getFGConnection(
+                companyId, collection, resourceId, token, HttpMethods.GET,
+                FutureGatewayAdminPortletKeys.FUTURE_GATEWAY_CONTENT_TYPE);
+        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            connection.disconnect();
+            log.debug("FG server response code not correct: "
+                    + connection.getResponseCode());
+            throw new IOException("Server response with code: "
+                    + connection.getResponseCode());
+        }
+        BufferedReader resIn = new BufferedReader(
+                new InputStreamReader(connection.getInputStream()));
+        String inputLine;
+        StringBuilder resource = new StringBuilder();
+        while ((inputLine = resIn.readLine()) != null) {
+            resource.append(inputLine);
+        }
+        resIn.close();
+        log.debug("This is the collection: " + resource.toString());
+        return resource.toString();
+    }
+
+    /**
      * Retrieves the available infrastructures from the FG service.
      *
      * @param companyId The id of the instance

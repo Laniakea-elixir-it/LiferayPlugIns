@@ -62,4 +62,9 @@ public final class FGServerConstants {
      * Name of the attribute providing if it is enabled.
      */
     public static final String ATTRIBUTE_ENABLED = "enabled";
+
+    /**
+     * Name of the attribute providing if it is enabled.
+     */
+    public static final String VIEW_EDIT_RESOURCE_ID = "resourceId";
 }

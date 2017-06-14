@@ -185,7 +185,7 @@ public class FGAddInfraMVCActionCommandTest {
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
-        FGAddInfraMVCActionCommand fgAIMAC = new FGAddInfraMVCActionCommand();
+        FGEditInfraMVCActionCommand fgAIMAC = new FGEditInfraMVCActionCommand();
         fgAIMAC.setFGServerManeger(fgSManager);
         try {
             fgAIMAC.doProcessAction(actionRequest, actionResponse);
@@ -251,7 +251,7 @@ public class FGAddInfraMVCActionCommandTest {
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
-        FGAddInfraMVCActionCommand fgAIMAC = new FGAddInfraMVCActionCommand();
+        FGEditInfraMVCActionCommand fgAIMAC = new FGEditInfraMVCActionCommand();
         fgAIMAC.setFGServerManeger(fgSManager);
         try {
             fgAIMAC.doProcessAction(actionRequest, actionResponse);

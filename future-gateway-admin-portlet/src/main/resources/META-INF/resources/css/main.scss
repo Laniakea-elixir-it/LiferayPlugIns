@@ -46,6 +46,13 @@
     .loaded {
         display: none;
     }
+
+    .fileReplace {
+        font-size: 16px;
+        color: #869CAD;
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
 }
 
 div.modal-boot[role=dialog] {
