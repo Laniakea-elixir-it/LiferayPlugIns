@@ -180,7 +180,8 @@ public class FGAddInfraMVCActionCommandTest {
             Mockito.when(
                 fgSManager.addResource(
                         Mockito.anyLong(), Mockito.anyString(),
-                        Mockito.anyString(), Mockito.anyLong())).
+                        Mockito.anyString(), Mockito.anyString(),
+                        Mockito.anyLong())).
                 thenReturn("");
         } catch (Exception e) {
             Assert.fail(e.getMessage());
@@ -193,7 +194,7 @@ public class FGAddInfraMVCActionCommandTest {
                     String.class);
             Mockito.verify(fgSManager).addResource(
                     Mockito.anyLong(), Mockito.anyString(),
-                    json.capture(), Mockito.anyLong());
+                    Mockito.anyString(), json.capture(), Mockito.anyLong());
             JSONObject jObj = JSONFactoryUtil.createJSONObject(
                     json.getValue());
             Assert.assertEquals("fg-infra-name", jObj.getString("name"));
@@ -246,7 +247,8 @@ public class FGAddInfraMVCActionCommandTest {
             Mockito.when(
                 fgSManager.addResource(
                         Mockito.anyLong(), Mockito.anyString(),
-                        Mockito.anyString(), Mockito.anyLong())).
+                        Mockito.anyString(), Mockito.anyString(),
+                        Mockito.anyLong())).
                 thenThrow(new IOException());
         } catch (Exception e) {
             Assert.fail(e.getMessage());

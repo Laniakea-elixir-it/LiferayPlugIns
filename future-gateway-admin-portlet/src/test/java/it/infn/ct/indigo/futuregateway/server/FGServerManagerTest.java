@@ -214,7 +214,7 @@ public class FGServerManagerTest {
                     Mockito.anyString(), Mockito.anyString());
             String resourceId = fgsm.addResource(0,
                     FGServerConstants.INFRASTRUCTURE_COLLECTION,
-                    DataTest.INFRA_RES, "");
+                    null, DataTest.INFRA_RES, "");
             Assert.assertEquals(DataTest.INFRAS_ID[0], resourceId);
             Assert.assertEquals(DataTest.INFRA_RES, baos.toString(
                     Charset.defaultCharset().name()));
@@ -242,7 +242,7 @@ public class FGServerManagerTest {
                     Mockito.anyString(), Mockito.anyString());
             String resourceId = fgsm.addResource(0,
                     FGServerConstants.INFRASTRUCTURE_COLLECTION,
-                    DataTest.INFRA_RES, "");
+                    null, DataTest.INFRA_RES, "");
             Assert.assertEquals(DataTest.INFRAS_ID[0], resourceId);
             Assert.assertEquals(DataTest.INFRA_RES, baos.toString(
                     Charset.defaultCharset().name()));

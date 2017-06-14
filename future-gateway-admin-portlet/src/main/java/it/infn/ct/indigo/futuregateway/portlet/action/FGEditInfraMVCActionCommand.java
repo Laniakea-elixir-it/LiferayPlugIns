@@ -68,6 +68,7 @@ public class FGEditInfraMVCActionCommand extends BaseMVCActionCommand {
 
         String redirect = PortalUtil.escapeRedirect(
                 ParamUtil.getString(actionRequest, "redirect"));
+        String id = ParamUtil.getString(actionRequest, "fg-infra-id");
         String name = ParamUtil.getString(actionRequest, "fg-infra-name");
         String description = ParamUtil.getString(actionRequest,
                 "fg-infra-description");
@@ -83,6 +84,9 @@ public class FGEditInfraMVCActionCommand extends BaseMVCActionCommand {
                 actionRequest, "fg-infra-parameter-description");
 
         JSONObject jInfra = JSONFactoryUtil.createJSONObject();
+        if (!id.isEmpty()) {
+            jInfra.put("id", id);
+        }
         jInfra.put("name", name);
         jInfra.put("description", description);
         jInfra.put("enabled", enabled);
@@ -101,6 +105,7 @@ public class FGEditInfraMVCActionCommand extends BaseMVCActionCommand {
             fgServerManager.addResource(
                     themeDisplay.getCompanyId(),
                     FGServerConstants.INFRASTRUCTURE_COLLECTION,
+                    id,
                     jInfra.toJSONString(),
                     themeDisplay.getUserId());
             sendRedirect(actionRequest, actionResponse, redirect);

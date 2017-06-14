@@ -107,6 +107,8 @@ public class FGServerManager {
      *
      * @param companyId The id of the instance
      * @param collection The name of the collection to post the new resource
+     * @param resourceId The id of the resource to add. If provided the
+     *                   resource will be overwritten
      * @param resource The resource information in JSON format
      * @param token The token of the user performing the action
      * @return The Id of the new resource
@@ -114,13 +116,20 @@ public class FGServerManager {
      * @throws IOException Connect communicate with the server
      */
     public final String addResource(final long companyId,
-            final String collection, final String resource,
-            final String token)
+            final String collection, final String resourceId,
+            final String resource, final String token)
                     throws PortalException, IOException {
         log.debug("Adding the new " + collection + ": " + resource);
-        HttpURLConnection connection = getFGConnection(
-                companyId, collection, null, token, HttpMethods.POST,
+        HttpURLConnection connection;
+        if (resourceId != null && !resourceId.isEmpty()) {
+            connection = getFGConnection(
+                companyId, collection, resourceId, token, HttpMethods.PUT,
                 FutureGatewayAdminPortletKeys.FUTURE_GATEWAY_CONTENT_TYPE);
+        } else {
+            connection = getFGConnection(
+                    companyId, collection, null, token, HttpMethods.POST,
+                    FutureGatewayAdminPortletKeys.FUTURE_GATEWAY_CONTENT_TYPE);
+        }
         OutputStream os = connection.getOutputStream();
         os.write(resource.getBytes());
         os.flush();
@@ -157,10 +166,29 @@ public class FGServerManager {
             final String collection, final String resource,
             final long userId)
                     throws Exception {
-        return addResource(companyId, collection, resource,
+        return addResource(companyId, collection, null, resource,
                 iam.getUserToken(userId));
     }
 
+    /**
+     * Add a new resource into the FG service.
+     *
+     * @param companyId The id of the instance
+     * @param collection The name of the collection to post the new resource
+     * @param resourceId The id of the resource to add. If provided the
+     *                   resource will be overwritten
+     * @param resource The resource information in JSON format
+     * @param userId The id of the user performing the action
+     * @return The Id of the new resource
+     * @throws Exception The resource cannot be added
+     */
+    public String addResource(final long companyId,
+            final String collection, final String resourceId,
+            final String resource, final long userId)
+                    throws Exception {
+        return addResource(companyId, collection, resourceId, resource,
+                iam.getUserToken(userId));
+    }
     /**
      * Add files into a resource on FG service.
      *

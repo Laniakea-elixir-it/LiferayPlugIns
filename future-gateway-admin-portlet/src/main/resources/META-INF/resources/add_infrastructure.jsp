@@ -42,7 +42,7 @@ if(request.getAttribute("infra_id") == null ) {
 <aui:form action="<%= addInfraActionURL %>" cssClass="container-fluid-1280" method="post" name="fm">
     <aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.ADD %>" />
     <aui:input name="redirect" type="hidden" value="<%= redirect %>" />
-    <aui:input name="infra_id" type="hidden" value="${infra_id}" />
+    <aui:input name="fg-infra-id" type="hidden" value="${infra_id}" />
     <aui:fieldset-group markupView="lexicon">
         <div class="row">
             <aui:fieldset cssClass="col-md-6">

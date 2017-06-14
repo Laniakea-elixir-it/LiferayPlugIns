@@ -44,7 +44,7 @@ Map<String, String> infras = (Map<String, String>) request.getAttribute(FGServer
 <aui:form action="<%= addAppActionURL %>" cssClass="container-fluid-1280" method="post" name="fm" enctype="multipart/form-data">
     <aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.ADD %>" />
     <aui:input name="redirect" type="hidden" value="<%= redirect %>" />
-    <aui:input name="app_id" type="hidden" value="${app_id}" />
+    <aui:input name="fg-app-id" type="hidden" value="${app_id}" />
     <aui:fieldset-group markupView="lexicon">
         <div class="row">
             <aui:fieldset cssClass="col-md-6">

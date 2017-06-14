@@ -217,7 +217,8 @@ public class FGAddAppMVCActionCommandTest {
             Mockito.when(
                     fgSManager.addResource(
                             Mockito.anyLong(), Mockito.anyString(),
-                            Mockito.anyString(), Mockito.anyLong())).
+                            Mockito.anyString(), Mockito.anyString(),
+                            Mockito.anyLong())).
                 thenReturn("");
         } catch (Exception e) {
             Assert.fail(e.getMessage());
@@ -230,6 +231,7 @@ public class FGAddAppMVCActionCommandTest {
                     String.class);
             Mockito.verify(fgSManager).addResource(
                     Mockito.anyLong(), Mockito.anyString(),
+                    Mockito.anyString(),
                     json.capture(), Mockito.anyLong());
             JSONObject jObj = JSONFactoryUtil.createJSONObject(
                     json.getValue());
@@ -312,7 +314,8 @@ public class FGAddAppMVCActionCommandTest {
             Mockito.when(
                     fgSManager.addResource(
                             Mockito.anyLong(), Mockito.anyString(),
-                            Mockito.anyString(), Mockito.anyLong())).
+                            Mockito.anyString(), Mockito.anyString(),
+                            Mockito.anyLong())).
                 thenReturn("");
             Mockito.doThrow(new IOException()).when(fgSManager).
                 submitFilesResource(Mockito.anyLong(), Mockito.anyString(),
@@ -333,6 +336,7 @@ public class FGAddAppMVCActionCommandTest {
                     String.class);
             Mockito.verify(fgSManager).addResource(
                     Mockito.anyLong(), Mockito.anyString(),
+                    Mockito.anyString(),
                     json.capture(), Mockito.anyLong());
             JSONObject jObj = JSONFactoryUtil.createJSONObject(
                     json.getValue());

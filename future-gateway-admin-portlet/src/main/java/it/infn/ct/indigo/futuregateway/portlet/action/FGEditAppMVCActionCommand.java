@@ -76,6 +76,7 @@ public class FGEditAppMVCActionCommand extends BaseMVCActionCommand {
 
         String redirect = PortalUtil.escapeRedirect(
                 ParamUtil.getString(actionRequest, "redirect"));
+        String id = ParamUtil.getString(actionRequest, "fg-app-id");
         String name = ParamUtil.getString(actionRequest, "fg-app-name");
         String description = ParamUtil.getString(actionRequest,
                 "fg-app-description");
@@ -98,6 +99,9 @@ public class FGEditAppMVCActionCommand extends BaseMVCActionCommand {
         Map<String, InputStream> fileToTransfer = new HashMap<>();
 
         JSONObject jApp = JSONFactoryUtil.createJSONObject();
+        if (!id.isEmpty()) {
+            jApp.put("id", id);
+        }
         jApp.put("name", name);
         jApp.put("description", description);
         jApp.put("enabled", enabled);
@@ -139,7 +143,7 @@ public class FGEditAppMVCActionCommand extends BaseMVCActionCommand {
             String resourceId = fgServerManager.addResource(
                     themeDisplay.getCompanyId(),
                     FGServerConstants.APPLICATION_COLLECTION,
-                    jApp.toJSONString(), themeDisplay.getUserId());
+                    id, jApp.toJSONString(), themeDisplay.getUserId());
             if (!fileToTransfer.isEmpty()) {
                 fgServerManager.submitFilesResource(
                         themeDisplay.getCompanyId(),
