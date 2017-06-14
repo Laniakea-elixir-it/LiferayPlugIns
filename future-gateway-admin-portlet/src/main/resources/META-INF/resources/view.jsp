@@ -71,12 +71,6 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
         <portlet:renderURL var="viewTasksURL">
             <portlet:param name="toolbarItem" value="" />
         </portlet:renderURL>
-
-        <portlet:renderURL var="modifyURL">
-            <portlet:param name="mvcRenderCommandName" value="/fg/modifyTask" />
-            <portlet:param name="redirect" value="<%= viewTasksURL %>" />
-            <portlet:param name="resourceId" value="resourceIdToReplace" />
-        </portlet:renderURL>
         <script>
             var resource = 'tasks';
             var columns = ['id', 'date', 'status', 'description'];
@@ -104,9 +98,10 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
     Liferay.provide(
         window,
         '<portlet:namespace />resourceDetails',
-        function (id, resource) {
-            table.showDetails(id, resource,
-                [{
+        function (id) {
+            var buttons;
+            if(resource!='tasks') {
+                buttons = [{
                     name: '<liferay-ui:message key="fg-res-modify"/>',
                     callback: '<portlet:namespace />resourceModify',
                     style: 'warning',
@@ -115,8 +110,15 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
                     name: '<liferay-ui:message key="fg-res-delete"/>',
                     callback: '<portlet:namespace />resourceDelete',
                     style: 'danger'
-                 },
-                 ]);
+                 }];
+            } else {
+                buttons = [{
+                    name: '<liferay-ui:message key="fg-res-delete"/>',
+                    callback: '<portlet:namespace />resourceDelete',
+                    style: 'danger'
+                 }];
+            }
+            table.showDetails(id, resource, buttons);
         },
         []);
 

@@ -53,7 +53,7 @@ class FgTable {
           if (keyEntry == 'id') {
             entry[keyEntry] = '<a href="#' + entry[keyEntry] +
               '" onClick="' + detailsCallback + '(\'' +
-              entry[keyEntry] + '\', \'' + resource + '\')">' +
+              entry[keyEntry] + '\')">' +
               entry[keyEntry] + '</a>';
           }
           entry[keyEntry.capitalize()] = entry[keyEntry];
