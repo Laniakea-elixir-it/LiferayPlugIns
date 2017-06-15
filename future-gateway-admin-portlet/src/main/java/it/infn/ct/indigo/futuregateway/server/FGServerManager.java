@@ -119,9 +119,13 @@ public class FGServerManager {
             final String collection, final String resourceId,
             final String resource, final String token)
                     throws PortalException, IOException {
-        log.debug("Adding the new " + collection + ": " + resource);
+        log.debug("Updating/adding the resource in "
+                    + collection + ": " + resource);
         HttpURLConnection connection;
+        boolean resourceExist = false;
+
         if (resourceId != null && !resourceId.isEmpty()) {
+            resourceExist = true;
             connection = getFGConnection(
                 companyId, collection, resourceId, token, HttpMethods.PUT,
                 FutureGatewayAdminPortletKeys.FUTURE_GATEWAY_CONTENT_TYPE);
@@ -133,8 +137,14 @@ public class FGServerManager {
         OutputStream os = connection.getOutputStream();
         os.write(resource.getBytes());
         os.flush();
-        if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-            throw new IOException("Impossible to add the resource."
+        if (resourceExist
+                && connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            return resourceId;
+        }
+        if (!resourceExist
+                        && connection.getResponseCode()
+                        != HttpURLConnection.HTTP_CREATED) {
+            throw new IOException("Impossible to add the resource. "
                     + "Server response with code: "
                     + connection.getResponseCode());
         }
