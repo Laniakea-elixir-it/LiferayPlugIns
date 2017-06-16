@@ -88,6 +88,7 @@ Map<String, String> infras = (Map<String, String>) request.getAttribute(FGServer
                         <div id="<portlet:namespace/>fileName${theCount.index}">
                             <hr/>
                             <p class="fileReplace">Previous file: <i>${aFile}</i></p>
+                            <aui:input name="fg-app-file-old" type="hidden" value="${aFile}" />
                             <aui:input name="fg-app-file-update" type="file"/>
                             <liferay-ui:message key="alternative-option"/>
                             <aui:input name="fg-app-file-url"/>
@@ -146,6 +147,7 @@ Map<String, String> infras = (Map<String, String>) request.getAttribute(FGServer
         function () {
             var generatedId = 'File' + (+new Date).toString(36).slice(-5);
             var newFile = `<div id="<portlet:namespace/>generatedId" style="display: none;"><hr/>
+                <aui:input name="fg-app-file-old" type="hidden" value="N/A" />
                 <aui:input name="fg-app-file-update" type="file">
                 </aui:input>
                 <liferay-ui:message key="alternative-option"/>

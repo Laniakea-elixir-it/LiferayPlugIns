@@ -92,6 +92,8 @@ public class FGEditAppMVCActionCommand extends BaseMVCActionCommand {
                 "fg-app-infrastructure");
         String[] fileUrls = ParamUtil.getStringValues(actionRequest,
                 "fg-app-file-url");
+        String[] fileOld = ParamUtil.getStringValues(actionRequest,
+                "fg-app-file-old");
         UploadPortletRequest upr = PortalUtil.
                 getUploadPortletRequest(actionRequest);
         InputStream[] files = upr.getFilesAsStream("fg-app-file-update", true);
@@ -113,7 +115,9 @@ public class FGEditAppMVCActionCommand extends BaseMVCActionCommand {
                 JSONObject jPar = JSONFactoryUtil.createJSONObject();
                 jPar.put("name", paramNames[i]);
                 jPar.put("value", paramValues[i]);
-                jPar.put("description", paramDescriptions[i]);
+                if (paramDescriptions.length == paramNames.length) {
+                    jPar.put("description", paramDescriptions[i]);
+                }
                 jParams.put(jPar);
             }
         }
@@ -132,8 +136,13 @@ public class FGEditAppMVCActionCommand extends BaseMVCActionCommand {
                     jFiles.put(fileNames[i]);
                     fileToTransfer.put(fileNames[i], files[i]);
                 } else {
-                    if (Validator.isNotNull(fileUrls[i])) {
+                    if (fileUrls.length == fileNames.length
+                            && Validator.isNotNull(fileUrls[i])) {
                         jFiles.put(fileUrls[i]);
+                    } else {
+                        if (fileOld[i].compareTo("N/A") != 0) {
+                            jFiles.put(fileOld[i]);
+                        }
                     }
                 }
             }

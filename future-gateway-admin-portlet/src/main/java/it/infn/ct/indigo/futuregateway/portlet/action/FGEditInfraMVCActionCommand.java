@@ -96,7 +96,9 @@ public class FGEditInfraMVCActionCommand extends BaseMVCActionCommand {
             JSONObject jPar = JSONFactoryUtil.createJSONObject();
             jPar.put("name", paramNames[i]);
             jPar.put("value", paramValues[i]);
-            jPar.put("description", paramDescriptions[i]);
+            if (paramDescriptions.length == paramNames.length) {
+                jPar.put("description", paramDescriptions[i]);
+            }
             jParams.put(jPar);
         }
         jInfra.put("parameters", jParams);
