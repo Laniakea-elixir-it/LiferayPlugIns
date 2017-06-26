@@ -48,7 +48,6 @@ in the following figure:
 Finally, in the right bottom of the applications and infrastructures tab a button with a `+` sign open an insert page where the user can
 add a new resource. The button will open a new page with a form, depending on the resource type, containing all the possible fields.
 
-Currently, resource search, filter and modify is not supported but it will be added in future releases of the modules.
 
 ## FutureGateway customisable application module
 

@@ -1,5 +1,5 @@
 Bundle-SymbolicName: com.liferay.login.authentication.iam.web
-Bundle-Version: 2.0.2
+Bundle-Version: 2.0.3
 Bundle-Name: Login Authentication IAM Web
 Bundle-Description: Login extension for IAM authentication
 Bundle-Copyright: Copyright 2016, INFN - INDIGO-DataCloud
