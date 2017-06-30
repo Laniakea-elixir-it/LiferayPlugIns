@@ -1,28 +1,20 @@
 package it.infn.ct.indigo.customisableApp.portlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
-import it.infn.ct.indigo.customisableApp.portlet.configuration.Config;
 import it.infn.ct.indigo.futuregateway.server.FGServerManager;
 
 /**
@@ -45,10 +37,7 @@ import it.infn.ct.indigo.futuregateway.server.FGServerManager;
         service = Portlet.class
 )
 public class CustomisableApplicationPortlet extends MVCPortlet {
-    /**
-     * Configuration.
-     */
-    private Config config = new Config();
+
 
     @Override
     public final void doView(final RenderRequest renderRequest,

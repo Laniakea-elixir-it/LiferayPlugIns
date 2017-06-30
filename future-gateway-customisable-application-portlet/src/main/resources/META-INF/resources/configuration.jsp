@@ -63,6 +63,8 @@
 
             function changeJson() {
                 var ans = $('input[name="optradio"]:checked').val();
+                $('#<portlet:namespace />requestButton').removeClass('disabled');
+                $('#<portlet:namespace />requestButton').prop('disabled', false);
                 switch(ans) {
                     case "old":
                         myJson = defaultJson;
