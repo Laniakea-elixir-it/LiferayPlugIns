@@ -6,7 +6,7 @@
              */
             var paramJson = { parameters: {} };
             var defaultApps;
-            var myJson = JSON.parse('<%= jsonApp %>') ;
+            var myJson = JSON.parse('<%= jsonApp.replaceAll("'", "\\\\'") %>') ;
             var parameterFile = '<%= parameterFile %>';
             var defaultJson = myJson;
             var application;
