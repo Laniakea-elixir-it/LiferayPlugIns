@@ -1,4 +1,14 @@
 <%@ include file="/init.jsp" %>
+        <portlet:resourceURL var="oneDataURL" id="/oneData/resources"/>
+    <script>
+         define._amd = define.amd;
+         define.amd = false;
+    </script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jstree.min.js">
+    </script>
+    <script>
+       define.amd = define._amd;
+    </script>
 
         <script type="text/javascript">
             /*
@@ -25,18 +35,6 @@
                ,app_id         : '<%= appId %>'
                ,apiserver_endpoint: '${FGEndPoint}'
             };
-            function changeApp(app_name, app_id) {
-                $('#requestButton').prop('disabled', false);
-                $('#jsonButton').prop('disabled', false);
-                $('#mainTitle').html(app_name+" application");
-                for(var i=0; i<defaultApps.applications.length; i++) {
-                    if(defaultApps.applications[i].id == app_id) {
-                        application = defaultApps.applications[i];
-                        webapp_settings.app_id = defaultApps.applications[i].id;
-                    }
-                }
-                callServer("json", getPath(application));
-            }
             /*
              * Change variable below to change delay of check status loop
              */
@@ -136,6 +134,17 @@
                                 }
                             out += '</select></div>';
                             break;
+                        case "onedata_input":
+                          out += '<div class="form-group">';
+                          out += '<input type="text" id="param_'+jsonArr[i].name
+                              +'" onchange="<portlet:namespace />updateOneDataTree(\'param_'+jsonArr[i].name+'\', \'param_tree_'+jsonArr[i].name+'\')" class="form-control" value="'
+                              + jsonArr[i].value + '"/></br>';
+                          out += '<div id="param_tree_'+jsonArr[i].name+'"></div>';
+                          out += '</div>';
+                          break;
+                        case "onedata_output":
+                          alert("Generate onedata code for output")
+                          break;
                     }
                     out += '</p>';
                     if((jsonArr[i].tab != null) && makeTabs) {
@@ -196,72 +205,24 @@
                     }
                 }
             }
-            function callServer(call, opt) {
-                switch(call) {
-                    case "submit":
-                        var myData = {
-                            <portlet:namespace />json: JSON.stringify(paramJson),
-                        };
-                        AUI().use('aui-io-request', function(A){
-                            A.io.request('<%=resourceURL.toString()%>', {
-                                dataType: 'json',
-                                method: 'post',
-                                data: myData
-                            });
-                        });
-                        break;
-                    case "json":
-                        var myData = {<portlet:namespace />jarray: opt};
-                        AUI().use('aui-io-request', function(A){
-                                A.io.request('<%=resourceURL.toString()%>', {
-                                dataType: 'json',
-                                method: 'post',
-                                data: myData,
-                                on: {
-                                    success: function() {
-                                        var content = this.get('responseData');
-                                        //console.log(content);
-                                        myJson = { parameters: {} };
-                                        if((content != null) && (content.content != null)) { 
-                                            myJson = content.content;
-                                        }
 
-                                        defaultJson = myJson;
-                                        var appJson = JSON.stringify(defaultJson, null, 2);
-                                        $('#jsonArea1').val(appJson);
-                                        $('#jsonArea2').val(appJson);
-                                        printJsonArray();
-                                        prepareJobTable();
-                                    }
-                                }
-                            });
-                        });
-                        break;
-                }
+            function <portlet:namespace />updateOneDataTree(oneZone, tree) {
+              $('#'+tree).jstree({
+                  'core': {
+                     'data' : {
+                       'url' : '${oneDataURL}',
+                       'dataType' : 'json',
+                       'data' : function (node) {
+                         return {
+                           '<portlet:namespace />path' : node.id,
+                           '<portlet:namespace />oneZone' : $('#'+oneZone).val(),
+                           };
+                       }
+                     }
+                   }
+              });
+              $('#'+tree).jstree().refresh(false, true);
             }
-
-            function changeJson() {
-                var ans = $('input[name="optradio"]:checked').val();
-                switch(ans) {
-                    case "old":
-                        myJson = defaultJson;                        
-                        printJsonArray();
-                        break;
-                    case "new":
-                        var newJson = $('#jsonArea2').val();
-                        myJson = JSON.parse(newJson);;
-                        printJsonArray();
-                        break;
-                    default:
-                        break;
-                }
-            }
-            function filljsonArea1() {
-                var ans = defaultJson;
-                var json1 = JSON.stringify(ans, null, 2);
-                $('#jsonArea1').val(json1); 
-            }
-    
         </script>
         <div class="panel panel-default">
         <div class="panel-body">
@@ -330,8 +291,7 @@
             </div>
         </div>
     </div>
-
-      <script>
+    <script>
             Liferay.Service(
                 '/iam.token/get-token',
                 function(obj) {
@@ -346,4 +306,6 @@
         
           var json2 = JSON.stringify(defaultJson, null, 2);
           $('#jsonArea2').val(json2);
-      </script>
+
+
+    </script>
