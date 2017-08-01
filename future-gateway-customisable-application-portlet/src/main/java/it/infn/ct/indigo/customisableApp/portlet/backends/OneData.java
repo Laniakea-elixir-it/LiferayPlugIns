@@ -103,6 +103,7 @@ public class OneData {
             }
         };
 
+
         // Install the all-trusting trust manager
         SSLContext sc;
         try {

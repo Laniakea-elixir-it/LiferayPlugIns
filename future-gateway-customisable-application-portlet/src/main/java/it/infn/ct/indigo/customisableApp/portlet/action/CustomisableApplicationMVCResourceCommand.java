@@ -49,7 +49,6 @@ public class CustomisableApplicationMVCResourceCommand
             return true;
         }
         String path = ParamUtil.getString(resourceRequest, "path", "#");
-
         ThemeDisplay theme = (ThemeDisplay) resourceRequest.getAttribute(
                 WebKeys.THEME_DISPLAY);
         OneData od;
