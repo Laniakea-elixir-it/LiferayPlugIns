@@ -35,43 +35,51 @@ import it.infn.ct.indigo.customisableApp.portlet.backends.utils.OneDataElement;
                 },
         service = MVCResourceCommand.class
 )
-public class CustomisableApplicationMVCResourceCommand implements MVCResourceCommand {
+public class CustomisableApplicationMVCResourceCommand
+        implements MVCResourceCommand {
 
     @Override
-    public boolean serveResource(ResourceRequest resourceRequest, ResourceResponse resourceResponse)
-            throws PortletException {
+    public final boolean serveResource(
+            final ResourceRequest resourceRequest,
+            final ResourceResponse resourceResponse)
+                    throws PortletException {
         String oneZone = ParamUtil.getString(resourceRequest, "oneZone", "");
         log.debug("Looking at onezone: " + oneZone);
-        if(oneZone.isEmpty()) {
+        if (oneZone.isEmpty()) {
             return true;
         }
         String path = ParamUtil.getString(resourceRequest, "path", "#");
 
-        ThemeDisplay theme = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
+        ThemeDisplay theme = (ThemeDisplay) resourceRequest.getAttribute(
+                WebKeys.THEME_DISPLAY);
         OneData od;
         try {
-            od = new OneData(oneZone, path, iam.getUserToken(theme.getUserId()));
+            od = new OneData(oneZone, path, iam.getUserToken(
+                    theme.getUserId()));
         } catch (Exception e1) {
-            log.error("Impossible to get a token for the user: " + theme.getUserId());
+            log.error("Impossible to get a token for the user: "
+                    + theme.getUserId());
             return true;
         }
-        List<OneDataElement> folder = od.getElementsInFolder();
+        log.debug("Looking for elements in " + path);
+        List<OneDataElement> folders = od.getElementsInFolder();
+        log.debug("Found " + folders.size() + " elements in path");
         JSONArray jFiles = JSONFactoryUtil.createJSONArray();
-        for(OneDataElement ode: folder) {
+        for (OneDataElement ode: folders) {
             JSONObject elem = JSONFactoryUtil.createJSONObject();
             elem.put("id", path + ode.getId());
             elem.put("text", ode.getName());
-            if(ode.isFolder()) {
+            if (ode.isFolder()) {
                 elem.put("children", true);
             }
             jFiles.put(elem);
         }
-        
         try {
             resourceResponse.setContentType("application/json");
             resourceResponse.getWriter().append(jFiles.toJSONString());
         } catch (IOException e) {
-            log.error("Impossible to send the json with OneData files back to the user.");
+            log.error("Impossible to send the json with OneData files "
+                    + "back to the user.");
         }
         return false;
     }
@@ -95,5 +103,6 @@ public class CustomisableApplicationMVCResourceCommand implements MVCResourceCom
     /**
      * The logger.
      */
-    private Log log = LogFactoryUtil.getLog(CustomisableApplicationMVCResourceCommand.class);
+    private Log log = LogFactoryUtil.getLog(
+            CustomisableApplicationMVCResourceCommand.class);
 }
