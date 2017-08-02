@@ -196,10 +196,10 @@ public class OneData {
             for (int i = 0; i < rawFiles.length(); i++) {
                 JSONObject rawFile = rawFiles.getJSONObject(i);
                 OneDataElement file = new OneDataElement();
-                file.setId(rawFile.getString("id"));
                 String fileName = rawFile.getString("path");
                 file.setName(fileName.substring(fileName.lastIndexOf("/") + 1));
-                file.setFolder(isFolder(providerUrl + "/" + fileName));
+                file.setFolder(isFolder(providerUrl + "files" + fileName));
+                file.setId(basePath + "/" + file.getName());
 
                 if (file != null) {
                     files.add(file);
