@@ -347,7 +347,7 @@ public class OneData {
             connection.setDoOutput(true);
             connection.setRequestMethod(HttpMethods.GET);
             connection.setRequestProperty("X-Auth-Token", "indigo:" + token);
-            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 connection.disconnect();
                 log.debug("Error contacting OneData: "
