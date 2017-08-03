@@ -71,6 +71,9 @@ public class CustomisableApplicationMVCResourceCommand
             if (ode.isFolder()) {
                 elem.put("children", true);
             }
+            else {
+                elem.put("icon", "glyphicon glyphicon-leaf");
+            }
             jFiles.put(elem);
         }
         try {

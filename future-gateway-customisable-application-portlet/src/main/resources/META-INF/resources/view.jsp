@@ -136,9 +136,14 @@
                             break;
                         case "onedata_input":
                           out += '<div class="form-group">';
-                          out += '<input type="text" id="param_'+jsonArr[i].name
-                              +'" onchange="<portlet:namespace />updateOneDataTree(\'param_'+jsonArr[i].name+'\', \'param_tree_'+jsonArr[i].name+'\')" class="form-control" value="'
-                              + jsonArr[i].value + '"/></br>';
+                          out += '<select id="param_'+jsonArr[i].name
+                              +'" onchange="<portlet:namespace />updateOneDataTree(\'param_'+jsonArr[i].name+'\', \'param_tree_'+jsonArr[i].name+'\')" class="form-control">';
+                          out += '<option value="">Select the OneZone</option>';
+                          var onezone;
+                          for(onezone in jsonArr[i].value) {
+                            out += '<option value="' + jsonArr[i].value[onezone] + '">' + jsonArr[i].value[onezone] + '</option>';
+                          } 
+                          out += '</select></br>';
                           out += '<div id="param_tree_'+jsonArr[i].name+'"></div>';
                           out += '</div>';
                           break;
