@@ -23,6 +23,11 @@ public class OneDataElement {
     private List<String> providers = new ArrayList<>();
 
     /**
+     * Provider for the resource.
+     */
+    private String provider;
+
+    /**
      * A flag indicating if the resource has to be shown as a folder.
      */
     private boolean folder;
@@ -108,5 +113,25 @@ public class OneDataElement {
      */
     public final void setProviders(final List<String> someProviders) {
         this.providers = someProviders;
+    }
+
+    /**
+     * Retrieve the provider used for the resource.
+     * If null the provided or default provider is used. As an example for
+     * resource managed by a OneZone the value is null
+     *
+     * @return Provider used for the resource
+     */
+    public final String getProvider() {
+        return provider;
+    }
+
+    /**
+     * Sets the provider for the identifid resource.
+     *
+     * @param aProvider A provider
+     */
+    public final void setProvider(final String aProvider) {
+        this.provider = aProvider;
     }
 }

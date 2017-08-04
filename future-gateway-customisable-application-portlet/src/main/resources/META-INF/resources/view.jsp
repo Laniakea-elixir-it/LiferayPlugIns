@@ -1,5 +1,6 @@
 <%@ include file="/init.jsp" %>
         <portlet:resourceURL var="oneDataURL" id="/oneData/resources"/>
+        <portlet:resourceURL var="oneDataTokenURL" id="/oneData/token"/>
     <script>
          define._amd = define.amd;
          define.amd = false;
@@ -14,7 +15,6 @@
             /*
              * All the web app needs to configure are the following
              */
-            var paramJson = { parameters: {} };
             var defaultApps;
             var myJson = JSON.parse('<%= jsonApp.replaceAll("'", "\\\\'") %>') ;
             var parameterFile = '<%= parameterFile %>';
@@ -192,23 +192,53 @@
                 myDiv.innerHTML = myDiv.innerHTML + out;
             }
             function getParams() {
-                jsonApp = {};
+                var paramJson = { parameters: {} };
                 if(myJson != null) {
-                    jsonArr = myJson.parameters;
+                    var jsonArr = myJson.parameters;
                 }
+                var token_to_update  = [];
 
-                paramJson = { parameters: {} };
                 for(var i=0; i<jsonArr.length; i++) {
                     switch(jsonArr[i].type) {
                         case "radio":
                             var out = $('input[name='+jsonArr[i].name+']:checked').val();
                             paramJson.parameters[jsonArr[i].name] = out;
                             break;
+                        case "onedata_input":
+                            var onezonedata = $('#param_tree_'+jsonArr[i].name).jstree().get_selected();
+                            if (onezonedata.length < 1) {
+                              break;
+                            }
+                            if (jsonArr[i].component_map) {
+                              var onezoneid = onezonedata[0];
+                              paramJson.parameters[jsonArr[i].component_map.space] = $('#param_tree_'+jsonArr[i].name).jstree().get_text(onezoneid.substring(0, onezoneid.indexOf('/')));
+                              paramJson.parameters[jsonArr[i].component_map.path] = onezoneid.substring(onezoneid.indexOf('/') + 1, onezoneid.lastIndexOf('/'));
+                              paramJson.parameters[jsonArr[i].component_map.file] = onezoneid.substring(onezoneid.lastIndexOf('/') + 1);
+                              paramJson.parameters[jsonArr[i].component_map.provider] = $('li[id="' + onezoneid + '"]').attr('provider');
+                              token_to_update.push({param: paramJson.parameters[jsonArr[i].component_map.token], element: jsonArr[i].name});
+                            } else {
+                              paramJson.parameters[jsonArr[i].name] = onezonedata[0];
+                            }
+                            break;
                         default:
                             var out = $('#param_'+jsonArr[i].name).val();
                             paramJson.parameters[jsonArr[i].name] = out;
                     }
                 }
+                var deferred = [];
+                for (var key in token_to_update) {
+                  deferred.push($.ajax({
+                    url: '${oneDataTokenURL}',
+                    dataType: 'json',
+                    data: {
+                      <portlet:namespace />oneZone: $('#param_'+token_to_update[key].element).val()
+                    },
+                    success: function(data) {
+                      paramJson.parameters[token_to_update[key].param] = data.token
+                    }
+                  }));                  
+                }
+                return {params: paramJson, defers: deferred};
             }
 
             function <portlet:namespace />updateOneDataTree(oneZone, tree) {

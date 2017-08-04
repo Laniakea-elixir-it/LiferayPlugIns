@@ -56,6 +56,17 @@ public class OneData {
      * and the other parameters.
      * @param oneZoneUrl The url of OneZone.
      * It can be only the hostname or the full url to the APIs
+     * @param tokenIAM The user token released by IAM.
+     */
+    public OneData(final String oneZoneUrl, final String tokenIAM) {
+        this(oneZoneUrl, null, tokenIAM);
+    }
+
+    /**
+     * Initialise the OneData object with the final url of OneZone
+     * and the other parameters.
+     * @param oneZoneUrl The url of OneZone.
+     * It can be only the hostname or the full url to the APIs
      * @param basePathDiscovery The path where the discovery should start.
      * The format is <i>#_space_id_/_folder_1_/_folder_2_/.../_folder_n_</i>
      * @param tokenIAM The user token released by IAM.
@@ -137,6 +148,34 @@ public class OneData {
     }
 
     /**
+     * Retrieves a new OneData token.
+     * A new token is generated at every request and the user
+     * is responsible to clean the old token if they do not expire
+     * 
+     * @return The OneData token
+     */
+    public final String getToken() {
+        String fullUrl = oneZone + "user/client_tokens";
+        String json = oneDataPost(fullUrl);
+        try {
+            rawSpaces = JSONFactoryUtil.createJSONObject(json);
+            JSONArray spcList = rawSpaces.getJSONArray("spaces");
+            log.debug("Found " + spcList.length() + " spaces");
+            for (int i = 0; i < spcList.length(); i++) {
+                OneDataElement space = getSpace(
+                        fullUrl + "/" + spcList.getString(i));
+                if (space != null) {
+                    spaces.add(space);
+                    log.debug("Included the space " + space.getName());
+                }
+            }
+        } catch (JSONException e) {
+            log.error("The json returned by OneZone has errors: " + json);
+        }
+        return null;
+    }
+
+    /**
      * Retrieves the element registered in the base path.
      *
      * @return A list of {@link OneDataElement}. Each item represents
@@ -200,6 +239,7 @@ public class OneData {
                 file.setName(fileName.substring(fileName.lastIndexOf("/") + 1));
                 file.setFolder(isFolder(providerUrl + "files" + fileName));
                 file.setId(basePath + "/" + file.getName());
+                file.setProvider(providerUrl);
 
                 if (file != null) {
                     files.add(file);
@@ -276,7 +316,7 @@ public class OneData {
         String json = oneDataGet(spaceUrl);
         try {
             rawSpace = JSONFactoryUtil.createJSONObject(json);
-            space.setId(rawSpace.getString("spaceId"));
+            space.setId(basePath + rawSpace.getString("spaceId"));
             log.debug("Found the space " + space.getId());
             space.setName(rawSpace.getString("name"));
             space.setFolder(true);

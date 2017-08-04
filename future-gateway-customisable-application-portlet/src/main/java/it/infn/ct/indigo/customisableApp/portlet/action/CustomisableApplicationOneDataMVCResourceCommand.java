@@ -35,7 +35,7 @@ import it.infn.ct.indigo.customisableApp.portlet.backends.utils.OneDataElement;
                 },
         service = MVCResourceCommand.class
 )
-public class CustomisableApplicationMVCResourceCommand
+public class CustomisableApplicationOneDataMVCResourceCommand
         implements MVCResourceCommand {
 
     @Override
@@ -66,8 +66,17 @@ public class CustomisableApplicationMVCResourceCommand
         JSONArray jFiles = JSONFactoryUtil.createJSONArray();
         for (OneDataElement ode: folders) {
             JSONObject elem = JSONFactoryUtil.createJSONObject();
-            elem.put("id", path + ode.getId());
+            elem.put("id", ode.getId());
             elem.put("text", ode.getName());
+            JSONObject li_attr = JSONFactoryUtil.createJSONObject();
+            if (ode.getProvider() != null) {
+                li_attr.put("provider", ode.getProvider());
+            } else {
+                if (!ode.getProviders().isEmpty()) {
+                    li_attr.put("provider", ode.getProviders().get(0));
+                }
+            }
+            elem.put("li_attr", li_attr);
             if (ode.isFolder()) {
                 elem.put("children", true);
             }
@@ -106,5 +115,5 @@ public class CustomisableApplicationMVCResourceCommand
      * The logger.
      */
     private Log log = LogFactoryUtil.getLog(
-            CustomisableApplicationMVCResourceCommand.class);
+            CustomisableApplicationOneDataMVCResourceCommand.class);
 }

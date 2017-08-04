@@ -305,8 +305,7 @@
             /*
              * Function responsible of job submission
              */
-            function submit(job_desc) {
-                getParams();
+            function submit(job_desc, paramJson) {
                 $('#submitButton').hide();
                 job_failed ='<div class="alert alert-danger">'
                            +'<strong>ERROR!</strong> Failed to submit job.'
@@ -425,11 +424,14 @@
              * Just prepare the job_desc and call the submit() function             
              */
             function submitJob() {
-                job_usrdesc = $('#jobDescription').val();
-                job_desc = { application : webapp_settings.app_id
+                var job_usrdesc = $('#jobDescription').val();
+                var job_desc = { application : webapp_settings.app_id
                             ,description : job_usrdesc
                             ,output_files: []
                             ,input_files : [ { name: parameterFile } ]
                            };
-                submit(job_desc);
+                parameters = getParams();
+                $.when.apply(parameters.defers).done(function(){
+                  submit(job_desc, parameters.params);                  
+                });
             }
