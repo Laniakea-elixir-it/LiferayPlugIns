@@ -1,0 +1,9 @@
+Bundle-Description: Displays status of a Kepler workflow.
+Bundle-Name: pl.psnc.indigo.kepler.status.portlet
+Bundle-SymbolicName: pl.psnc.indigo.kepler.status.portlet
+Bundle-Version: 1.0.0
+Export-Package: pl.psnc.indigo.kepler.status.portlet
+-jsp: *.jsp,*.jspf
+-plugin.bundle: com.liferay.ant.bnd.resource.bundle.ResourceBundleLoaderAnalyzerPlugin
+-plugin.jsp: com.liferay.ant.bnd.jsp.JspAnalyzerPlugin
+-sources: true
