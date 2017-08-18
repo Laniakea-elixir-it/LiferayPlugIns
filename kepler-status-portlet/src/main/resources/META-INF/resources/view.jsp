@@ -1,21 +1,19 @@
-<%@ include file="/init.jsp" %>
+<%@ include file="init.jsp" %>
 
-<%= renderRequest.getAttribute("GREETER_MESSAGE") %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<liferay-ui:message key="blade_portlet_actioncommand_GreeterPortlet.caption"/>
+<c:choose>
 
-<liferay-portlet:actionURL name="greet" var="greetURL"/>
+    <c:when test="${renderRequest.getAttribute('isIamUser')}">
 
-<aui:form action="<%= greetURL %>" method="post" name="fm">
+        Hello <c:out value="${renderRequest.getAttribute('iamSubject')}"/>
 
-    <aui:input name="name" type="text"/>
+    </c:when>
 
-    <aui:button-row>
+    <c:otherwise>
 
-        <aui:button type="submit">
+        You must be logged in using IAM.
 
-        </aui:button>
+    </c:otherwise>
 
-    </aui:button-row>
-
-</aui:form>
+</c:choose>

@@ -15,6 +15,20 @@
 
     <dependencies>
         <dependency>
+            <groupId>pl.psnc.indigo</groupId>
+            <artifactId>indigo-fg-api</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <!-- provided -->
+        <dependency>
+            <groupId>jstl</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.liferay.portal</groupId>
             <artifactId>com.liferay.portal.kernel</artifactId>
             <version>2.0.0</version>
@@ -48,6 +62,13 @@
             <version>5.0.0</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>it.infn.ct</groupId>
+            <artifactId>service-iam-token-api</artifactId>
+            <version>2.0.3</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -78,6 +99,25 @@
                         <version>2.0.39</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
