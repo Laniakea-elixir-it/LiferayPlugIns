@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'maven'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
@@ -13,6 +14,12 @@ checkstyleTest {
 	configProperties = checkStyleProps
 }
 
+group = 'it.infn.ct'
+version = '2.0.3'
+
+repositories {
+    mavenCentral()
+}
 
 dependencies {
 	compile group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
