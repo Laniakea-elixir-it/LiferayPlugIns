@@ -3,6 +3,7 @@ package it.infn.ct.indigo.customisableApp.portlet.backends;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -151,24 +152,15 @@ public class OneData {
      * Retrieves a new OneData token.
      * A new token is generated at every request and the user
      * is responsible to clean the old token if they do not expire
-     * 
+     *
      * @return The OneData token
      */
     public final String getToken() {
         String fullUrl = oneZone + "user/client_tokens";
-        String json = oneDataPost(fullUrl);
+        String json = oneDataPost(fullUrl, "{}");
         try {
-            rawSpaces = JSONFactoryUtil.createJSONObject(json);
-            JSONArray spcList = rawSpaces.getJSONArray("spaces");
-            log.debug("Found " + spcList.length() + " spaces");
-            for (int i = 0; i < spcList.length(); i++) {
-                OneDataElement space = getSpace(
-                        fullUrl + "/" + spcList.getString(i));
-                if (space != null) {
-                    spaces.add(space);
-                    log.debug("Included the space " + space.getName());
-                }
-            }
+            JSONObject odToken = JSONFactoryUtil.createJSONObject(json);
+            return odToken.getString("token");
         } catch (JSONException e) {
             log.error("The json returned by OneZone has errors: " + json);
         }
@@ -371,23 +363,62 @@ public class OneData {
     }
 
     /**
-     * Connects to OneData service a return the output.
+     * Performs a POST to OneData service a return the output.
+     *
+     * @param urlFull Url to connect
+     * @param jsonBody A json format string to include in the body
+     *
+     * @return The output of the POST operation.
+     */
+    private String oneDataPost(final String urlFull, final String jsonBody) {
+        log.debug("Create the resource " + urlFull
+                + " with the following parameters " + jsonBody);
+        return oneDataCall(urlFull, HttpMethods.POST, jsonBody);
+
+    }
+
+    /**
+     * Performs a GET to OneData service a return the output.
      *
      * @param urlFull Url to connect.
      *
      * @return The output of the GET operation.
      */
     private String oneDataGet(final String urlFull) {
-        StringBuilder resource = new StringBuilder();
         log.debug("Get the collection from " + urlFull);
+        return oneDataCall(urlFull, HttpMethods.GET, null);
+
+    }
+
+    /**
+     * Performs a OneData call and return the output.
+     *
+     * @param urlFull Url to connect
+     * @param method The http call method
+     * @param jsonBody A json format string to include in the body
+     *
+     * @return The output of the POST operation.
+     */
+    private String oneDataCall(final String urlFull, final String method,
+            final String jsonBody) {
+        StringBuilder resource = new StringBuilder();
         try {
             URL url = new URL(urlFull);
             HttpURLConnection connection =
                     (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
-            connection.setRequestMethod(HttpMethods.GET);
+            connection.setRequestMethod(method);
             connection.setRequestProperty("X-Auth-Token", "indigo:" + token);
             connection.setRequestProperty("Accept", "application/json");
+            if (jsonBody != null && !jsonBody.isEmpty()) {
+                connection.setRequestProperty("Content-Type",
+                        "application/json");
+                OutputStreamWriter postWriter =
+                        new OutputStreamWriter(connection.getOutputStream());
+                postWriter.write(jsonBody);
+                postWriter.flush();
+            }
+
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 connection.disconnect();
                 log.debug("Error contacting OneData: "

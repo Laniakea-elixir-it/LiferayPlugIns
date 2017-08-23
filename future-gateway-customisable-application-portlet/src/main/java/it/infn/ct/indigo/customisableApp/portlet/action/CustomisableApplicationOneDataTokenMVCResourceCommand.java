@@ -1,7 +1,6 @@
 package it.infn.ct.indigo.customisableApp.portlet.action;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
@@ -10,7 +9,6 @@ import javax.portlet.ResourceResponse;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -22,7 +20,6 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.security.sso.iam.IAM;
 
 import it.infn.ct.indigo.customisableApp.portlet.backends.OneData;
-import it.infn.ct.indigo.customisableApp.portlet.backends.utils.OneDataElement;
 
 /**
  * Main portlet class for the customisable application.

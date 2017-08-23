@@ -68,19 +68,18 @@ public class CustomisableApplicationOneDataMVCResourceCommand
             JSONObject elem = JSONFactoryUtil.createJSONObject();
             elem.put("id", ode.getId());
             elem.put("text", ode.getName());
-            JSONObject li_attr = JSONFactoryUtil.createJSONObject();
+            JSONObject liAttr = JSONFactoryUtil.createJSONObject();
             if (ode.getProvider() != null) {
-                li_attr.put("provider", ode.getProvider());
+                liAttr.put("provider", ode.getProvider());
             } else {
                 if (!ode.getProviders().isEmpty()) {
-                    li_attr.put("provider", ode.getProviders().get(0));
+                    liAttr.put("provider", ode.getProviders().get(0));
                 }
             }
-            elem.put("li_attr", li_attr);
+            elem.put("li_attr", liAttr);
             if (ode.isFolder()) {
                 elem.put("children", true);
-            }
-            else {
+            } else {
                 elem.put("icon", "glyphicon glyphicon-leaf");
             }
             jFiles.put(elem);
