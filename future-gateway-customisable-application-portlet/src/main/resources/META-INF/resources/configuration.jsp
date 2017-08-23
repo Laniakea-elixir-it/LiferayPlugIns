@@ -28,6 +28,49 @@
                 app_id: 0,
                 apiserver_endpoint: '${FGEndPoint}'
             };
+            function getApplicationFile(local_app_id) {
+                var res = null;
+                $.ajax({                     
+                    type: "GET",
+                    async: false,
+                    headers: {
+                        'Authorization':'Bearer ' + token
+                    },
+                    url: webapp_settings.apiserver_url
+                        +webapp_settings.apiserver_path +'/'
+                        +webapp_settings.apiserver_ver +'/'
+                        +'applications' +'/'
+                        +local_app_id,
+                    dataType: "json",                    
+                    success: function(data) {
+                        if(data && data.files) {
+                            for(var i=0; i<data.files.length; i++) {
+                                if((data.files[i].name == "template.yml") || (data.files[i].name == "template.yaml")) {
+                                    res = data.files[i].url;
+                                    return res;
+                                }
+                            }
+                        }
+                    }, 
+                });
+                return res;
+            }
+            function callServeResource(yaml_file_content) {
+                var myData = {
+                    <portlet:namespace />yaml_content: yaml_file_content
+                };
+                AUI().use('aui-io-request', function(A){
+                    A.io.request('<%=resourceURL.toString()%>', {
+                        method: 'post',
+                        data: myData,
+                        on: {
+                            success: function() {
+                                var content = this.get('responseData');
+                            },
+                        }    
+                    });
+                });
+            }
             function changeApp(app_name, app_id) {
                 $('#<portlet:namespace />requestButton').removeClass('disabled');
                 $('#<portlet:namespace />requestButton').prop('disabled', false);
@@ -38,6 +81,9 @@
                         application = defaultApps.applications[i];
                         webapp_settings.app_id = defaultApps.applications[i].id;
                         $('#<portlet:namespace />applicationId').val(app_id);
+
+                        var yamlFile = getFile(getApplicationFile(app_id));
+                        $('#<portlet:namespace />fileConverter').val(yamlFile);
                     }
                 }
             }
@@ -67,8 +113,10 @@
                 $('#<portlet:namespace />requestButton').prop('disabled', false);
                 switch(ans) {
                     case "old":
-                        myJson = defaultJson;
-                        $('#<portlet:namespace />jsonApp').val("");
+                        //myJson = defaultJson;
+                        filljsonArea1();
+                        myJson = $('#jsonArea1').val();
+                        $('#<portlet:namespace />jsonApp').val(myJson);
                         break;
                     case "new":
                         var newJson = $('#jsonArea2').val();
@@ -87,7 +135,7 @@
             function filljsonArea1() {
                 var ans = defaultJson;
                 var json1 = JSON.stringify(ans, null, 2);
-                $('#jsonArea1').val(json1); 
+                $('#jsonArea1').val(json1);
             }
     
         </script>
@@ -113,6 +161,7 @@
 	        </center>
 	        <aui:input name="applicationId" id="applicationId" type="hidden" value="" />
 	        <aui:input name="jsonApp" id="jsonApp" type="hidden" value="" />
+	        <aui:input name="fileConverter" id="fileConverter" type="hidden" value="" />
 	        <aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
             <aui:input name="redirect" type="hidden" value="<%= configurationRenderURL %>" />
 	        

@@ -15,6 +15,14 @@
             /*
              * All the web app needs to configure are the following
              */
+            var webapp_settings = {
+                apiserver_url: ''
+               ,apiserver_path : '/apis'
+               ,apiserver_ver  : 'v1.0'
+               ,app_id         : '<%= appId %>'
+               ,apiserver_endpoint: '${FGEndPoint}'
+            };
+            var paramJson = { parameters: {} };
             var defaultApps;
             var myJson = JSON.parse('<%= jsonApp.replaceAll("'", "\\\\'") %>') ;
             var parameterFile = '<%= parameterFile %>';
@@ -28,13 +36,34 @@
             var infoMap = new Object();
             var jsonArr; 
 
-            var webapp_settings = {
-                apiserver_url: ''
-               ,apiserver_path : '/apis'
-               ,apiserver_ver  : 'v1.0'
-               ,app_id         : '<%= appId %>'
-               ,apiserver_endpoint: '${FGEndPoint}'
-            };
+            function getApplicationFile() {
+                var res = null;
+                $.ajax({                     
+                    type: "GET",
+                    async: false,
+                    headers: {
+                        'Authorization':'Bearer ' + token
+                    },
+                    url: webapp_settings.apiserver_url
+                        +webapp_settings.apiserver_path +'/'
+                        +webapp_settings.apiserver_ver +'/'
+                        +'applications' +'/'
+                        +'<%= appId %>',
+                    dataType: "json",                    
+                    success: function(data) {
+                        if(data && data.files) {
+                            for(var i=0; i<data.files.length; i++) {
+                                if((data.files[i].name == "tosca_template.yml") || (data.files[i].name == "tosca_template.yaml")) {
+                                    res = data.files[i].url;
+                                    return res;
+                                }
+                            }
+                        }
+                    }, 
+                });
+                return res;
+            }
+               */
             /*
              * Change variable below to change delay of check status loop
              */
@@ -110,10 +139,6 @@
                             out += '<input type="password" maxlength="50" id="param_'+jsonArr[i].name
                                 +'" class="form-control" value="' + jsonArr[i].value + '"/></br>';
                             break;
-                        case "text":
-                            out += '<input type="text" id="param_'+jsonArr[i].name
-                                +'" class="form-control" value="' + jsonArr[i].value + '"/></br>';
-                            break;
                         case "radio":    
                             out += '<div id="param_'+jsonArr[i].name+'" class="radio">';
                             for(k = 0; k < jsonArr[i].value.length; k++) {
@@ -147,6 +172,11 @@
                           out += '<div id="param_tree_'+jsonArr[i].name+'"></div>';
                           out += '</div>';
                           break;
+                        case "text":
+                        default:
+                            out += '<input type="text" id="param_'+jsonArr[i].name
+                                +'" class="form-control" value="' + jsonArr[i].value + '"/></br>';
+                            break;
                     }
                     out += '</p>';
                     if((jsonArr[i].tab != null) && makeTabs) {
@@ -248,8 +278,7 @@
                 }
                 return {params: paramJson, defers: deferred};
             }
-
-            function <portlet:namespace />updateOneDataTree(oneZone, tree) {
+           function <portlet:namespace />updateOneDataTree(oneZone, tree) {
               $('#'+tree).jstree({
                   'core': {
                      'multiple': false,
@@ -281,7 +310,7 @@
         <c:otherwise>
             <div id="<portlet:namespace/>appSubmitForm"></div>
             <center>                
-                <button type="button" class="btn btn-primary" onClick="submitJob()" id="submitButton">Submit</button>
+                <button type="button" class="btn btn-primary" onClick="submitJob()" id="submitBigButton">Submit</button>
             </center>
         </c:otherwise>
         </c:choose>
@@ -343,7 +372,9 @@
                     if(obj.token != undefined) {
                         token = obj.token;
                     }
-                    printJsonArray();
+                    if(document.getElementById("<portlet:namespace/>appSubmitForm")) {
+                        printJsonArray();
+                    }
                     prepareJobTable();
                 }
             );

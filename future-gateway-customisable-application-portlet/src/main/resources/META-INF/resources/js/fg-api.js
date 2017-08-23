@@ -17,7 +17,27 @@ function predicatBy(prop) {
     return 0;
   }
 }
-
+function getFile(file_url) {
+  var res = null;
+  if(file_url == null) {
+    return res;
+  }
+  $.ajax({                     
+    type: "GET",
+    async: false,
+    headers: {
+      'Authorization':'Bearer ' + token
+    },
+    url: webapp_settings.apiserver_url
+      +webapp_settings.apiserver_path +'/'
+      +webapp_settings.apiserver_ver +'/'
+      +file_url,
+    success: function(data) {
+      res=data;
+    }, 
+  });
+  return res;
+}
 function getApplicationsJson() {
   var res = null;
   $
@@ -66,7 +86,6 @@ function clusterInfo(id) {
   $('#information').find('.modal-body').html(data);
   $('#information').modal();
 }
-
 function addJobRecord(i, jrec) {
   job_id = jrec.id;
   job_status = jrec.status;
@@ -330,7 +349,6 @@ function submit(job_desc, paramJson) {
     }
   });
 }
-
 /*
  * Function that checks for job status change
  */
