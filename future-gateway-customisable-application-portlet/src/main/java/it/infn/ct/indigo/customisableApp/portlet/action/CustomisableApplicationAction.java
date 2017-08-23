@@ -1,8 +1,13 @@
 package it.infn.ct.indigo.customisableApp.portlet.action;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletException;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,6 +22,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import it.infn.ct.indigo.futuregateway.server.FGServerManager;
+import it.infn.ct.indigo.customisableApp.portlet.converter.Converter;
 
 /**
  * Configuration manager for the portlet instance.
@@ -55,14 +61,17 @@ public class CustomisableApplicationAction extends DefaultConfigurationAction {
 
         setPreference(actionRequest, "applicationId",
                 ParamUtil.getString(actionRequest, "applicationId"));
+        Converter converter = new Converter();
         String jsonApp = ParamUtil.getString(actionRequest, "jsonApp");
         if (jsonApp != null && !jsonApp.isEmpty()) {
             setPreference(actionRequest, "jsonApp", jsonApp);
         }
+        //code below returns json array of parameters generated from yaml file
+        //converter.readYamlToJsonArray(ParamUtil.getString(actionRequest, "fileConverter"));
         super.processAction(portletConfig, actionRequest, actionResponse);
     }
 
-    /**
+     /**
      * Sets the FG Server manager.
      * This is used to get information of the service and for interactions.
      *
@@ -79,4 +88,4 @@ public class CustomisableApplicationAction extends DefaultConfigurationAction {
      */
     private FGServerManager fgServerManager;
 
-}
+ }

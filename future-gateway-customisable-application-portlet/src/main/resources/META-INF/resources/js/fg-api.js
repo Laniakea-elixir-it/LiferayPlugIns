@@ -17,7 +17,27 @@
                     return 0;
                 }
             }
-
+            function getFile(file_url) {
+                var res = null;
+                if(file_url == null) {
+                    return res;
+                }
+                $.ajax({                     
+                    type: "GET",
+                    async: false,
+                    headers: {
+                        'Authorization':'Bearer ' + token
+                    },
+                    url: webapp_settings.apiserver_url
+                        +webapp_settings.apiserver_path +'/'
+                        +webapp_settings.apiserver_ver +'/'
+                        +file_url,
+                    success: function(data) {
+                            res=data;
+                        }, 
+                });
+                return res;
+            }
             function getApplicationsJson() {
                 var res = null;
                 $.ajax({                     
@@ -307,7 +327,6 @@
              */
             function submit(job_desc) {
                 getParams();
-                $('#submitButton').hide();
                 job_failed ='<div class="alert alert-danger">'
                            +'<strong>ERROR!</strong> Failed to submit job.'
                            +'</div>';
