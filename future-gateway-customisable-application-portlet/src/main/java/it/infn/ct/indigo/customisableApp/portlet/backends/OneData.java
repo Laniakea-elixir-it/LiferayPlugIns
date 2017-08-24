@@ -230,7 +230,15 @@ public class OneData {
                 String fileName = rawFile.getString("path");
                 file.setName(fileName.substring(fileName.lastIndexOf("/") + 1));
                 file.setFolder(isFolder(providerUrl + "files" + fileName));
-                file.setId(basePath + "/" + file.getName());
+                StringBuilder idElem = new StringBuilder(basePath);
+                if (!basePath.endsWith("/")) {
+                    idElem.append("/");
+                }
+                idElem.append(file.getName());
+                if (file.isFolder()) {
+                    idElem.append("/");
+                }
+                file.setId(idElem.toString());
                 file.setProvider(providerUrl);
 
                 if (file != null) {

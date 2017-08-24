@@ -134,7 +134,7 @@
                                 }
                             out += '</select></div>';
                             break;
-                        case "onedata_input":
+                        case "onedata":
                           out += '<div class="form-group">';
                           out += '<select id="param_'+jsonArr[i].name
                               +'" onchange="<portlet:namespace />updateOneDataTree(\'param_'+jsonArr[i].name+'\', \'param_tree_'+jsonArr[i].name+'\')" class="form-control">';
@@ -146,9 +146,6 @@
                           out += '</select></br>';
                           out += '<div id="param_tree_'+jsonArr[i].name+'"></div>';
                           out += '</div>';
-                          break;
-                        case "onedata_output":
-                          alert("Generate onedata code for output")
                           break;
                     }
                     out += '</p>';
@@ -204,7 +201,7 @@
                             var out = $('input[name='+jsonArr[i].name+']:checked').val();
                             paramJson.parameters[jsonArr[i].name] = out;
                             break;
-                        case "onedata_input":
+                        case "onedata":
                             var onezonedata = $('#param_tree_'+jsonArr[i].name).jstree().get_selected();
                             if (onezonedata.length < 1) {
                               break;
@@ -237,14 +234,15 @@
                 }
                 var deferred = [];
                 for (var key in token_to_update) {
+                  let itemKey = key;
                   deferred.push($.ajax({
                     url: '${oneDataTokenURL}',
                     dataType: 'json',
                     data: {
-                      <portlet:namespace />oneZone: $('#param_'+token_to_update[key].element).val()
+                      <portlet:namespace />oneZone: $('#param_'+token_to_update[itemKey].element).val()
                     },
                     success: function(data) {
-                      paramJson.parameters[token_to_update[key].param] = data.token;
+                      paramJson.parameters[token_to_update[itemKey].param] = data.token;
                     }
                   }));                  
                 }
