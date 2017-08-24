@@ -400,8 +400,8 @@ function submitJob() {
       name : parameterFile
     } ]
   };
-  parameters = getParams();
-  $.when.apply(parameters.defers).done(function() {
+  var parameters = getParams();
+  $.when.apply($, parameters.defers).done(function() {
     submit(job_desc, parameters.params);
   });
 }

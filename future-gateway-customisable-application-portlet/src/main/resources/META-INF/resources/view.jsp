@@ -211,11 +211,21 @@
                             }
                             if (jsonArr[i].component_map) {
                               var onezoneid = onezonedata[0];
-                              paramJson.parameters[jsonArr[i].component_map.space] = $('#param_tree_'+jsonArr[i].name).jstree().get_text(onezoneid.substring(0, onezoneid.indexOf('/')));
-                              paramJson.parameters[jsonArr[i].component_map.path] = onezoneid.substring(onezoneid.indexOf('/') + 1, onezoneid.lastIndexOf('/'));
-                              paramJson.parameters[jsonArr[i].component_map.file] = onezoneid.substring(onezoneid.lastIndexOf('/') + 1);
-                              paramJson.parameters[jsonArr[i].component_map.provider] = $('li[id="' + onezoneid + '"]').attr('provider');
-                              token_to_update.push({param: paramJson.parameters[jsonArr[i].component_map.token], element: jsonArr[i].name});
+                              if (jsonArr[i].component_map.space) {
+                                paramJson.parameters[jsonArr[i].component_map.space] = $('#param_tree_'+jsonArr[i].name).jstree().get_text(onezoneid.substring(0, onezoneid.indexOf('/')));
+                              }
+                              if (jsonArr[i].component_map.path) {
+                                paramJson.parameters[jsonArr[i].component_map.path] = onezoneid.substring(onezoneid.indexOf('/') + 1, onezoneid.lastIndexOf('/'));
+                              }
+                              if (jsonArr[i].component_map.file) {
+                                paramJson.parameters[jsonArr[i].component_map.file] = onezoneid.substring(onezoneid.lastIndexOf('/') + 1);
+                              }
+                              if (jsonArr[i].component_map.provider) {
+                                paramJson.parameters[jsonArr[i].component_map.provider] = $('li[id="' + onezoneid + '"]').attr('provider');
+                              }
+                              if (jsonArr[i].component_map.token) {
+                                token_to_update.push({param: jsonArr[i].component_map.token, element: jsonArr[i].name});
+                              }
                             } else {
                               paramJson.parameters[jsonArr[i].name] = onezonedata[0];
                             }
@@ -234,7 +244,7 @@
                       <portlet:namespace />oneZone: $('#param_'+token_to_update[key].element).val()
                     },
                     success: function(data) {
-                      paramJson.parameters[token_to_update[key].param] = data.token
+                      paramJson.parameters[token_to_update[key].param] = data.token;
                     }
                   }));                  
                 }
@@ -244,6 +254,7 @@
             function <portlet:namespace />updateOneDataTree(oneZone, tree) {
               $('#'+tree).jstree({
                   'core': {
+                     'multiple': false,
                      'data' : {
                        'url' : '${oneDataURL}',
                        'dataType' : 'json',
