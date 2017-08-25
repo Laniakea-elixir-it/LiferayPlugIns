@@ -9,6 +9,8 @@ import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.security.sso.iam.model.TokenInfo;
 import com.liferay.portal.security.sso.iam.service.TokenServiceUtil;
 import org.osgi.service.component.annotations.Component;
+import pl.psnc.indigo.fg.api.restful.TasksAPI;
+import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
@@ -16,6 +18,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
+import java.net.URI;
 
 // @formatter:off
 @Component(
@@ -47,10 +50,14 @@ public class KeplerPortlet extends MVCPortlet {
                 renderRequest.setAttribute("isIamUser", true);
                 renderRequest
                         .setAttribute("iamSubject", tokenInfo.getSubject());
+
+                final TasksAPI api = new TasksAPI(
+                        URI.create("http://fgw02.ncg.ingrid.pt/apis"),
+                        tokenInfo.getToken());
             } else {
                 renderRequest.setAttribute("isIamUser", false);
             }
-        } catch (final PortalException e) {
+        } catch (final PortalException | FutureGatewayException e) {
             throw new PortletException(
                     "Failed to prepare variables for Kepler portlet", e);
         } finally {

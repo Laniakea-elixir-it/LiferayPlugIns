@@ -11,7 +11,7 @@
     <groupId>pl.psnc.indigo</groupId>
     <artifactId>kepler-status-portlet</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
 
     <dependencies>
         <dependency>
@@ -76,48 +76,39 @@
 
         <plugins>
             <plugin>
-                <groupId>biz.aQute.bnd</groupId>
-                <artifactId>bnd-maven-plugin</artifactId>
-                <version>3.4.0</version>
-                <executions>
-                    <execution>
-                        <id>default-bnd-process</id>
-                        <goals>
-                            <goal>bnd-process</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>biz.aQute.bnd</groupId>
-                        <artifactId>biz.aQute.bndlib</artifactId>
-                        <version>3.4.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.liferay</groupId>
-                        <artifactId>com.liferay.ant.bnd</artifactId>
-                        <version>2.0.39</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.0.0</version>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>3.3.0</version>
+                <extensions>true</extensions>
                 <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
+                    <instructions>
+                        <Import-Package>
+                            !com.sun.*,
+                            !javax.validation.*,
+                            !jersey.repackaged.*,
+                            !org.apache.avalon.*,
+                            !org.apache.log.*,
+                            !org.eclipse.*,
+                            !org.hibernate.*,
+                            !org.mapstruct.*,
+                            !org.slf4j.impl.*,
+                            !sun.misc.*,
+                            *
+                        </Import-Package>
+                        <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
+                        <Require-Capability>
+                            <![CDATA[
+                            osgi.extender;filter:="(&(osgi.extender=jsp.taglib)(uri=http://java.sun.com/portlet_2_0))",
+                            osgi.extender;filter:="(&(osgi.extender=jsp.taglib)(uri=http://liferay.com/tld/aui))",
+                            osgi.extender;filter:="(&(osgi.extender=jsp.taglib)(uri=http://liferay.com/tld/portlet))",
+                            osgi.extender;filter:="(&(osgi.extender=jsp.taglib)(uri=http://liferay.com/tld/theme))",
+                            osgi.extender;filter:="(&(osgi.extender=jsp.taglib)(uri=http://liferay.com/tld/ui))",
+                            osgi.service;filter:="(objectClass=it.infn.ct.indigo.futuregateway.server.FGServerManager)";effective=active
+                            ]]>
+                        </Require-Capability>
+                    </instructions>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
@@ -127,17 +118,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
                 </configuration>
             </plugin>
         </plugins>
