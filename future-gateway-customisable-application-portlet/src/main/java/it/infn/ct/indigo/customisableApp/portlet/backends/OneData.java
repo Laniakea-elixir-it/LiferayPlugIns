@@ -90,62 +90,43 @@ public class OneData {
         this.basePath = basePathDiscovery;
         this.token = tokenIAM;
 
-        /*******************************************
-         *
-         * DA RIMUOVERE
-         * (inizio)
-         *
-         *******************************************/
-        // Create a trust manager that does not
-        // validate certificate chains
-        TrustManager[] trustAllCerts = new TrustManager[] {
-                new X509TrustManager() {
-                    public java.security.cert.X509Certificate[]
-                            getAcceptedIssuers() {
-                        return null;
-                    }
-                    public void checkClientTrusted(
-                            final X509Certificate[] certs,
-                            final String authType) {
-                    }
-                    public void checkServerTrusted(
-                            final X509Certificate[] certs,
-                            final String authType) {
-                    }
+        if (System.getProperty("it.infn.ct.indigo.onedata.trustAll", "false")
+                .equals("true")) {
+            TrustManager[] trustAllCerts = new TrustManager[] {
+                    new X509TrustManager() {
+                        public java.security.cert.X509Certificate[]
+                                getAcceptedIssuers() {
+                            return null;
+                        }
+                        public void checkClientTrusted(
+                                final X509Certificate[] certs,
+                                final String authType) {
+                        }
+                        public void checkServerTrusted(
+                                final X509Certificate[] certs,
+                                final String authType) {
+                        }
+            } };
+            SSLContext sc;
+            try {
+                sc = SSLContext.getInstance("SSL");
+                sc.init(null, trustAllCerts,
+                        new java.security.SecureRandom());
+                HttpsURLConnection.setDefaultSSLSocketFactory(
+                        sc.getSocketFactory());
+            } catch (NoSuchAlgorithmException e) {
+            } catch (KeyManagementException e) {
             }
-        };
 
+            HostnameVerifier allHostsValid = new HostnameVerifier() {
+                public boolean verify(
+                        final String hostname, final SSLSession session) {
+                    return true;
+                }
+            };
 
-        // Install the all-trusting trust manager
-        SSLContext sc;
-        try {
-            sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(
-                    sc.getSocketFactory());
-        } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
         }
-
-        // Create all-trusting host name verifier
-        HostnameVerifier allHostsValid = new HostnameVerifier() {
-            public boolean verify(final String hostname,
-                    final SSLSession session) {
-                return true;
-            }
-        };
-
-        // Install the all-trusting host verifier
-        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-        /***************************
-        *
-        * (fine)
-        *
-        ***************************/
     }
 
     /**
