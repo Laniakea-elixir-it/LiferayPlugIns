@@ -20,6 +20,12 @@
             <version>1.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+
         <!-- provided -->
         <dependency>
             <groupId>jstl</groupId>
@@ -84,6 +90,10 @@
                     <instructions>
                         <Import-Package>
                             !com.sun.*,
+                            !groovy.lang.*,
+                            !org.codehaus.commons.*,
+                            !org.codehaus.groovy.*,
+                            !org.codehaus.janino.*,
                             !javax.validation.*,
                             !jersey.repackaged.*,
                             !org.apache.avalon.*,
@@ -93,6 +103,7 @@
                             !org.mapstruct.*,
                             !org.slf4j.impl.*,
                             !sun.misc.*,
+                            !sun.reflect.*,
                             *
                         </Import-Package>
                         <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
@@ -107,6 +118,7 @@
                             osgi.service;filter:="(objectClass=it.infn.ct.indigo.futuregateway.server.FGServerManager)";effective=active
                             ]]>
                         </Require-Capability>
+                        <_metatype>*</_metatype>
                     </instructions>
                 </configuration>
             </plugin>
