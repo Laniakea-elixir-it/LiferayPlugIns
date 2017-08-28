@@ -335,7 +335,8 @@ function submit(job_desc, paramJson) {
  * Function that checks for job status change
  */
 function checkJobs() {
-  $('#jobTable tr').each(
+  if(token) {
+    $('#jobTable tr').each(
       function(i, row) {
         if (i > 0 // Starting after thead
             && i % 2 != 0 // Consider only odd rows (no childs)
@@ -370,6 +371,7 @@ function checkJobs() {
             });
         }
       });
+  }
   // Set timeout again for the next loop
   setTimeout(checkJobs, TimerDelay);
 }
