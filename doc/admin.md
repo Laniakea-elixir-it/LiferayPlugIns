@@ -58,6 +58,11 @@ selecting the *User* resource. To make them visible select the permissions confi
 users should find these three fields among their custom fields in the account configuration pages.
 
 
+**NOTE:** the communication with IAM to generate tokens takes in account the timestamp of the messages. Hence, if the server time is not correct
+token generation will fail and users will get an error page. To prevent problems during the token generation it is highly recommended to keep the
+server time synchronised with a time server.
+
+
 ### Upgrade to a new release
 
 To upgrade to a new release of the IAM authentication modules is enough to install the new module following the same procedure of the installation.
