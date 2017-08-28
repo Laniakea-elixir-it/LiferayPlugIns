@@ -1,10 +1,20 @@
 <%@ include file="/init.jsp" %>
+        <portlet:resourceURL var="oneDataURL" id="/oneData/resources"/>
+        <portlet:resourceURL var="oneDataTokenURL" id="/oneData/token"/>
+    <script>
+         define._amd = define.amd;
+         define.amd = false;
+    </script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jstree.min.js">
+    </script>
+    <script>
+       define.amd = define._amd;
+    </script>
 
         <script type="text/javascript">
             /*
              * All the web app needs to configure are the following
              */
-            var paramJson = { parameters: {} };
             var defaultApps;
             var myJson = JSON.parse('<%= jsonApp.replaceAll("'", "\\\\'") %>') ;
             var parameterFile = '<%= parameterFile %>';
@@ -25,18 +35,6 @@
                ,app_id         : '<%= appId %>'
                ,apiserver_endpoint: '${FGEndPoint}'
             };
-            function changeApp(app_name, app_id) {
-                $('#requestButton').prop('disabled', false);
-                $('#jsonButton').prop('disabled', false);
-                $('#mainTitle').html(app_name+" application");
-                for(var i=0; i<defaultApps.applications.length; i++) {
-                    if(defaultApps.applications[i].id == app_id) {
-                        application = defaultApps.applications[i];
-                        webapp_settings.app_id = defaultApps.applications[i].id;
-                    }
-                }
-                callServer("json", getPath(application));
-            }
             /*
              * Change variable below to change delay of check status loop
              */
@@ -136,6 +134,19 @@
                                 }
                             out += '</select></div>';
                             break;
+                        case "onedata":
+                          out += '<div class="form-group">';
+                          out += '<select id="param_'+jsonArr[i].name
+                              +'" onchange="<portlet:namespace />updateOneDataTree(\'param_'+jsonArr[i].name+'\', \'param_tree_'+jsonArr[i].name+'\')" class="form-control">';
+                          out += '<option value="">Select the OneZone</option>';
+                          var onezone;
+                          for(onezone in jsonArr[i].value) {
+                            out += '<option value="' + jsonArr[i].value[onezone] + '">' + jsonArr[i].value[onezone] + '</option>';
+                          } 
+                          out += '</select></br>';
+                          out += '<div id="param_tree_'+jsonArr[i].name+'"></div>';
+                          out += '</div>';
+                          break;
                     }
                     out += '</p>';
                     if((jsonArr[i].tab != null) && makeTabs) {
@@ -178,90 +189,84 @@
                 myDiv.innerHTML = myDiv.innerHTML + out;
             }
             function getParams() {
-                jsonApp = {};
+                var paramJson = { parameters: {} };
                 if(myJson != null) {
-                    jsonArr = myJson.parameters;
+                    var jsonArr = myJson.parameters;
                 }
+                var token_to_update  = [];
 
-                paramJson = { parameters: {} };
                 for(var i=0; i<jsonArr.length; i++) {
                     switch(jsonArr[i].type) {
                         case "radio":
                             var out = $('input[name='+jsonArr[i].name+']:checked').val();
                             paramJson.parameters[jsonArr[i].name] = out;
                             break;
+                        case "onedata":
+                            var onezonedata = $('#param_tree_'+jsonArr[i].name).jstree().get_selected();
+                            if (onezonedata.length < 1) {
+                              break;
+                            }
+                            if (jsonArr[i].component_map) {
+                              var onezoneid = onezonedata[0];
+                              if (jsonArr[i].component_map.space) {
+                                paramJson.parameters[jsonArr[i].component_map.space] = $('#param_tree_'+jsonArr[i].name).jstree().get_text(onezoneid.substring(0, onezoneid.indexOf('/')));
+                              }
+                              if (jsonArr[i].component_map.path) {
+                                paramJson.parameters[jsonArr[i].component_map.path] = onezoneid.substring(onezoneid.indexOf('/') + 1, onezoneid.lastIndexOf('/'));
+                              }
+                              if (jsonArr[i].component_map.file) {
+                                paramJson.parameters[jsonArr[i].component_map.file] = onezoneid.substring(onezoneid.lastIndexOf('/') + 1);
+                              }
+                              if (jsonArr[i].component_map.provider) {
+                                paramJson.parameters[jsonArr[i].component_map.provider] = $('li[id="' + onezoneid + '"]').attr('provider');
+                              }
+                              if (jsonArr[i].component_map.token) {
+                                token_to_update.push({param: jsonArr[i].component_map.token, element: jsonArr[i].name});
+                              }
+                            } else {
+                              paramJson.parameters[jsonArr[i].name] = onezonedata[0];
+                            }
+                            break;
                         default:
                             var out = $('#param_'+jsonArr[i].name).val();
                             paramJson.parameters[jsonArr[i].name] = out;
                     }
                 }
-            }
-            function callServer(call, opt) {
-                switch(call) {
-                    case "submit":
-                        var myData = {
-                            <portlet:namespace />json: JSON.stringify(paramJson),
-                        };
-                        AUI().use('aui-io-request', function(A){
-                            A.io.request('<%=resourceURL.toString()%>', {
-                                dataType: 'json',
-                                method: 'post',
-                                data: myData
-                            });
-                        });
-                        break;
-                    case "json":
-                        var myData = {<portlet:namespace />jarray: opt};
-                        AUI().use('aui-io-request', function(A){
-                                A.io.request('<%=resourceURL.toString()%>', {
-                                dataType: 'json',
-                                method: 'post',
-                                data: myData,
-                                on: {
-                                    success: function() {
-                                        var content = this.get('responseData');
-                                        //console.log(content);
-                                        myJson = { parameters: {} };
-                                        if((content != null) && (content.content != null)) { 
-                                            myJson = content.content;
-                                        }
-
-                                        defaultJson = myJson;
-                                        var appJson = JSON.stringify(defaultJson, null, 2);
-                                        $('#jsonArea1').val(appJson);
-                                        $('#jsonArea2').val(appJson);
-                                        printJsonArray();
-                                        prepareJobTable();
-                                    }
-                                }
-                            });
-                        });
-                        break;
+                var deferred = [];
+                for (var key in token_to_update) {
+                  let itemKey = key;
+                  deferred.push($.ajax({
+                    url: '${oneDataTokenURL}',
+                    dataType: 'json',
+                    data: {
+                      <portlet:namespace />oneZone: $('#param_'+token_to_update[itemKey].element).val()
+                    },
+                    success: function(data) {
+                      paramJson.parameters[token_to_update[itemKey].param] = data.token;
+                    }
+                  }));                  
                 }
+                return {params: paramJson, defers: deferred};
             }
 
-            function changeJson() {
-                var ans = $('input[name="optradio"]:checked').val();
-                switch(ans) {
-                    case "old":
-                        myJson = defaultJson;                        
-                        printJsonArray();
-                        break;
-                    case "new":
-                        var newJson = $('#jsonArea2').val();
-                        myJson = JSON.parse(newJson);;
-                        printJsonArray();
-                        break;
-                    default:
-                        break;
-                }
+            function <portlet:namespace />updateOneDataTree(oneZone, tree) {
+              $('#'+tree).jstree({
+                  'core': {
+                     'multiple': false,
+                     'data' : {
+                       'url' : '${oneDataURL}',
+                       'dataType' : 'json',
+                       'data' : function (node) {
+                         return {
+                           '<portlet:namespace />path' : node.id,
+                           '<portlet:namespace />oneZone' : $('#'+oneZone).val(),
+                           };
+                       }
+                     }
+                   }
+              });
+              $('#'+tree).jstree().refresh(false, true);
             }
-            function filljsonArea1() {
-                var ans = defaultJson;
-                var json1 = JSON.stringify(ans, null, 2);
-                $('#jsonArea1').val(json1); 
-            }
-    
         </script>
         <div class="panel panel-default">
         <div class="panel-body">
@@ -330,8 +335,7 @@
             </div>
         </div>
     </div>
-
-      <script>
+    <script>
             Liferay.Service(
                 '/iam.token/get-token',
                 function(obj) {
@@ -346,4 +350,6 @@
         
           var json2 = JSON.stringify(defaultJson, null, 2);
           $('#jsonArea2').val(json2);
-      </script>
+
+
+    </script>

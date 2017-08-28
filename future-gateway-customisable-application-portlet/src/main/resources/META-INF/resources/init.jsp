@@ -10,8 +10,6 @@
 
 <portlet:defineObjects />
 
-<portlet:resourceURL var="resourceURL"/>
-
 <%
 String appId = portletPreferences.getValue("applicationId", null);
 String jsonApp = portletPreferences.getValue("jsonApp", "").replace(System.getProperty("line.separator"), "");
