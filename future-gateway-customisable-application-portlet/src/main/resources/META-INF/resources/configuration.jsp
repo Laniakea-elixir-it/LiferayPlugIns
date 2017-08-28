@@ -72,7 +72,12 @@
                         break;
                     case "new":
                         var newJson = $('#jsonArea2').val();
-                        myJson = JSON.parse(newJson);
+                        try {
+                          myJson = JSON.parse(newJson);
+                        } catch( e ) {
+                          alert("<liferay-ui:message key="customisable.application.portlet.jsonError"/>. " + e);
+                        }
+                        
                         $('#<portlet:namespace />jsonApp').val(newJson);
                         break;
                     default:
