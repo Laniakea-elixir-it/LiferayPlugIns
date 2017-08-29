@@ -34,4 +34,3 @@ dependencies {
     compile project(":modules:future-gateway-admin-portlet")
     compile project(":modules:portal-security-sso-iam")
 }
-
