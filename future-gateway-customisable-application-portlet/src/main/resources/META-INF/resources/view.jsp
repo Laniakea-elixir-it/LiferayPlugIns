@@ -36,34 +36,6 @@
             var infoMap = new Object();
             var jsonArr; 
 
-            function getApplicationFile() {
-                var res = null;
-                $.ajax({                     
-                    type: "GET",
-                    async: false,
-                    headers: {
-                        'Authorization':'Bearer ' + token
-                    },
-                    url: webapp_settings.apiserver_url
-                        +webapp_settings.apiserver_path +'/'
-                        +webapp_settings.apiserver_ver +'/'
-                        +'applications' +'/'
-                        +'<%= appId %>',
-                    dataType: "json",                    
-                    success: function(data) {
-                        if(data && data.files) {
-                            for(var i=0; i<data.files.length; i++) {
-                                if((data.files[i].name == "tosca_template.yml") || (data.files[i].name == "tosca_template.yaml")) {
-                                    res = data.files[i].url;
-                                    return res;
-                                }
-                            }
-                        }
-                    }, 
-                });
-                return res;
-            }
-               */
             /*
              * Change variable below to change delay of check status loop
              */
@@ -227,6 +199,10 @@
 
                 for(var i=0; i<jsonArr.length; i++) {
                     switch(jsonArr[i].type) {
+                        case "password":
+                            out += '<input type="password" maxlength="50" id="param_'+jsonArr[i].name
+                                +'" class="form-control" value="' + jsonArr[i].value + '"/></br>';
+                            break;
                         case "radio":
                             var out = $('input[name='+jsonArr[i].name+']:checked').val();
                             paramJson.parameters[jsonArr[i].name] = out;
@@ -257,6 +233,15 @@
                               paramJson.parameters[jsonArr[i].name] = onezonedata[0];
                             }
                             break;
+                        case "list":
+                            out += '<div class="form-group">';
+                            out += '<select class="form-control" id="param_'+jsonArr[i].name+'">'
+                            for(k = 0; k < jsonArr[i].value.length; k++) {
+                                out += '<option>'+jsonArr[i].value[k]+'</option>'
+                            }
+                            out += '</select></div>';
+                            break;
+                        case "text":
                         default:
                             var out = $('#param_'+jsonArr[i].name).val();
                             paramJson.parameters[jsonArr[i].name] = out;

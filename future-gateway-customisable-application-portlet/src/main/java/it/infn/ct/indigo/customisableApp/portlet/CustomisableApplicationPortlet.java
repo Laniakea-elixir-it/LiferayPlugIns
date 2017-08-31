@@ -63,21 +63,7 @@ public class CustomisableApplicationPortlet extends MVCPortlet {
         super.doView(renderRequest, renderResponse);
     }
 
-     @Override
-     public final void serveResource(final ResourceRequest resourceRequest,
-         final ResourceResponse resourceResponse)
-         throws IOException, PortletException {
-         try {
-             String content = ParamUtil.getString(resourceRequest, "yaml_content");
-             PrintWriter writer = resourceResponse.getWriter();
-             writer.write(content);
-         } catch (Exception e) {
-             e.printStackTrace(System.out);
-         }
-         super.serveResource(resourceRequest, resourceResponse);
-     }
-
-   /**
+    /**
      * Sets the FG Server manager.
      * This is used to get information of the service and for interactions.
      *

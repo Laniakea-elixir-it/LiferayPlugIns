@@ -55,23 +55,7 @@
                 });
                 return res;
             }
-            function callServeResource(yaml_file_content) {
-                var myData = {
-                    <portlet:namespace />yaml_content: yaml_file_content
-                };
-                AUI().use('aui-io-request', function(A){
-                    A.io.request('<%=resourceURL.toString()%>', {
-                        method: 'post',
-                        data: myData,
-                        on: {
-                            success: function() {
-                                var content = this.get('responseData');
-                            },
-                        }    
-                    });
-                });
-            }
-            function changeApp(app_name, app_id) {
+           function changeApp(app_name, app_id) {
                 $('#<portlet:namespace />requestButton').removeClass('disabled');
                 $('#<portlet:namespace />requestButton').prop('disabled', false);
                 $('#jsonButton').prop('disabled', false);
