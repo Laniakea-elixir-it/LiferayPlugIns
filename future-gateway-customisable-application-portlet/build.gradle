@@ -20,6 +20,10 @@ task downloadLibs(type: Exec) {
     args "-c" , "mkdir -p lib; cd lib; wget -N http://central.maven.org/maven2/org/yaml/snakeyaml/1.17/snakeyaml-1.17.jar; wget -N http://central.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0.jar; wget -N http://central.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.0/jackson-core-2.9.0.jar; wget -N http://central.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.0/jackson-databind-2.9.0.jar; wget -N http://central.maven.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.9.0/jackson-dataformat-yaml-2.9.0.jar"
 }
 
+jar.dependsOn {
+    downloadLibs
+}
+
 dependencies {
     compile group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
     compile group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "2.0.0"

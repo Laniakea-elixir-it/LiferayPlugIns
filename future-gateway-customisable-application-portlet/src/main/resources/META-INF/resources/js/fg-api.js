@@ -38,12 +38,9 @@ function getFile(file_url) {
   });
   return res;
 }
-function getApplicationsJson() {
-  var res = null;
-  $
-      .ajax({
+function getApplicationsJson(successCallback) {
+  $.ajax({
         type : "GET",
-        async : false,
         headers : {
           'Authorization' : 'Bearer ' + token
         },
@@ -53,16 +50,16 @@ function getApplicationsJson() {
                 + '/' + webapp_settings.apiserver_ver + '/' + 'applications',
         dataType : "json",
         success : function(data) {
-          res = data;
+          if (typeof successCallback === "function") {
+            successCallback(data);
+          };
         },
       });
-  return res;
 }
-function getIP(job_output_url, id) {
-  web_address = null;
+
+function updateIP(job_output_url, id) {
   $.ajax({
     type : "GET",
-    async : false,
     headers : {
       'Authorization' : 'Bearer ' + token
     },
@@ -70,14 +67,15 @@ function getIP(job_output_url, id) {
         + webapp_settings.apiserver_ver + '/' + job_output_url,
     dataType : "json",
     success : function(data) {
-      web_address = data.galaxy_url;
-      info = data.cluster_creds;
       if (data.cluster_creds) {
-        infoMap[id] = 'user: ' + info.user + '</br></br>' + info.token;
+        infoMap[id] = 'user: ' + data.cluster_creds.user + '</br></br>' + data.cluster_creds.token;
       }
+      ${"#ip_" + id}.html(data.galaxy_url);
+      ${"#ip_" + id}.bind("click", function(){
+        openNewWindow(data.galaxy_url)
+      })
     },
   });
-  return web_address;
 }
 function clusterInfo(id) {
   var repl = infoMap[id].replace(/\n/g, "</br>");
@@ -86,27 +84,14 @@ function clusterInfo(id) {
   $('#information').find('.modal-body').html(data);
   $('#information').modal();
 }
-function addJobRecord(i, jrec) {
-  job_id = jrec.id;
-  job_status = jrec.status;
-  job_date = jrec.date;
-  job_lastchange = jrec.last_change;
-  job_description = jrec.description;
-  out_files = jrec.output_files;
-  machineIP = null;
-  if (job_status == 'DONE') {
-    for (var i = 0; i < out_files.length; i++) {
-      if (out_files[i].name == 'stdout.txt') {
-        machineIP = getIP(out_files[i].url, job_id);
-      }
-    }
-  }
-  labelIP = machineIP;
-  if (machineIP == null) {
-    labelIP = 'not available';
-    machineIP = '';
-  }
-  var OutFiles = '';
+function appendJobRecord(jobIndex, jrec, container) {
+  var job_id = jrec.id;
+  var job_status = jrec.status;
+  var job_date = jrec.date;
+  var job_lastchange = jrec.last_change;
+  var job_description = jrec.description;
+  var out_files = jrec.output_files;
+  var outFiles = '';
   if (job_status == 'DONE') {
     del_btn = '<button id="cln_btn' + job_id + '"'
         + '        class="btn btn-xs btn-danger"' + '        type="button"'
@@ -117,7 +102,7 @@ function addJobRecord(i, jrec) {
         + '        data-data="' + job_id + '">'
         + '<i class="glyphicon glyphicon-trash"></i> Delete' + '</button>';
     for (var j = 0; j < out_files.length; j++)
-      OutFiles += '<div class="row">' + '  <div class="col-sm-3">'
+      outFiles += '<div class="row">' + '  <div class="col-sm-3">'
           + '  <a href="' + webapp_settings.apiserver_url
           + webapp_settings.apiserver_path + '/'
           + webapp_settings.apiserver_ver + '/' + out_files[j].url + '">'
@@ -126,12 +111,12 @@ function addJobRecord(i, jrec) {
           + '  <div class="col-sm-3">' + '  </div>' + '</div>';
   } else {
     del_btn = '';
-    OutFiles = '  <div class="col-sm-3"><small>No output available yet</small>'
+    outFiles = '  <div class="col-sm-3"><small>No output available yet</small>'
         + '  </div>' + '  <div class="col-sm-3">' + '  </div>'
         + '  <div class="col-sm-3">' + '  </div>';
   }
-  if (job_status != 'CANCELLED')
-    TableRow = '<tr id="' + job_id + '">' + '   <td rowspan="2">'
+  if (job_status != 'CANCELLED'){
+    container.append('<tr id="' + job_id + '">' + '   <td rowspan="2">'
         + '        <button id="job_btn' + job_id + '"'
         + '        class="btn btn-default btn-xs toggle" onClick="cleanJob('
         + job_id + ')">'
@@ -139,8 +124,8 @@ function addJobRecord(i, jrec) {
         + '        </button>' + '	</td>' + '  <td>' + job_date + '</td>'
         + '  <td>' + job_lastchange + '</td>' + '  <td>' + job_status + '</td>'
         + '  <td>' + job_description + '</td>'
-        + '  <td><button type="button" class="btn btn-default btn-sm"'
-        + '      onClick=openNewWindow("' + machineIP + '")>' + labelIP
+        + '  <td><button type="button" class="btn btn-default btn-sm" id="ip_' + job_id + '">'
+        + '   N/A'
         + '</button>' + '      <button id="job_info_' + job_id
         + '" type="button" class="btn btn-default btn-sm"'
         + '      style="display:none;" onClick=clusterInfo(' + job_id + ')>'
@@ -149,8 +134,16 @@ function addJobRecord(i, jrec) {
         + '<tr class="tablesorter-childRow">' + '<td colspan="4">'
         + '<div class="row">' + '  <div class="col-sm-3"><b>Output</b></div>'
         + '  <div class="col-sm-3"></div>' + '  <div class="col-sm-3">'
-        + del_btn + '</div>' + '</div>' + OutFiles + '</td>' + '</tr>';
-  return TableRow;
+        + del_btn + '</div>' + '</div>' + outFiles + '</td>' + '</tr>');
+    ;
+    if (job_status == 'DONE') {
+      for (var i = 0; i < out_files.length; i++) {
+        if (out_files[i].name == 'stdout.txt') {
+          updateIP(out_files[i].url, job_id);
+        }
+      }
+    }
+  }
 }
 /*
  * Clean the specified job             
@@ -186,12 +179,6 @@ function cleanJob(job_id) {
  */
 function fillJobTable(data, current) {
   $('#jobsDiv').html('');
-  var tableRows = '';
-  for (var i = 0; i < data.length; i++) {
-    if ((i >= current * jobLimit) && (i < (current + 1) * jobLimit)) {
-      tableRows += addJobRecord(i, data[i]);
-    }
-  }
   jobsTable = '<table id="jobTable" class="table table-responsive tablesorter">'
       + '	<colgroup>'
       + '		<col/>'
@@ -212,7 +199,6 @@ function fillJobTable(data, current) {
       + '            </tr>'
       + '	</thead>'
       + '      <tbody id="jobRecords">'
-      + tableRows
       + '      </tbody>'
       + '<tfoot style="size:0px">' + '</tfoot>' + '</table>';
 
@@ -226,6 +212,11 @@ function fillJobTable(data, current) {
 
   // Add table
   $('#jobsDiv').append(jobsTable);
+  for (var i = 0; i < data.length; i++) {
+    if ((i >= current * jobLimit) && (i < (current + 1) * jobLimit)) {
+      appendJobRecord(i, data[i], $('#jobRecords'));
+    }
+  }
   newLI = "LI_" + current;
   document.getElementById(LI).className = "";
   document.getElementById(newLI).className = "active";

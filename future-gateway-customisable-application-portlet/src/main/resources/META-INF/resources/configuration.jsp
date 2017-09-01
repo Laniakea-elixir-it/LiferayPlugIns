@@ -30,7 +30,7 @@
             };
             function getApplicationFile(local_app_id) {
                 var res = null;
-                $.ajax({                     
+                $.ajax({
                     type: "GET",
                     async: false,
                     headers: {
@@ -41,7 +41,7 @@
                         +webapp_settings.apiserver_ver +'/'
                         +'applications' +'/'
                         +local_app_id,
-                    dataType: "json",                    
+                    dataType: "json",
                     success: function(data) {
                         if(data && data.files) {
                             for(var i=0; i<data.files.length; i++) {
@@ -71,8 +71,7 @@
                     }
                 }
             }
-            function welcome() {
-                defaultApps = getApplicationsJson();
+            function welcome(defaultApps) {
                 $('#jobsDiv').html('');
                 var content = '';
                 for(var i=0; i<defaultApps.applications.length; i++) {
@@ -233,7 +232,7 @@
                     if(obj.token != undefined) {
                         token = obj.token;
                     }
-                    welcome();
+                    getApplicationsJson(welcome);
                 }
             );
           $('#jsonArea2').val('<%= jsonApp %>');
