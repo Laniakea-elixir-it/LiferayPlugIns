@@ -1,13 +1,8 @@
 package it.infn.ct.indigo.customisableApp.portlet.action;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletException;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -21,8 +16,8 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
-import it.infn.ct.indigo.futuregateway.server.FGServerManager;
 import it.infn.ct.indigo.customisableApp.portlet.converter.Converter;
+import it.infn.ct.indigo.futuregateway.server.FGServerManager;
 
 /**
  * Configuration manager for the portlet instance.

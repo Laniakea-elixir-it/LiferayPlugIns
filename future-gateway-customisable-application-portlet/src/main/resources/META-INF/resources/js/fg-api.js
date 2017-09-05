@@ -17,39 +17,37 @@ function predicatBy(prop) {
     return 0;
   }
 }
-function getFile(file_url) {
-  var res = null;
+function getFile(file_url, callback) {
   if(file_url == null) {
-    return res;
+    return;
   }
-  $.ajax({                     
+  $.ajax({
     type: "GET",
-    async: false,
     headers: {
       'Authorization':'Bearer ' + token
     },
-    url: webapp_settings.apiserver_url
-      +webapp_settings.apiserver_path +'/'
-      +webapp_settings.apiserver_ver +'/'
-      +file_url,
+    url: webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
+        + '/' + file_url
+        : webapp_settings.apiserver_url + webapp_settings.apiserver_path
+            + '/' + webapp_settings.apiserver_ver + '/' + file_url,
     success: function(data) {
-      res=data;
+      callback(data);
     }, 
   });
-  return res;
 }
+
 function getApplicationsJson(successCallback) {
   $.ajax({
-        type : "GET",
-        headers : {
+        type: "GET",
+        headers: {
           'Authorization' : 'Bearer ' + token
         },
-        url : webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
+        url: webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
             + '/' + 'applications'
             : webapp_settings.apiserver_url + webapp_settings.apiserver_path
                 + '/' + webapp_settings.apiserver_ver + '/' + 'applications',
-        dataType : "json",
-        success : function(data) {
+        dataType: "json",
+        success: function(data) {
           if (typeof successCallback === "function") {
             successCallback(data);
           };

@@ -16,5 +16,3 @@
     String jsonApp = portletPreferences.getValue("jsonApp", "").replace(System.getProperty("line.separator"), "");
     String parameterFile = "parameters.json";
 %>
-
-<portlet:resourceURL var="resourceURL"/>

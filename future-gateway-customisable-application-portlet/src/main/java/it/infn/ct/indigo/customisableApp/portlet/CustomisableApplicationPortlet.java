@@ -1,7 +1,6 @@
 package it.infn.ct.indigo.customisableApp.portlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
@@ -12,14 +11,12 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 
-import javax.portlet.PortletException;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
-import com.liferay.portal.kernel.util.ParamUtil;
 import it.infn.ct.indigo.futuregateway.server.FGServerManager;
 
 /**
@@ -57,7 +54,7 @@ public class CustomisableApplicationPortlet extends MVCPortlet {
                     "FGEndPoint",
                     fgServerManager.getFGUrl(themeDisplay.getCompanyId()));
         } catch (PortalException pe) {
-
+            log.error("Impossible to get the FG end-point");
         }
 
         super.doView(renderRequest, renderResponse);
@@ -80,4 +77,9 @@ public class CustomisableApplicationPortlet extends MVCPortlet {
      */
     private FGServerManager fgServerManager;
 
+    /**
+     * The logger.
+     */
+    private Log log = LogFactoryUtil.getLog(
+            CustomisableApplicationPortlet.class);
 }

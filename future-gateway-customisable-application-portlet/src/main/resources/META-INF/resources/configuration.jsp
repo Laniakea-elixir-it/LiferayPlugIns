@@ -3,15 +3,13 @@
 
 <liferay-portlet:actionURL portletConfiguration="<%= true %>" var="configurationActionURL" />
 <liferay-portlet:renderURL portletConfiguration="<%= true %>" var="configurationRenderURL" />
+<portlet:resourceURL var="convertYAMLURL" id="/yaml/convert"/>
 
         <script type="text/javascript">
             /*
              * All the web app needs to configure are the following
              */
-            var paramJson = { parameters: {} };
             var defaultApps;
-            var myJson = paramJson ;
-            var defaultJson = myJson;
             var application;
             
             var token = null;
@@ -28,33 +26,72 @@
                 app_id: 0,
                 apiserver_endpoint: '${FGEndPoint}'
             };
-            function getApplicationFile(local_app_id) {
-                var res = null;
+            function getApplicationTemplate(local_app_id, template_name, yamlCallback) {
                 $.ajax({
                     type: "GET",
-                    async: false,
                     headers: {
                         'Authorization':'Bearer ' + token
                     },
-                    url: webapp_settings.apiserver_url
-                        +webapp_settings.apiserver_path +'/'
-                        +webapp_settings.apiserver_ver +'/'
-                        +'applications' +'/'
-                        +local_app_id,
+                    url: webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
+                        + '/' + 'applications' + '/' + local_app_id
+                        : webapp_settings.apiserver_url + webapp_settings.apiserver_path
+                            + '/' + webapp_settings.apiserver_ver + '/' +  + 'applications' + '/' + local_app_id,
                     dataType: "json",
                     success: function(data) {
                         if(data && data.files) {
                             for(var i=0; i<data.files.length; i++) {
-                                if((data.files[i].name == "template.yml") || (data.files[i].name == "template.yaml")) {
-                                    res = data.files[i].url;
-                                    return res;
+                                if(data.files[i].name == template_name) {
+                                    getFile(data.files[i].url, function (data){
+                                      convertYAMLyaml(data, yamlCallback);
+                                    }
+                                    return;
                                 }
                             }
                         }
-                    }, 
+                    },
                 });
-                return res;
             }
+
+            function convertYAML(yaml, callback) {
+              $.ajax({
+                headers: {
+                    'Authorization':'Bearer ' + token
+                },
+                url: '${convertYAMLURL}',
+                dataType: "json",
+                data: {
+                  <portlet:namespace />yamlFile: yaml
+                },
+                success: function(data) {
+                    if(data) {
+                      callback(data);
+                    }
+                },
+              });
+            }
+
+            function generateApplicationJson(app_id, infra_list, callback) {
+              $.ajax({
+                type: "GET",
+                headers: {
+                    'Authorization':'Bearer ' + token
+                },
+                url: webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
+                   + '/' + 'infrastructures' + '/' + infra_list[0]
+                   : webapp_settings.apiserver_url + webapp_settings.apiserver_path
+                       + '/' + webapp_settings.apiserver_ver + '/' +  + 'infrastructures' + '/' + infra_list[0],
+                dataType: "json",
+                success: function(data) {
+                  for (var i=0; data.parameters.length; i++) {
+                    if (data.parameters[i].name == "tosca_template") {
+                      getApplicationTemplate(app_id, data.parameters[i].value, callback);
+                      return;
+                    }
+                  }
+                },
+              });
+           }
+
            function changeApp(app_name, app_id) {
                 $('#<portlet:namespace />requestButton').removeClass('disabled');
                 $('#<portlet:namespace />requestButton').prop('disabled', false);
@@ -65,9 +102,10 @@
                         application = defaultApps.applications[i];
                         webapp_settings.app_id = defaultApps.applications[i].id;
                         $('#<portlet:namespace />applicationId').val(app_id);
-
-                        var yamlFile = getFile(getApplicationFile(app_id));
-                        $('#<portlet:namespace />fileConverter').val(yamlFile);
+                        getApplicationTemplate(app_id, function(yaml){
+                          $('#<portlet:namespace />fileConverter').val();
+                        });
+                        
                     }
                 }
             }
@@ -81,6 +119,12 @@
                     if (defaultApps.applications[i].id == '<%= appId %>') {
                       $('#appButton').html(defaultApps.applications[i].name + ' <span class="caret"></span>');
                       $('#jsonButton').prop('disabled', false);
+                      generateApplicationJson(defaultApps.applications[i].id, defaultApps.applications[i].infrastructures,
+                          function(json){
+                            var json1 = JSON.stringify(ans, null, 2);
+                            $('#jsonArea1').val(json1);
+                      });
+                      
                     }
                 }
                 $('#dropmenu').html(content);
@@ -96,15 +140,14 @@
                 $('#<portlet:namespace />requestButton').prop('disabled', false);
                 switch(ans) {
                     case "old":
-                        //myJson = defaultJson;
                         filljsonArea1();
-                        myJson = $('#jsonArea1').val();
+                        var myJson = $('#jsonArea1').val();
                         $('#<portlet:namespace />jsonApp').val(myJson);
                         break;
                     case "new":
                         var newJson = $('#jsonArea2').val();
                         try {
-                          myJson = JSON.parse(newJson);
+                          var myJson = JSON.parse(newJson);
                         } catch( e ) {
                           alert("<liferay-ui:message key="customisable.application.portlet.jsonError"/>. " + e);
                         }
@@ -115,12 +158,6 @@
                         break;
                 }
             }
-            function filljsonArea1() {
-                var ans = defaultJson;
-                var json1 = JSON.stringify(ans, null, 2);
-                $('#jsonArea1').val(json1);
-            }
-    
         </script>
         <div class="panel panel-default">
         <div class="panel-body">
@@ -171,7 +208,7 @@
                       <div class="radio">
                           <label><input type="radio" name="optradio" value="old" <%= jsonApp.isEmpty() ?  "checked" : "" %>>
                               <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#jsonTextArea1" onClick="filljsonArea1()">default json</button>
-                              object can not be changed
+                              <liferay-ui:message key="customisable.application.portlet.defaultJson"/>
                           </label>
                       </div>
                       <div id="jsonTextArea1" class="collapse">
@@ -183,7 +220,7 @@
                       <div class="radio">
                           <label><input type="radio" name="optradio" value="new" <%= jsonApp.isEmpty() ?  "" : "checked" %>>
                               <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#jsonTextArea2">new json</button>
-                              customizable object
+                              <liferay-ui:message key="customisable.application.portlet.customJson"/>
                           </label>
                       </div>
                       <div id=jsonTextArea2 class="collapse">
