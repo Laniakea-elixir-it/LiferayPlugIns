@@ -1,10 +1,15 @@
 <%@ include file="/init.jsp" %>
 <%@ page import="com.liferay.portal.kernel.util.Constants" %>
+<%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
+<%@ page import="com.liferay.portal.kernel.portlet.LiferayPortletURL" %>
 
 <liferay-portlet:actionURL portletConfiguration="<%= true %>" var="configurationActionURL" />
 <liferay-portlet:renderURL portletConfiguration="<%= true %>" var="configurationRenderURL" />
-<portlet:resourceURL var="convertYAMLURL" id="/yaml/convert"/>
-
+<%
+LiferayPortletURL resourceURL = (LiferayPortletURL) renderResponse.createResourceURL();
+resourceURL.setPortletId(ParamUtil.getString(request, "portletResource"));
+resourceURL.setResourceID("/yaml/convert");
+%>
         <script type="text/javascript">
             /*
              * All the web app needs to configure are the following
@@ -42,8 +47,8 @@
                             for(var i=0; i<data.files.length; i++) {
                                 if(data.files[i].name == template_name) {
                                     getFile(data.files[i].url, function (data){
-                                      convertYAMLyaml(data, yamlCallback);
-                                    }
+                                      convertYAML(data, yamlCallback);
+                                    });
                                     return;
                                 }
                             }
@@ -57,7 +62,7 @@
                 headers: {
                     'Authorization':'Bearer ' + token
                 },
-                url: '${convertYAMLURL}',
+                url: '<%= resourceURL.toString() %>',
                 dataType: "json",
                 data: {
                   <portlet:namespace />yamlFile: yaml
@@ -82,7 +87,8 @@
                        + '/' + webapp_settings.apiserver_ver + '/' +  + 'infrastructures' + '/' + infra_list[0],
                 dataType: "json",
                 success: function(data) {
-                  for (var i=0; data.parameters.length; i++) {
+                  if (data && data.parameters)
+                  for (var i = 0; i < data.parameters.length; i++) {
                     if (data.parameters[i].name == "tosca_template") {
                       getApplicationTemplate(app_id, data.parameters[i].value, callback);
                       return;
@@ -102,14 +108,17 @@
                         application = defaultApps.applications[i];
                         webapp_settings.app_id = defaultApps.applications[i].id;
                         $('#<portlet:namespace />applicationId').val(app_id);
-                        getApplicationTemplate(app_id, function(yaml){
-                          $('#<portlet:namespace />fileConverter').val();
-                        });
-                        
+                        generateApplicationJson(defaultApps.applications[i].id, defaultApps.applications[i].infrastructures,
+                            function(json){
+                              var json1 = JSON.stringify(ans, null, 2);
+                              $('#jsonArea1').val(json1);
+                        });                        
                     }
                 }
             }
-            function welcome(defaultApps) {
+
+            function welcome(apps) {
+                defaultApps = apps;
                 $('#jobsDiv').html('');
                 var content = '';
                 for(var i=0; i<defaultApps.applications.length; i++) {
@@ -140,9 +149,7 @@
                 $('#<portlet:namespace />requestButton').prop('disabled', false);
                 switch(ans) {
                     case "old":
-                        filljsonArea1();
-                        var myJson = $('#jsonArea1').val();
-                        $('#<portlet:namespace />jsonApp').val(myJson);
+                        $('#<portlet:namespace />jsonApp').val('');
                         break;
                     case "new":
                         var newJson = $('#jsonArea2').val();
@@ -179,9 +186,8 @@
         	<center>
             	<aui:button type="submit" name="configSave" value="customisable.application.portlet.configSave" id="requestButton" class="btn btn-primary btn-lg" disabled="true"/>
 	        </center>
-	        <aui:input name="applicationId" id="applicationId" type="hidden" value="" />
+	        <aui:input name="applicationId" id="applicationId" type="hidden" value="<%= appId==null ? "" : appId %>" />
 	        <aui:input name="jsonApp" id="jsonApp" type="hidden" value="" />
-	        <aui:input name="fileConverter" id="fileConverter" type="hidden" value="" />
 	        <aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
             <aui:input name="redirect" type="hidden" value="<%= configurationRenderURL %>" />
 	        
@@ -206,8 +212,8 @@
               <div class="modal-body" style="max-height: calc(100vh - 210px); overflow-y: auto;">
                   <form>
                       <div class="radio">
-                          <label><input type="radio" name="optradio" value="old" <%= jsonApp.isEmpty() ?  "checked" : "" %>>
-                              <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#jsonTextArea1" onClick="filljsonArea1()">default json</button>
+                          <label><input type="radio" name="optradio" value="old" <%= isDefaultJson ?  "checked" : "" %>>
+                              <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#jsonTextArea1">default json</button>
                               <liferay-ui:message key="customisable.application.portlet.defaultJson"/>
                           </label>
                       </div>
@@ -218,7 +224,7 @@
                           </div>
                       </div>
                       <div class="radio">
-                          <label><input type="radio" name="optradio" value="new" <%= jsonApp.isEmpty() ?  "" : "checked" %>>
+                          <label><input type="radio" name="optradio" value="new" <%= isDefaultJson ?  "" : "checked" %>>
                               <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#jsonTextArea2">new json</button>
                               <liferay-ui:message key="customisable.application.portlet.customJson"/>
                           </label>

@@ -12,7 +12,10 @@
 
 <%
     String appId = portletPreferences.getValue("applicationId", null);
-    String fConverter = portletPreferences.getValue("fileConverter", null);
     String jsonApp = portletPreferences.getValue("jsonApp", "").replace(System.getProperty("line.separator"), "");
     String parameterFile = "parameters.json";
+    boolean isDefaultJson = jsonApp.isEmpty();
+    if (isDefaultJson) {
+        jsonApp = "{ \"parameters\": {}}";
+    }
 %>

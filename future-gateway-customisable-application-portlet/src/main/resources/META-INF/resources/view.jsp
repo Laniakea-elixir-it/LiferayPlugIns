@@ -22,12 +22,9 @@
                ,app_id         : '<%= appId %>'
                ,apiserver_endpoint: '${FGEndPoint}'
             };
-            var paramJson = { parameters: {} };
-            var defaultApps;
             var myJson = JSON.parse('<%= jsonApp.replaceAll("'", "\\\\'") %>') ;
             var parameterFile = '<%= parameterFile %>';
             var defaultJson = myJson;
-            var application;
             
             var token = null;
             var jobLimit = 5;
@@ -360,7 +357,9 @@
                     if(document.getElementById("<portlet:namespace/>appSubmitForm")) {
                         printJsonArray();
                     }
+                    <c:if test="<%= appId != null && !appId.isEmpty() %>" >
                     prepareJobTable();
+                    </c:if>
                 }
             );
         

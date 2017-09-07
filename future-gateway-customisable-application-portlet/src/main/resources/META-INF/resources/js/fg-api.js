@@ -68,8 +68,8 @@ function updateIP(job_output_url, id) {
       if (data.cluster_creds) {
         infoMap[id] = 'user: ' + data.cluster_creds.user + '</br></br>' + data.cluster_creds.token;
       }
-      ${"#ip_" + id}.html(data.galaxy_url);
-      ${"#ip_" + id}.bind("click", function(){
+      $("#ip_" + id).html(data.galaxy_url);
+      $("#ip_" + id).bind("click", function(){
         openNewWindow(data.galaxy_url)
       })
     },
@@ -256,9 +256,11 @@ function prepareJobTable() {
     headers : {
       'Authorization' : 'Bearer ' + token
     },
-    url : webapp_settings.apiserver_url + webapp_settings.apiserver_path + '/'
-        + webapp_settings.apiserver_ver + '/tasks?application='
-        + webapp_settings.app_id,
+    url: webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
+           + '/' + '/tasks?application=' + webapp_settings.app_id
+       : webapp_settings.apiserver_url + webapp_settings.apiserver_path
+           + '/' + webapp_settings.apiserver_ver + '/' + '/tasks?application=' + webapp_settings.app_id,
+
     dataType : "json",
     success : function(data) {
       if (data.tasks.length > 0) {
