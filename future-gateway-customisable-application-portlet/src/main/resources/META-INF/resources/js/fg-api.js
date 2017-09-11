@@ -68,10 +68,33 @@ function updateIP(job_output_url, id) {
       if (data.cluster_creds) {
         infoMap[id] = 'user: ' + data.cluster_creds.user + '</br></br>' + data.cluster_creds.token;
       }
-      $("#ip_" + id).html(data.galaxy_url);
-      $("#ip_" + id).bind("click", function(){
-        openNewWindow(data.galaxy_url)
-      })
+      if(data.galaxy_url) {
+        $("#ip_" + id).html('<button id="galaxy_ip_' + id + '" type="button" class="btn btn-default btn-sm">' + data.galaxy_url + '</button>');
+        $("#galaxy_ip_" + id).bind("click", function(){
+          openNewWindow(data.galaxy_url);
+        })
+      }
+      if(data.marathon_endpoint != null || data.zenodo_http_endpoint != null && data.zenodo_https_endpoint != null) {
+       var content = '<div class="btn-group-vertical btn-group-sm">'
+       + '<button id="marathon_ip_' + id + '" type="button" class="btn btn-default">marathon endpoint:<br>' 
+       + data.marathon_endpoint + '</button><br>'
+       + '<button id="zenodo_http_' + id + '" type="button" class="btn btn-default">zenodo http endpoint:<br>' 
+       + data.zenodo_http_endpoint + '</button><br>'
+       + '<button id="zenodo_https_' + id + '" type="button" class="btn btn-default">zenodo https endpoint:<br>' 
+       + data.zenodo_https_endpoint + '</button><br>'
+       + '</div>';
+       $("#ip_" + id).html(content);
+       
+       $("#marathon_ip_" + id).bind("click", function(){
+          openNewWindow(data.marathon_endpoint);
+       })
+       $("#zenodo_http_" + id).bind("click", function(){
+          openNewWindow(data.zenodo_http_endpoint);
+       })
+       $("#zenodo_https_" + id).bind("click", function(){
+          openNewWindow(data.zenodo_https_endpoint);
+       })
+      }
     },
   });
 }
@@ -122,9 +145,9 @@ function appendJobRecord(jobIndex, jrec, container) {
         + '        </button>' + '	</td>' + '  <td>' + job_date + '</td>'
         + '  <td>' + job_lastchange + '</td>' + '  <td>' + job_status + '</td>'
         + '  <td>' + job_description + '</td>'
-        + '  <td><button type="button" class="btn btn-default btn-sm" id="ip_' + job_id + '">'
-        + '   N/A'
-        + '</button>' + '      <button id="job_info_' + job_id
+        + '  <td><div id="ip_' + job_id + '">'
+        + '      <button type="button" class="btn btn-default btn-sm">N/A'
+        + '</button></div>' + '<button id="job_info_' + job_id
         + '" type="button" class="btn btn-default btn-sm"'
         + '      style="display:none;" onClick=clusterInfo(' + job_id + ')>'
         + '      <span class="glyphicon glyphicon-info-sign"></span>'
