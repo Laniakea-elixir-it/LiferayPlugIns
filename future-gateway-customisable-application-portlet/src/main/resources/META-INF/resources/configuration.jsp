@@ -65,7 +65,7 @@ resourceURL.setResourceID("/yaml/convert");
                 url: '<%= resourceURL.toString() %>',
                 dataType: "json",
                 data: {
-                  <portlet:namespace />yamlFile: yaml
+                  yamlFile: yaml
                 },
                 success: function(data) {
                     if(data) {
@@ -130,7 +130,7 @@ resourceURL.setResourceID("/yaml/convert");
                       $('#jsonButton').prop('disabled', false);
                       generateApplicationJson(defaultApps.applications[i].id, defaultApps.applications[i].infrastructures,
                           function(json){
-                            var json1 = JSON.stringify(ans, null, 2);
+                            var json1 = JSON.stringify(json, null, 2);
                             $('#jsonArea1').val(json1);
                       });
                       

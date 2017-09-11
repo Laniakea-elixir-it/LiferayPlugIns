@@ -15,7 +15,4 @@
     String jsonApp = portletPreferences.getValue("jsonApp", "").replace(System.getProperty("line.separator"), "");
     String parameterFile = "parameters.json";
     boolean isDefaultJson = jsonApp.isEmpty();
-    if (isDefaultJson) {
-        jsonApp = "{ \"parameters\": {}}";
-    }
 %>

@@ -354,8 +354,13 @@
                     if(obj.token != undefined) {
                         token = obj.token;
                     }
+
                     if(document.getElementById("<portlet:namespace/>appSubmitForm")) {
+                      if (isDefaultJson) {
+                        jsonApp = "{ \"parameters\": {}}";
+                      } else {
                         printJsonArray();
+                      }
                     }
                     <c:if test="<%= appId != null && !appId.isEmpty() %>" >
                     prepareJobTable();

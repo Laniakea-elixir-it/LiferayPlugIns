@@ -34,6 +34,7 @@ import it.infn.ct.indigo.futuregateway.server.FGServerManager;
                 "com.liferay.portlet.header-portlet-javascript=/js/fg-api.js",
                 "com.liferay.portlet.header-portlet-css=/css/style.min.css",
                 "com.liferay.portlet.instanceable=false",
+                "com.liferay.portlet.requires-namespaced-parameters=false",
                 "javax.portlet.name=CustomisableApplication",
                 "javax.portlet.display-name=Customisable application Portlet",
                 "javax.portlet.init-param.template-path=/",
@@ -71,6 +72,7 @@ public class CustomisableApplicationPortlet extends MVCPortlet {
     @Override
     public void serveResource(ResourceRequest resourceRequest, ResourceResponse resourceResponse)
             throws IOException, PortletException {
+        super.serveResource(resourceRequest, resourceResponse);
         String resourceID = GetterUtil.getString(
                 resourceRequest.getResourceID());
 
