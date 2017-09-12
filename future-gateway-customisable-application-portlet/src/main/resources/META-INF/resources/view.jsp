@@ -197,8 +197,8 @@
                 for(var i=0; i<jsonArr.length; i++) {
                     switch(jsonArr[i].type) {
                         case "password":
-                            out += '<input type="password" maxlength="50" id="param_'+jsonArr[i].name
-                                +'" class="form-control" value="' + jsonArr[i].value + '"/></br>';
+                            var out = $('#param_'+jsonArr[i].name).val();
+                            paramJson.parameters[jsonArr[i].name] = out;
                             break;
                         case "radio":
                             var out = $('input[name='+jsonArr[i].name+']:checked').val();
@@ -231,12 +231,8 @@
                             }
                             break;
                         case "list":
-                            out += '<div class="form-group">';
-                            out += '<select class="form-control" id="param_'+jsonArr[i].name+'">'
-                            for(k = 0; k < jsonArr[i].value.length; k++) {
-                                out += '<option>'+jsonArr[i].value[k]+'</option>'
-                            }
-                            out += '</select></div>';
+                            var out = $('#param_'+jsonArr[i].name).val();
+                            paramJson.parameters[jsonArr[i].name] = out;
                             break;
                         case "text":
                         default:
