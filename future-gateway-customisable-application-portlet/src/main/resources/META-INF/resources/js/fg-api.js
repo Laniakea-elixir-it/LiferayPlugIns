@@ -67,6 +67,7 @@ function updateIP(job_output_url, id) {
     success : function(data) {
       if (data.cluster_creds) {
         infoMap[id] = 'user: ' + data.cluster_creds.user + '</br></br>' + data.cluster_creds.token;
+        $('#job_info_' + id).show();
       }
       if(data.galaxy_url) {
         $("#ip_" + id).html('<button id="galaxy_ip_' + id + '" type="button" class="btn btn-default btn-sm">' + data.galaxy_url + '</button>');
