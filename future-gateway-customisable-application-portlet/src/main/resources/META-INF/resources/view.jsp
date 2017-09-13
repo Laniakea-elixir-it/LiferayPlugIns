@@ -186,6 +186,36 @@
                 }
                 var myDiv = document.getElementById("<portlet:namespace/>appSubmitForm");
                 myDiv.innerHTML = myDiv.innerHTML + out;
+                for(var i = 0; i < jsonArr.length; i++) {
+                  switch(jsonArr[i].type) {
+                    case "password":
+                      if(jsonArr[i].maxlength) {
+                        $("#param_"+jsonArr[i].name).prop("maxLength",jsonArr[i].maxlength);
+                      }
+                      break;
+                    case "password":
+                      if(jsonArr[i].maxlength) {
+                        $("#param_"+jsonArr[i].name).prop("maxLength",jsonArr[i].maxlength);
+                      }
+                      break;
+                    case "list":
+                      if(jsonArr[i].choosen) {
+                        $("#param_"+jsonArr[i].name).val(jsonArr[i].choosen);
+                      }
+                      break;
+                    case "radio":
+                      if(jsonArr[i].choosen) {
+                        var radio_length = $('input[name='+jsonArr[i].name+']').length;
+                        for(var j=0; j<radio_length; j++) {
+                          if($('input[name='+jsonArr[i].name+']')[j].defaultValue == jsonArr[i].choosen) {
+                            $('input[name='+jsonArr[i].name+']')[j].checked=true;
+                            break;
+                          }
+                        }
+                      }
+                      break;
+                  }
+                }
             }
             function getParams() {
                 var paramJson = { parameters: {} };

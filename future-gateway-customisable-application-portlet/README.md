@@ -23,7 +23,9 @@ Simplest example of json file:
     (required) "type": TYPE_NAME,
     (required) "value": VALUE,
     (required) "name": NAME_OF_PARAMETER,
-    (required) "display": DISPLAY
+    (required) "display": DISPLAY,
+    (optional) "choosen": CHOOSEN_VALUE,
+    (optional) "maxlength": LENGTH
 }
 ```
 * NUMBER_OF_TAB_ITEM: JSON number - position in the **"tabs"** table
@@ -35,6 +37,8 @@ Simplest example of json file:
   * for "radio" type: JSON array of strings or numbers
 * NAME_OF_PARAMETER: unique name of parameter (name must be single word e.g. use _ as separator between words)
 * DISPLAY: parameter named shown for user in request pop-up 
+* CHOOSEN_VALUE: (works only for list and radio types) value selected in the list or radio
+* LENGTH: (works only for text and password types) max length of input
 
 
 
@@ -50,16 +54,18 @@ Simplest example of json file:
     ],
     "type": "list",
     "name": "number_cpus",
-    "display": "Virtual CPUs Number"
+    "display": "Virtual CPUs Number",
+    "choosen": 8
 }
 ```
 * example with text type:
 ```
 {
     "tab": 1,
-        "value": "Paste here your public key",
-        "type": "text",
-        "name": "instance_key_pub",
-        "display": "SSH public key"
+    "value": "Paste here your public key",
+    "type": "text",
+    "name": "instance_key_pub",
+    "display": "SSH public key",
+    "maxlength": 1000 
 }
 ```
