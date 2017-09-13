@@ -1,17 +1,20 @@
 <%@ include file="/init.jsp" %>
 <%@ page import="com.liferay.portal.kernel.util.Constants" %>
+<%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
+<%@ page import="com.liferay.portal.kernel.portlet.LiferayPortletURL" %>
 
 <liferay-portlet:actionURL portletConfiguration="<%= true %>" var="configurationActionURL" />
 <liferay-portlet:renderURL portletConfiguration="<%= true %>" var="configurationRenderURL" />
-
+<%
+LiferayPortletURL resourceURL = (LiferayPortletURL) renderResponse.createResourceURL();
+resourceURL.setPortletId(ParamUtil.getString(request, "portletResource"));
+resourceURL.setResourceID("/yaml/convert");
+%>
         <script type="text/javascript">
             /*
              * All the web app needs to configure are the following
              */
-            var paramJson = { parameters: {} };
             var defaultApps;
-            var myJson = paramJson ;
-            var defaultJson = myJson;
             var application;
             
             var token = null;
@@ -28,7 +31,8 @@
                 app_id: 0,
                 apiserver_endpoint: '${FGEndPoint}'
             };
-            function changeApp(app_name, app_id) {
+
+           function changeApp(app_name, app_id) {
                 $('#<portlet:namespace />requestButton').removeClass('disabled');
                 $('#<portlet:namespace />requestButton').prop('disabled', false);
                 $('#jsonButton').prop('disabled', false);
@@ -38,11 +42,17 @@
                         application = defaultApps.applications[i];
                         webapp_settings.app_id = defaultApps.applications[i].id;
                         $('#<portlet:namespace />applicationId').val(app_id);
+                        generateApplicationJson(defaultApps.applications[i].id, defaultApps.applications[i].infrastructures,
+                            function(json){
+                              var json1 = JSON.stringify(ans, null, 2);
+                              $('#jsonArea1').val(json1);
+                        }, '<%= resourceURL.toString() %>');                        
                     }
                 }
             }
-            function welcome() {
-                defaultApps = getApplicationsJson();
+
+            function welcome(apps) {
+                defaultApps = apps;
                 $('#jobsDiv').html('');
                 var content = '';
                 for(var i=0; i<defaultApps.applications.length; i++) {
@@ -52,6 +62,12 @@
                     if (defaultApps.applications[i].id == '<%= appId %>') {
                       $('#appButton').html(defaultApps.applications[i].name + ' <span class="caret"></span>');
                       $('#jsonButton').prop('disabled', false);
+                      generateApplicationJson(defaultApps.applications[i].id, defaultApps.applications[i].infrastructures,
+                          function(json){
+                            var json1 = JSON.stringify(json, null, 2);
+                            $('#jsonArea1').val(json1);
+                      }, '<%= resourceURL.toString() %>');
+                      
                     }
                 }
                 $('#dropmenu').html(content);
@@ -67,13 +83,12 @@
                 $('#<portlet:namespace />requestButton').prop('disabled', false);
                 switch(ans) {
                     case "old":
-                        myJson = defaultJson;
-                        $('#<portlet:namespace />jsonApp').val("");
+                        $('#<portlet:namespace />jsonApp').val('');
                         break;
                     case "new":
                         var newJson = $('#jsonArea2').val();
                         try {
-                          myJson = JSON.parse(newJson);
+                          var myJson = JSON.parse(newJson);
                         } catch( e ) {
                           alert("<liferay-ui:message key="customisable.application.portlet.jsonError"/>. " + e);
                         }
@@ -84,12 +99,6 @@
                         break;
                 }
             }
-            function filljsonArea1() {
-                var ans = defaultJson;
-                var json1 = JSON.stringify(ans, null, 2);
-                $('#jsonArea1').val(json1); 
-            }
-    
         </script>
         <div class="panel panel-default">
         <div class="panel-body">
@@ -111,7 +120,7 @@
         	<center>
             	<aui:button type="submit" name="configSave" value="customisable.application.portlet.configSave" id="requestButton" class="btn btn-primary btn-lg" disabled="true"/>
 	        </center>
-	        <aui:input name="applicationId" id="applicationId" type="hidden" value="" />
+	        <aui:input name="applicationId" id="applicationId" type="hidden" value="<%= appId==null ? "" : appId %>" />
 	        <aui:input name="jsonApp" id="jsonApp" type="hidden" value="" />
 	        <aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
             <aui:input name="redirect" type="hidden" value="<%= configurationRenderURL %>" />
@@ -137,9 +146,9 @@
               <div class="modal-body" style="max-height: calc(100vh - 210px); overflow-y: auto;">
                   <form>
                       <div class="radio">
-                          <label><input type="radio" name="optradio" value="old" <%= jsonApp.isEmpty() ?  "checked" : "" %>>
-                              <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#jsonTextArea1" onClick="filljsonArea1()">default json</button>
-                              object can not be changed
+                          <label><input type="radio" name="optradio" value="old" <%= isDefaultJson ?  "checked" : "" %>>
+                              <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#jsonTextArea1">default json</button>
+                              <liferay-ui:message key="customisable.application.portlet.defaultJson"/>
                           </label>
                       </div>
                       <div id="jsonTextArea1" class="collapse">
@@ -149,9 +158,9 @@
                           </div>
                       </div>
                       <div class="radio">
-                          <label><input type="radio" name="optradio" value="new" <%= jsonApp.isEmpty() ?  "" : "checked" %>>
+                          <label><input type="radio" name="optradio" value="new" <%= isDefaultJson ?  "" : "checked" %>>
                               <button type="button" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#jsonTextArea2">new json</button>
-                              customizable object
+                              <liferay-ui:message key="customisable.application.portlet.customJson"/>
                           </label>
                       </div>
                       <div id=jsonTextArea2 class="collapse">
@@ -200,7 +209,7 @@
                     if(obj.token != undefined) {
                         token = obj.token;
                     }
-                    welcome();
+                    getApplicationsJson(welcome);
                 }
             );
           $('#jsonArea2').val('<%= jsonApp %>');

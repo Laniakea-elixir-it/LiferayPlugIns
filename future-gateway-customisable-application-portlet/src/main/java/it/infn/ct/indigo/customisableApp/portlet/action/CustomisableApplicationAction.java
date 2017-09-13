@@ -58,11 +58,13 @@ public class CustomisableApplicationAction extends DefaultConfigurationAction {
         String jsonApp = ParamUtil.getString(actionRequest, "jsonApp");
         if (jsonApp != null && !jsonApp.isEmpty()) {
             setPreference(actionRequest, "jsonApp", jsonApp);
+        } else {
+            setPreference(actionRequest, "jsonApp", (String) null);
         }
         super.processAction(portletConfig, actionRequest, actionResponse);
     }
 
-    /**
+     /**
      * Sets the FG Server manager.
      * This is used to get information of the service and for interactions.
      *
@@ -79,4 +81,4 @@ public class CustomisableApplicationAction extends DefaultConfigurationAction {
      */
     private FGServerManager fgServerManager;
 
-}
+ }

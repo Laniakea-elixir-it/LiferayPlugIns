@@ -1,11 +1,15 @@
-Bundle-Name: FutureGateway customisable.application.portlet
+Bundle-Name: FutureGateway Customisable Application portlet
 Bundle-SymbolicName: customisable.application.portlet
 Bundle-Version: 2.1.0
+Include-Resource: @lib/snakeyaml-1.17.jar, @lib/jackson-annotations-2.9.0.jar, @lib/jackson-core-2.9.0.jar, @lib/jackson-databind-2.9.0.jar, @lib/jackson-dataformat-yaml-2.9.0.jar
+
 Export-Package:\
     it.infn.ct.indigo.customisableApp.configuration,\
     it.infn.ct.indigo.customisableApp.portlet,\
-    it.infn.ct.indigo.customisableApp.portlet.configuration
+    it.infn.ct.indigo.customisableApp.portlet.configuration,\
+    it.infn.ct.indigo.customisableApp.portlet.converter
 Import-Package:\
+    !com.fasterxml.jackson.*,\
     !com.google.gson.*,\
     !com.google.gson.annotations.*,\
     !com.google.gson.internal.*,\

@@ -1,6 +1,7 @@
 <%@ include file="/init.jsp" %>
         <portlet:resourceURL var="oneDataURL" id="/oneData/resources"/>
         <portlet:resourceURL var="oneDataTokenURL" id="/oneData/token"/>
+        <portlet:resourceURL var="yamlConvertURL" id="/yaml/convert"/>
     <script>
          define._amd = define.amd;
          define.amd = false;
@@ -15,19 +16,6 @@
             /*
              * All the web app needs to configure are the following
              */
-            var defaultApps;
-            var myJson = JSON.parse('<%= jsonApp.replaceAll("'", "\\\\'") %>') ;
-            var parameterFile = '<%= parameterFile %>';
-            var defaultJson = myJson;
-            var application;
-            
-            var token = null;
-            var jobLimit = 5;
-            var Jdiv = 0;
-            var LI="LI_0";
-            var infoMap = new Object();
-            var jsonArr; 
-
             var webapp_settings = {
                 apiserver_url: ''
                ,apiserver_path : '/apis'
@@ -35,6 +23,20 @@
                ,app_id         : '<%= appId %>'
                ,apiserver_endpoint: '${FGEndPoint}'
             };
+            var myJson;
+            <c:if test="<%= !isDefaultJson %>">
+	            myJson = JSON.parse('<%= jsonApp.replaceAll("'", "\\\\'") %>') ;
+            </c:if>
+            var parameterFile = '<%= parameterFile %>';
+            var defaultJson = myJson;
+            var isDefaultJson = <%= isDefaultJson %>;
+            var token = null;
+            var jobLimit = 5;
+            var Jdiv = 0;
+            var LI="LI_0";
+            var infoMap = new Object();
+            var jsonArr;
+
             /*
              * Change variable below to change delay of check status loop
              */
@@ -110,10 +112,6 @@
                             out += '<input type="password" maxlength="50" id="param_'+jsonArr[i].name
                                 +'" class="form-control" value="' + jsonArr[i].value + '"/></br>';
                             break;
-                        case "text":
-                            out += '<input type="text" id="param_'+jsonArr[i].name
-                                +'" class="form-control" value="' + jsonArr[i].value + '"/></br>';
-                            break;
                         case "radio":    
                             out += '<div id="param_'+jsonArr[i].name+'" class="radio">';
                             for(k = 0; k < jsonArr[i].value.length; k++) {
@@ -147,6 +145,11 @@
                           out += '<div id="param_tree_'+jsonArr[i].name+'"></div>';
                           out += '</div>';
                           break;
+                        case "text":
+                        default:
+                            out += '<input type="text" id="param_'+jsonArr[i].name
+                                +'" class="form-control" value="' + jsonArr[i].value + '"/></br>';
+                            break;
                     }
                     out += '</p>';
                     if((jsonArr[i].tab != null) && makeTabs) {
@@ -187,6 +190,36 @@
                 }
                 var myDiv = document.getElementById("<portlet:namespace/>appSubmitForm");
                 myDiv.innerHTML = myDiv.innerHTML + out;
+                for(var i = 0; i < jsonArr.length; i++) {
+                  switch(jsonArr[i].type) {
+                    case "password":
+                      if(jsonArr[i].maxlength) {
+                        $("#param_"+jsonArr[i].name).prop("maxLength",jsonArr[i].maxlength);
+                      }
+                      break;
+                    case "password":
+                      if(jsonArr[i].maxlength) {
+                        $("#param_"+jsonArr[i].name).prop("maxLength",jsonArr[i].maxlength);
+                      }
+                      break;
+                    case "list":
+                      if(jsonArr[i].choosen) {
+                        $("#param_"+jsonArr[i].name).val(jsonArr[i].choosen);
+                      }
+                      break;
+                    case "radio":
+                      if(jsonArr[i].choosen) {
+                        var radio_length = $('input[name='+jsonArr[i].name+']').length;
+                        for(var j=0; j<radio_length; j++) {
+                          if($('input[name='+jsonArr[i].name+']')[j].defaultValue == jsonArr[i].choosen) {
+                            $('input[name='+jsonArr[i].name+']')[j].checked=true;
+                            break;
+                          }
+                        }
+                      }
+                      break;
+                  }
+                }
             }
             function getParams() {
                 var paramJson = { parameters: {} };
@@ -197,6 +230,10 @@
 
                 for(var i=0; i<jsonArr.length; i++) {
                     switch(jsonArr[i].type) {
+                        case "password":
+                            var out = $('#param_'+jsonArr[i].name).val();
+                            paramJson.parameters[jsonArr[i].name] = out;
+                            break;
                         case "radio":
                             var out = $('input[name='+jsonArr[i].name+']:checked').val();
                             paramJson.parameters[jsonArr[i].name] = out;
@@ -227,6 +264,11 @@
                               paramJson.parameters[jsonArr[i].name] = onezonedata[0];
                             }
                             break;
+                        case "list":
+                            var out = $('#param_'+jsonArr[i].name).val();
+                            paramJson.parameters[jsonArr[i].name] = out;
+                            break;
+                        case "text":
                         default:
                             var out = $('#param_'+jsonArr[i].name).val();
                             paramJson.parameters[jsonArr[i].name] = out;
@@ -248,8 +290,7 @@
                 }
                 return {params: paramJson, defers: deferred};
             }
-
-            function <portlet:namespace />updateOneDataTree(oneZone, tree) {
+           function <portlet:namespace />updateOneDataTree(oneZone, tree) {
               $('#'+tree).jstree({
                   'core': {
                      'multiple': false,
@@ -281,7 +322,7 @@
         <c:otherwise>
             <div id="<portlet:namespace/>appSubmitForm"></div>
             <center>                
-                <button type="button" class="btn btn-primary" onClick="submitJob()" id="submitButton">Submit</button>
+                <button type="button" class="btn btn-primary" onClick="submitJob()" id="submitBigButton">Submit</button>
             </center>
         </c:otherwise>
         </c:choose>
@@ -343,8 +384,25 @@
                     if(obj.token != undefined) {
                         token = obj.token;
                     }
-                    printJsonArray();
+
+                    if(document.getElementById("<portlet:namespace/>appSubmitForm")) {
+                      if(isDefaultJson) {
+                        getApplicationInfra('<%= appId %>', function(infra){
+                          generateApplicationJson('<%= appId %>', infra,
+                              function(json){
+                                myJson = json;
+                                defaultJson = myJson;
+                                printJsonArray();
+                              }, '<%= yamlConvertURL.toString() %>');
+                          
+                        });
+                      } else {
+	                    printJsonArray();
+                      }
+                    }
+                    <c:if test="<%= appId != null && !appId.isEmpty() %>" >
                     prepareJobTable();
+                    </c:if>
                 }
             );
         
