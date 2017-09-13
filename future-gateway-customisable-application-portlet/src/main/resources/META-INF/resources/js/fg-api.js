@@ -17,6 +17,73 @@ function predicatBy(prop) {
     return 0;
   }
 }
+function getApplicationTemplate(local_app_id, template_name, yamlCallback, converterUrl) {
+    $.ajax({
+        type: "GET",
+        headers: {
+            'Authorization':'Bearer ' + token
+        },
+        url: webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
+            + '/' + 'applications' + '/' + local_app_id
+            : webapp_settings.apiserver_url + webapp_settings.apiserver_path
+                + '/' + webapp_settings.apiserver_ver + '/' +  + 'applications' + '/' + local_app_id,
+        dataType: "json",
+        success: function(data) {
+            if(data && data.files) {
+                for(var i=0; i<data.files.length; i++) {
+                    if(data.files[i].name == template_name) {
+                        getFile(data.files[i].url, function (data){
+                          convertYAML(converterUrl, data, yamlCallback);
+                        });
+                        return;
+                    }
+                }
+            }
+        },
+    });
+}
+
+function convertYAML(converterUrl, yaml, callback) {
+  $.ajax({
+    headers: {
+        'Authorization':'Bearer ' + token
+    },
+    url: converterUrl,
+    dataType: "json",
+    data: {
+      yamlFile: yaml
+    },
+    success: function(data) {
+        if(data) {
+          callback(data);
+        }
+    },
+  });
+}
+
+function generateApplicationJson(app_id, infra_list, callback, converterUrl) {
+  $.ajax({
+    type: "GET",
+    headers: {
+        'Authorization':'Bearer ' + token
+    },
+    url: webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
+       + '/' + 'infrastructures' + '/' + infra_list[0]
+       : webapp_settings.apiserver_url + webapp_settings.apiserver_path
+           + '/' + webapp_settings.apiserver_ver + '/' +  + 'infrastructures' + '/' + infra_list[0],
+    dataType: "json",
+    success: function(data) {
+      if (data && data.parameters)
+      for (var i = 0; i < data.parameters.length; i++) {
+        if (data.parameters[i].name == "tosca_template") {
+          getApplicationTemplate(app_id, data.parameters[i].value, callback, converterUrl);
+          return;
+        }
+      }
+    },
+  });
+}
+
 function getFile(file_url, callback) {
   if(file_url == null) {
     return;
@@ -50,6 +117,25 @@ function getApplicationsJson(successCallback) {
         success: function(data) {
           if (typeof successCallback === "function") {
             successCallback(data);
+          };
+        },
+      });
+}
+
+function getApplicationInfra(appId, successCallback) {
+  $.ajax({
+        type: "GET",
+        headers: {
+          'Authorization' : 'Bearer ' + token
+        },
+        url: webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
+            + '/' + 'applications' + '/'  +appId
+            : webapp_settings.apiserver_url + webapp_settings.apiserver_path
+                + '/' + webapp_settings.apiserver_ver + '/' + 'applications' + '/'  +appId,
+        dataType: "json",
+        success: function(data) {
+          if (typeof successCallback === "function") {
+            successCallback(data.infrastructures);
           };
         },
       });

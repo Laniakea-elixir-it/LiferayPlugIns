@@ -6,8 +6,6 @@ import javax.portlet.Portlet;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -17,11 +15,8 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
-import it.infn.ct.indigo.customisableApp.portlet.converter.Converter;
 import it.infn.ct.indigo.futuregateway.server.FGServerManager;
 
 /**
@@ -65,38 +60,6 @@ public class CustomisableApplicationPortlet extends MVCPortlet {
 
         super.doView(renderRequest, renderResponse);
     }
-
-    
-    
-    
-    @Override
-    public void serveResource(ResourceRequest resourceRequest, ResourceResponse resourceResponse)
-            throws IOException, PortletException {
-        super.serveResource(resourceRequest, resourceResponse);
-        String resourceID = GetterUtil.getString(
-                resourceRequest.getResourceID());
-
-        log.debug("Server resource from portlet");
-        if (resourceID.equals("/yaml/convert")) {
-
-        String yaml = ParamUtil.getString(resourceRequest, "yamlFile", "");
-        log.debug("Generating the json parameter file from the yaml: " + yaml);
-        if (yaml.isEmpty()) {
-//            return true;
-            return;
-        }
-        Converter conv = new Converter();
-        try {
-            resourceResponse.setContentType("application/json");
-            resourceResponse.getWriter().append(conv.readYamlToJsonArray(yaml).toString());
-        } catch (IOException e) {
-            log.error("Impossible to send the json with OneData files "
-                    + "back to the user.");
-        }
-        }
-    }
-
-
 
 
     /**

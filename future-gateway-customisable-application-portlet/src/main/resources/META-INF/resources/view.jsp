@@ -1,6 +1,7 @@
 <%@ include file="/init.jsp" %>
         <portlet:resourceURL var="oneDataURL" id="/oneData/resources"/>
         <portlet:resourceURL var="oneDataTokenURL" id="/oneData/token"/>
+        <portlet:resourceURL var="yamlConvertURL" id="/yaml/convert"/>
     <script>
          define._amd = define.amd;
          define.amd = false;
@@ -22,16 +23,19 @@
                ,app_id         : '<%= appId %>'
                ,apiserver_endpoint: '${FGEndPoint}'
             };
-            var myJson = JSON.parse('<%= jsonApp.replaceAll("'", "\\\\'") %>') ;
+            var myJson;
+            <c:if test="<%= !isDefaultJson %>">
+	            myJson = JSON.parse('<%= jsonApp.replaceAll("'", "\\\\'") %>') ;
+            </c:if>
             var parameterFile = '<%= parameterFile %>';
             var defaultJson = myJson;
-            
+            var isDefaultJson = <%= isDefaultJson %>;
             var token = null;
             var jobLimit = 5;
             var Jdiv = 0;
             var LI="LI_0";
             var infoMap = new Object();
-            var jsonArr; 
+            var jsonArr;
 
             /*
              * Change variable below to change delay of check status loop
@@ -382,10 +386,18 @@
                     }
 
                     if(document.getElementById("<portlet:namespace/>appSubmitForm")) {
-                      if (isDefaultJson) {
-                        jsonApp = "{ \"parameters\": {}}";
+                      if(isDefaultJson) {
+                        getApplicationInfra('<%= appId %>', function(infra){
+                          generateApplicationJson('<%= appId %>', infra,
+                              function(json){
+                                myJson = json;
+                                defaultJson = myJson;
+                                printJsonArray();
+                              }, '<%= yamlConvertURL.toString() %>');
+                          
+                        });
                       } else {
-                        printJsonArray();
+	                    printJsonArray();
                       }
                     }
                     <c:if test="<%= appId != null && !appId.isEmpty() %>" >
