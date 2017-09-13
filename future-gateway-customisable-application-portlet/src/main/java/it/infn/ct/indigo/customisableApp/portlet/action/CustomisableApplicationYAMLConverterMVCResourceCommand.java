@@ -42,7 +42,8 @@ public class CustomisableApplicationYAMLConverterMVCResourceCommand
         Converter conv = new Converter();
         try {
             resourceResponse.setContentType("application/json");
-            resourceResponse.getWriter().append(conv.readYamlToJsonArray(yaml).toString());
+            resourceResponse.getWriter().append(
+                    conv.readYamlToJsonArray(yaml).toString());
         } catch (IOException e) {
             log.error("Impossible to send the json with OneData files "
                     + "back to the user.");

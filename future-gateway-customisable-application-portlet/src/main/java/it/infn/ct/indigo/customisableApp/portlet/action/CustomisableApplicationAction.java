@@ -16,7 +16,6 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
-import it.infn.ct.indigo.customisableApp.portlet.converter.Converter;
 import it.infn.ct.indigo.futuregateway.server.FGServerManager;
 
 /**
@@ -56,16 +55,12 @@ public class CustomisableApplicationAction extends DefaultConfigurationAction {
 
         setPreference(actionRequest, "applicationId",
                 ParamUtil.getString(actionRequest, "applicationId"));
-        Converter converter = new Converter();
         String jsonApp = ParamUtil.getString(actionRequest, "jsonApp");
         if (jsonApp != null && !jsonApp.isEmpty()) {
             setPreference(actionRequest, "jsonApp", jsonApp);
         } else {
             setPreference(actionRequest, "jsonApp", (String) null);
         }
-        //code below returns json array of parameters generated from yaml file
-        String paramsArray = converter.readYamlToJsonArray(ParamUtil.getString(actionRequest, "fileConverter")).toString();
-        //System.out.println("[2.1.0-CAP] paramsToSend: " + paramsArray);
         super.processAction(portletConfig, actionRequest, actionResponse);
     }
 
