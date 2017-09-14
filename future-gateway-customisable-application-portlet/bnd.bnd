@@ -1,6 +1,6 @@
 Bundle-Name: FutureGateway Customisable Application portlet
 Bundle-SymbolicName: customisable.application.portlet
-Bundle-Version: 2.1.0
+Bundle-Version: 2.2.0
 Include-Resource: @lib/snakeyaml-1.17.jar, @lib/jackson-annotations-2.9.0.jar, @lib/jackson-core-2.9.0.jar, @lib/jackson-databind-2.9.0.jar, @lib/jackson-dataformat-yaml-2.9.0.jar
 
 Export-Package:\

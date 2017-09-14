@@ -1,6 +1,6 @@
 {
     "name": "future-gateway-admin-portlet",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "dependencies": {
         "metal": "^1.0.0",
         "metal-datatable": "^1.0.0",
