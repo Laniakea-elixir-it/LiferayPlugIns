@@ -1,81 +1,135 @@
 <%--suppress LongLine --%>
 <%@ include file="init.jsp" %>
 
-<%@ page import="pl.psnc.indigo.fg.api.restful.jaxb.Task" %>
-<%@ page import="pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus" %>
-<%@ page import="java.util.Collection" %>
-
 <c:choose>
 
     <c:when test="${renderRequest.getAttribute('error') == null}">
 
-        <%--@elvariable id="tasks" type="java.util.Collection<Task>"--%>
-
-        <%
-
-            final Collection<Task> tasks = (Collection<Task>) renderRequest.getAttribute("tasks");
-
-        %>
-
-        You have <c:out value="${tasks.size()}"/> tasks with runtime data.
-
-        <div class="panel-group" id="accordion" role="tablist">
-
-            <c:forEach var="task" items="${tasks}">
-
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="heading<c:out value="${task.id}"/>">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#task<c:out value="${task.id}"/>" aria-controls="task<c:out value="${task.id}"/>"><span class="glyphicon
-                            <c:choose>
-                                <c:when test="${task.status == 'DONE'}">
-                                    glyphicon-ok
-                                </c:when>
-                                <c:when test="${task.status == 'ABORTED'}">
-                                    glyphicon-remove
-                                </c:when>
-                                <c:otherwise>
-                                    glyphicon-refresh
-                                </c:otherwise>
-                            </c:choose>"></span> ${task.lastChange} - <c:out value="${task.id}"/> - <c:out value="${task.status}"/><c:if test="${task.description.length() > 0}">
-                                <br/>
-                                <c:out value="${task.description}"/></c:if> </a>
-                        </h4>
-                    </div>
-
-                    <div id="task<c:out value="${task.id}"/>" class="collapse panel-collapse" role="tabpanel" aria-labelledby="header<c:out value="${task.id}"/>">
-                        <div class="panel-body">
-                            <table class="table table-striped" style="width: 100%; table-layout: fixed">
-                                <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Created</th>
-                                    <th>Last changed</th>
-                                    <th>Value</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                <c:forEach var="runtimeData" items="${task.runtimeData}">
-
-                                    <tr>
-                                        <td><c:out value="${runtimeData.name}"/></td>
-                                        <td><c:out value="${runtimeData.creation}"/></td>
-                                        <td><c:out value="${runtimeData.lastChange}"/></td>
-                                        <td style="max-width: 25%;"><span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 100%;"><c:out value="${runtimeData.value}"/></span></td>
-                                    </tr>
-
-                                </c:forEach>
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-            </c:forEach>
-
+        <div class="input-group">
+            <input id="applicationName" class="form-control" name="applicationName" placeholder="Application Name"/>
+            <div class="input-group-btn">
+                <button id="applicationNameButton" class="btn btn-default">
+                    <i class="glyphicon glyphicon-search"></i>
+                </button>
+            </div>
         </div>
+
+        <div id="infoBox" class="alert alert-info" hidden="hidden"><span id="infoMessage"></span></div>
+        <div id="dangerBox" class="alert alert-danger" hidden="hidden"><span id="dangerMessage"></span></div>
+
+        <div class="panel-group" id="accordion" role="tablist"></div>
+
+        <script type="application/javascript">
+            $('#applicationNameButton').click(function () {
+                var applicationName = $('#applicationName').val();
+                var token = "<c:out value="${renderRequest.getAttribute('token')}"/>";
+                var futuregatewayUri = "<c:out value="${renderRequest.getAttribute('futuregatewayUri')}"/>";
+                var applicationId = null;
+
+                $('#applicationName').prop('disabled', true);
+                $('#applicationNameButton').prop('disabled', true);
+                $.ajax({
+                    method: 'GET',
+                    url: futuregatewayUri + '/v1.0/applications',
+                    headers: {
+                        Authorization: 'Bearer ' + token
+                    },
+                    cache: true,
+                    success: function (data) {
+                        $.each(data.applications, function () {
+                            if (this.name === applicationName) {
+                                applicationId = this.id;
+                            }
+                        });
+
+                        if (applicationId === null) {
+                            $('#dangerMessage').text('Failed to find application: ' + applicationName);
+                            $('#infoBox').attr('hidden', 'hidden');
+                            $('#dangerBox').removeAttr('hidden');
+                            return;
+                        }
+
+                        $('#infoMessage').text('Found application, retrieving task list...');
+                        $('#dangerBox').attr('hidden', 'hidden');
+                        $('#infoBox').removeAttr('hidden');
+
+                        $.ajax({
+                            method: 'GET',
+                            url: futuregatewayUri + '/v1.0/tasks?application=' + applicationId,
+                            headers: {
+                                Authorization: 'Bearer ' + token
+                            },
+                            cache: true,
+                            success: function (data) {
+                                $('#accordion').empty();
+                                $.each(data.tasks, function () {
+                                    var tbody = $('<tbody/>');
+
+                                    $.ajax({
+                                        method: 'GET',
+                                        url: futuregatewayUri + '/v1.0/tasks/' + this.id,
+                                        headers: {
+                                            Authorization: 'Bearer ' + token
+                                        },
+                                        cache: true,
+                                        success: function (task) {
+                                            $.each(task.runtime_data, function () {
+                                                tbody.append($('<tr/>')
+                                                    .append($('<td>' + this.name + '</td>'))
+                                                    .append($('<td>' + this.creation + '</td>'))
+                                                    .append($('<td>' + this.lastChange + '</td>'))
+                                                    .append($('<td style="max-width: 25%"/>')
+                                                        .append($('<span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 100%">' + this.value + '</span>"'))));
+                                            });
+                                        }
+                                    });
+
+                                    var icon;
+                                    if (this.status === 'DONE') {
+                                        icon = 'glyphicon-ok';
+                                    } else if (this.status === 'ABORTED') {
+                                        icon = 'glyphicon-remove';
+                                    } else {
+                                        icon = 'glyphicon-refresh';
+                                    }
+
+                                    var description = this['last_change'] + ' - ' + this.id;
+                                    if (this.description !== '') {
+                                        description += ' - ' + this.description;
+                                    }
+
+                                    $('#accordion')
+                                        .append($('<div class="panel panel-default"/>')
+                                            .append($('<div class="panel-heading"/>')
+                                                .append($('<h4 class="panel-title"/>')
+                                                    .append($('<a data-toggle="collapse" href="#task' + this.id + '"/>')
+                                                        .append($('<span class="glyphicon ' + icon + '"/>'))
+                                                        .append($('<span> ' + description + '</span>')))))
+                                            .append($('<div id="task' + this.id + '" class="collapse panel-collapse"/>')
+                                                .append($('<div class="panel-body"/>')
+                                                    .append($('<table class="table table-striped" style="width: 100%; table-layout: fixed"/>')
+                                                        .append($('<thead/>')
+                                                            .append($('<tr/>')
+                                                                .append($('<th>Name</th>'))
+                                                                .append($('<th>Created</th>'))
+                                                                .append($('<th>Last changed</th>'))
+                                                                .append($('<th>Value</th>'))))
+                                                        .append(tbody)))));
+                                });
+                            }
+                        });
+                    },
+                    complete: function () {
+                        $('#applicationName').prop('disabled', false);
+                        $('#applicationNameButton').prop('disabled', false);
+
+                        $('#infoMessage').text('Task list successfully retrieved');
+                        $('#dangerBox').attr('hidden', 'hidden');
+                        $('#infoBox').removeAttr('hidden');
+                    }
+                });
+            });
+        </script>
 
     </c:when>
 

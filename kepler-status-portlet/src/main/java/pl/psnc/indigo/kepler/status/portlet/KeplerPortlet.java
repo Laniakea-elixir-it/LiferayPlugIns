@@ -12,9 +12,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pl.psnc.indigo.fg.api.restful.TasksAPI;
-import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
-import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
@@ -23,16 +20,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Map;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 // @formatter:off
 @Component(
@@ -77,50 +65,15 @@ public class KeplerPortlet extends MVCPortlet {
                 return;
             }
 
-            final Collection<Task> tasks =
-                    KeplerPortlet.getTasks(tokenInfo, futureGatewayUri);
-
-            renderRequest.setAttribute("tasks", tasks);
-        } catch (final PortalException | FutureGatewayException |
-                InterruptedException | ExecutionException e) {
+            renderRequest.setAttribute("token", tokenInfo.getToken());
+            renderRequest.setAttribute("futuregatewayUri", futureGatewayUri);
+        } catch (final PortalException e) {
             throw new PortletException(
                     "Failed to prepare variables for Kepler portlet", e);
         } finally {
             super.doView(renderRequest, renderResponse);
 
         }
-    }
-
-    private static Collection<Task> getTasks(final TokenInfo tokenInfo,
-                                             final URI futureGatewayUri)
-            throws FutureGatewayException, InterruptedException,
-                   ExecutionException {
-        final TasksAPI api =
-                new TasksAPI(futureGatewayUri, tokenInfo.getToken());
-
-        final int cpuCount = Runtime.getRuntime().availableProcessors();
-        final ExecutorService executorService =
-                Executors.newFixedThreadPool(2 * cpuCount);
-        final Collection<Future<Collection<Task>>> futures = new ArrayList<>();
-
-        for (final Task task : api.getAllTasks()) {
-            futures.add(executorService.submit(() -> {
-                final Task taskFull = api.getTask(task.getId());
-                if (!taskFull.getRuntimeData().isEmpty()) {
-                    return Collections.singletonList(taskFull);
-                }
-                return Collections.emptyList();
-            }));
-        }
-
-        executorService.shutdown();
-
-        final Collection<Task> tasks = new TreeSet<>(
-                Comparator.comparing(Task::getLastChange).reversed());
-        for (final Future<Collection<Task>> future : futures) {
-            tasks.addAll(future.get());
-        }
-        return tasks;
     }
 
     private static TokenInfo getTokenInfo(final PortletRequest renderRequest)
