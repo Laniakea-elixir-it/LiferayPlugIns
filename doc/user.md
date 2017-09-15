@@ -52,4 +52,5 @@ add a new resource. The button will open a new page with a form, depending on th
 ## FutureGateway customisable application module
 
 Customisable application portlet provides direct access to selected applications and allows the user to list all submitted tasks and check their status.
-To submit new tasks it is needed only to press *Launch request* button, fill all required fields in a *submission panel* popup window and confirm it.
+To submit new tasks it is needed only to fill all required fields in a *submission panel* and confirm it by pressing *Submit* button.
+![Customisable Portlet](img/ca-portlet.png)
