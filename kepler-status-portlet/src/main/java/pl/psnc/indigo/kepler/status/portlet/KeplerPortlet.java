@@ -81,7 +81,6 @@ public class KeplerPortlet extends MVCPortlet {
                     "Failed to prepare variables for Kepler portlet", e);
         } finally {
             super.doView(renderRequest, renderResponse);
-
         }
     }
 
