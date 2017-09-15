@@ -1,17 +1,16 @@
 package pl.psnc.indigo.kepler.status.portlet;
 
-import aQute.bnd.annotation.metatype.Configurable;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.security.sso.iam.model.TokenInfo;
 import com.liferay.portal.security.sso.iam.service.TokenServiceUtil;
-import org.osgi.service.component.annotations.Activate;
+import it.infn.ct.indigo.futuregateway.server.FGServerManager;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.component.annotations.Reference;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
@@ -20,12 +19,15 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Map;
 
+/**
+ * A Liferay portlet which asks for FutureGateway's application name and
+ * lists all tasks with corresponding runtime data of the given application
+ * type.
+ */
 // @formatter:off
 @Component(
         immediate = true,
-        configurationPid = "pl.psnc.indigo.kepler.status.portlet.KeplerPortletConfiguration",
         property = {
             "com.liferay.portlet.css-class-wrapper=portlet-greeter",
             "com.liferay.portlet.display-category=category.sample",
@@ -39,10 +41,21 @@ import java.util.Map;
         service = Portlet.class)
 // @formatter:on
 public class KeplerPortlet extends MVCPortlet {
-    private static final Logger LOG =
-            LoggerFactory.getLogger(KeplerPortlet.class);
+    /**
+     * Injected dependency to get portal-wise configuration about FutureGateway.
+     */
+    private FGServerManager fgServerManager;
 
-    private volatile KeplerPortletConfiguration configuration;
+    /**
+     * Setter used for dependency injection by OSGi.
+     *
+     * @param manager An instance holding portal-wise configuration
+     *                options about FutureGateway.
+     */
+    @Reference
+    public final void setFgServerManager(final FGServerManager manager) {
+        fgServerManager = manager;
+    }
 
     @Override
     public final void doView(final RenderRequest renderRequest,
@@ -57,14 +70,10 @@ public class KeplerPortlet extends MVCPortlet {
                 return;
             }
 
-            final URI futureGatewayUri = configuration.futureGatewayUri();
-            if (futureGatewayUri == null) {
-                renderRequest.setAttribute("error",
-                                           "You must configure FutureGateway " +
-                                           "URI");
-                return;
-            }
-
+            final ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest
+                    .getAttribute(WebKeys.THEME_DISPLAY);
+            final URI futureGatewayUri = URI.create(
+                    fgServerManager.getFGUrl(themeDisplay.getCompanyId()));
             renderRequest.setAttribute("token", tokenInfo.getToken());
             renderRequest.setAttribute("futuregatewayUri", futureGatewayUri);
         } catch (final PortalException e) {
@@ -76,18 +85,19 @@ public class KeplerPortlet extends MVCPortlet {
         }
     }
 
+    /**
+     * Gets token info concerning the current user of the portlet.
+     *
+     * @param renderRequest A request which allows to recognize user of the
+     *                      portlet.
+     * @return A {@link TokenInfo} object which hold the IAM token itself and
+     * some metadata around it.
+     * @throws PortalException If a REST call to IAM token service fails.
+     */
     private static TokenInfo getTokenInfo(final PortletRequest renderRequest)
             throws PortalException {
         final ServiceContext serviceContext =
                 ServiceContextFactory.getInstance(renderRequest);
         return TokenServiceUtil.getToken(serviceContext);
-    }
-
-    @Activate
-    @Modified
-    protected final void activate(final Map<String, Object> properties) {
-        configuration = Configurable
-                .createConfigurable(KeplerPortletConfiguration.class,
-                                    properties);
     }
 }

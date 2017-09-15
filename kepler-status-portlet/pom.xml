@@ -3,29 +3,20 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
+    <parent>
+        <groupId>it.infn.ct</groupId>
+        <artifactId>liferay-plugins</artifactId>
+        <version>2.0.3</version>
+    </parent>
 
-    <groupId>pl.psnc.indigo</groupId>
     <artifactId>kepler-status-portlet</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <dependencies>
-        <dependency>
-            <groupId>pl.psnc.indigo</groupId>
-            <artifactId>indigo-fg-api</artifactId>
-            <version>1.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
-        </dependency>
-
         <!-- provided -->
         <dependency>
             <groupId>jstl</groupId>
@@ -72,13 +63,20 @@
         <dependency>
             <groupId>it.infn.ct</groupId>
             <artifactId>service-iam-token-api</artifactId>
-            <version>2.0.3</version>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>it.infn.ct</groupId>
+            <artifactId>future-gateway-admin-portlet</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>pl.psnc.indigo.kepler.status.portlet-${project.version}</finalName>
+        <finalName>kepler.status.portlet-${project.version}</finalName>
 
         <plugins>
             <plugin>
@@ -88,24 +86,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Import-Package>
-                            !com.sun.*,
-                            !groovy.lang.*,
-                            !org.codehaus.commons.*,
-                            !org.codehaus.groovy.*,
-                            !org.codehaus.janino.*,
-                            !javax.validation.*,
-                            !jersey.repackaged.*,
-                            !org.apache.avalon.*,
-                            !org.apache.log.*,
-                            !org.eclipse.*,
-                            !org.hibernate.*,
-                            !org.mapstruct.*,
-                            !org.slf4j.impl.*,
-                            !sun.misc.*,
-                            !sun.reflect.*,
-                            *
-                        </Import-Package>
+                        <Import-Package>*</Import-Package>
                         <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <Require-Capability>
@@ -125,12 +106,52 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.17</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.6.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <check>
+                        <haltOnFailure>true</haltOnFailure>
+                        <branchRate>70</branchRate>
+                        <lineRate>70</lineRate>
+                        <totalBranchRate>70</totalBranchRate>
+                        <totalLineRate>70</totalLineRate>
+                        <packageLineRate>70</packageLineRate>
+                        <packageBranchRate>70</packageBranchRate>
+                    </check>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>clean</goal>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

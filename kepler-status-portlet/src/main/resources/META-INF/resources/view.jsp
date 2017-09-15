@@ -30,7 +30,7 @@
                 $('#applicationNameButton').prop('disabled', true);
                 $.ajax({
                     method: 'GET',
-                    url: futuregatewayUri + '/v1.0/applications',
+                    url: futuregatewayUri + '/applications',
                     headers: {
                         Authorization: 'Bearer ' + token
                     },
@@ -55,7 +55,7 @@
 
                         $.ajax({
                             method: 'GET',
-                            url: futuregatewayUri + '/v1.0/tasks?application=' + applicationId,
+                            url: futuregatewayUri + '/tasks?application=' + applicationId,
                             headers: {
                                 Authorization: 'Bearer ' + token
                             },
@@ -67,7 +67,7 @@
 
                                     $.ajax({
                                         method: 'GET',
-                                        url: futuregatewayUri + '/v1.0/tasks/' + this.id,
+                                        url: futuregatewayUri + '/tasks/' + this.id,
                                         headers: {
                                             Authorization: 'Bearer ' + token
                                         },
