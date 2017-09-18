@@ -1,6 +1,6 @@
 # Customisable application portlet
 
-## Syntax of template-parameters.json
+## Syntax of json of parameters configuration
 Simplest example of json file:
 ```
 {

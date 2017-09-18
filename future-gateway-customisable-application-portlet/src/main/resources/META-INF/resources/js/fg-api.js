@@ -258,24 +258,40 @@ function appendJobRecord(jobIndex, jrec, container) {
  */
 function cleanJob(job_id) {
   $.ajax({
-    type : "DELETE",
+    type : "PATCH",
     headers : {
       'Authorization' : 'Bearer ' + token
     },
     url : webapp_settings.apiserver_url + webapp_settings.apiserver_path + '/'
         + webapp_settings.apiserver_ver + '/tasks/' + job_id,
     dataType : "json",
+    data: JSON.stringify({"status": "CANCELLED"}),
+    contentType: "application/json",
     success : function(data) {
-      $('#confirmJobDel').hide();
-      $('#cancelJobDel').text('Continue');
-      $('#confirmDelete').find('.modal-body p')
-          .text('Successfully removed job');
-      $('#jobTable').find('#' + job_id).next().remove();
-      if (getNumJobs() > 0)
-        $('#jobTable').find('#' + job_id).remove();
-      else
-        emptyJobTable();
-      prepareJobTable();
+      $.ajax({
+        type : "DELETE",
+        headers : {
+          'Authorization' : 'Bearer ' + token
+        },
+        url : webapp_settings.apiserver_url + webapp_settings.apiserver_path + '/'
+            + webapp_settings.apiserver_ver + '/tasks/' + job_id,
+        dataType : "json",
+        success : function(data) {
+          $('#confirmJobDel').hide();
+          $('#cancelJobDel').text('Continue');
+          $('#confirmDelete').find('.modal-body p')
+              .text('Successfully removed job');
+          $('#jobTable').find('#' + job_id).next().remove();
+          if (getNumJobs() > 0)
+            $('#jobTable').find('#' + job_id).remove();
+          else
+            emptyJobTable();
+          prepareJobTable();
+        },
+        error : function(jqXHR, textStatus, errorThrown) {
+          alert(jqXHR.status);
+        }
+      });
     },
     error : function(jqXHR, textStatus, errorThrown) {
       alert(jqXHR.status);
