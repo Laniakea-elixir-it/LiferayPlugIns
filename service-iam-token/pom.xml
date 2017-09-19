@@ -6,7 +6,7 @@
     <parent>
         <groupId>it.infn.ct</groupId>
         <artifactId>liferay-plugins</artifactId>
-        <version>2.0.3</version>
+        <version>2.2.0</version>
     </parent>
 
     <artifactId>service-iam-token</artifactId>
