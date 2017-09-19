@@ -798,7 +798,7 @@ public class IAMImpl implements IAM {
             claimsSet = jwtProcessor.process(token, null);
         } catch (java.text.ParseException | BadJOSEException
                 | JOSEException e) {
-            log.error("The following token cannot be parsed: " + token);
+            log.debug("The following token cannot be parsed: " + token);
             return false;
         }
         return claimsSet.getExpirationTime().after(

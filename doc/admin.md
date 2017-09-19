@@ -58,6 +58,11 @@ selecting the *User* resource. To make them visible select the permissions confi
 users should find these three fields among their custom fields in the account configuration pages.
 
 
+**NOTE:** the communication with IAM to generate tokens takes in account the timestamp of the messages. Hence, if the server time is not correct
+token generation will fail and users will get an error page. To prevent problems during the token generation it is highly recommended to keep the
+server time synchronised with a time server.
+
+
 ### Upgrade to a new release
 
 To upgrade to a new release of the IAM authentication modules is enough to install the new module following the same procedure of the installation.
@@ -111,6 +116,19 @@ The modules should not be present anymore but the configuration is still stored 
 will return to work as before.
 
 ## FutureGateway customisable application module
+To use the Customisable Application portlet, is needed to create and configure an application using the Admin Portlet. Then is possible to configure portlet using Configuration option.
 
-For each application it is possible to determine the parameter list with a template. The parameter list is based on the template-parameters.json file located in the application directory.
-Syntax of template-parameters.json file is shortly described on Customisable application module git repository website
+![Customisable Portlet Configuration](img/ca-portlet-config.png)
+
+It is possible to change application using first button with dropdown toggle. The list contains all installed applications on a given server instance.
+
+![Customisable Portlet application configuration pop-up](img/ca-portlet-app-config.png)
+
+**Interface configuration JSON** button opens **JSON Configuration** pop-up. This part of the configuration allows:
+
+* To use parameters generated from the application TOSCA yaml  
+* To use parameters list prepared by the user ([Syntax of json of parameters configuration](https://github.com/indigo-dc/LiferayPlugIns/tree/master/future-gateway-customisable-application-portlet))
+
+![Customisable Portlet json configuration pop-up](img/ca-portlet-json-config.png)
+
+To finish configuration is needed to confirm changes by pressing **Save configuration** button. The portlet should display all tasks for the chosen application and their current status.

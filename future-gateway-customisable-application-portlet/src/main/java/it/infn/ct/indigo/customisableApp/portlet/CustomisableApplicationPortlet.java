@@ -11,6 +11,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -25,7 +27,9 @@ import it.infn.ct.indigo.futuregateway.server.FGServerManager;
         property = {
                 "com.liferay.portlet.display-category=INFN",
                 "com.liferay.portlet.header-portlet-javascript=/js/fg-api.js",
+                "com.liferay.portlet.header-portlet-css=/css/style.min.css",
                 "com.liferay.portlet.instanceable=false",
+                "com.liferay.portlet.requires-namespaced-parameters=false",
                 "javax.portlet.name=CustomisableApplication",
                 "javax.portlet.display-name=Customisable application Portlet",
                 "javax.portlet.init-param.template-path=/",
@@ -51,11 +55,12 @@ public class CustomisableApplicationPortlet extends MVCPortlet {
                     "FGEndPoint",
                     fgServerManager.getFGUrl(themeDisplay.getCompanyId()));
         } catch (PortalException pe) {
-
+            log.error("Impossible to get the FG end-point");
         }
 
         super.doView(renderRequest, renderResponse);
     }
+
 
     /**
      * Sets the FG Server manager.
@@ -74,4 +79,9 @@ public class CustomisableApplicationPortlet extends MVCPortlet {
      */
     private FGServerManager fgServerManager;
 
+    /**
+     * The logger.
+     */
+    private Log log = LogFactoryUtil.getLog(
+            CustomisableApplicationPortlet.class);
 }

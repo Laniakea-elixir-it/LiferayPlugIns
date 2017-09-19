@@ -1,0 +1,85 @@
+{
+  "parameters": [
+    {
+      "display": "Amount of total disk resource",
+      "name": "storage_size",
+      "type": "list",
+      "value": [
+        "50 GB",
+        "100 GB",
+        "200 GB"
+      ],
+      "tab": 0
+    },
+    {
+      "display": "Admin password for accessing Marathon HTTP service",
+      "name": "marathon_password",
+      "type": "password",
+      "value": "s3cret",
+      "tab": 0
+    },
+    {
+      "display": "Number of slave nodes in the cluster",
+      "name": "slave_num",
+      "type": "list",
+      "value": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "tab": 1
+    },
+    {
+      "display": "Number of CPUs for the slave node",
+      "name": "slave_cpus",
+      "type": "list",
+      "value": [
+        1,
+        2,
+        4
+      ],
+      "tab": 1
+    },
+    {
+      "display": "Amount of Memory for the slave node",
+      "name": "slave_mem",
+      "type": "list",
+      "value": [
+        "1 GB",
+        "2 GB",
+        "4 GB",
+        "8 GB"
+      ],
+      "tab": 1
+    },
+    {
+      "display": "Number of CPUs for the master node",
+      "name": "master_cpus",
+      "type": "list",
+      "value": [
+        1,
+        2,
+        4
+      ],
+      "tab": 1
+    },
+    {
+      "display": "Amount of Memory for the master node",
+      "name": "master_mem",
+      "type": "list",
+      "value": [
+        "1 GB",
+        "2 GB",
+        "4 GB",
+        "8 GB"
+      ],
+      "tab": 1
+    }
+  ],
+  "tabs": [
+    "Repository configuration",
+    "Additional options"
+  ],
+  "version_of_portlet_description": 0.2
+}
