@@ -136,4 +136,4 @@ To finish configuration is needed to confirm changes by pressing **Save configur
 
 ## Kepler Status Portlet
 
-This portlet can be installed by uploading the `kepler.status.portlet-VERSION.jar` using `Liferay > Control Panel > Apps > App Manager`. It uses configuration of FutureGateway administration panel (namely, the URL to the FutureGateway service) and there are not any additional steps required to configure Kepler Status Portlet. 
+This portlet can be installed by uploading the `kepler.status.portlet-VERSION.jar` using `Liferay > Control Panel > Apps > App Manager`. It uses configuration of FutureGateway administration panel (namely, the URL to the FutureGateway service) and there are not any additional steps required to configure Kepler Status Portlet. You can find the portlet under `Sample` category if you want to add the portlet to a page
