@@ -23,7 +23,6 @@
 package com.liferay.portal.security.sso.iam.internal;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
@@ -79,16 +78,12 @@ import com.liferay.portal.security.sso.iam.constants.IAMConfigurationKeys;
 import com.liferay.portal.security.sso.iam.constants.IAMConstants;
 import com.liferay.portal.security.sso.iam.constants.IAMWebKeys;
 import com.liferay.portal.security.sso.iam.internal.util.IAMEndPoints;
+import com.liferay.portal.security.sso.iam.internal.util.IAMEndPointsManager;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.BadJOSEException;
-import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
-import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant;
@@ -140,7 +135,8 @@ public class IAMImpl implements IAM {
             final String authorizationCode, final String returnRequestUri)
                     throws Exception {
         log.debug("Add or update a new user");
-        IAMEndPoints iamEP = new IAMEndPoints(getIAMConfiguration(companyId));
+        IAMEndPoints iamEP = IAMEndPointsManager.getIAMEndPointsInstance(
+                getIAMConfiguration(companyId));
         AuthorizationCode authCode = new AuthorizationCode(authorizationCode);
 
         TokenRequest tokenReq = new TokenRequest(iamEP.getTokenURI(),
@@ -227,7 +223,8 @@ public class IAMImpl implements IAM {
             final boolean isRefreshTokenRequested)
             throws Exception {
         IAMConfiguration iamConf = getIAMConfiguration(companyId);
-        IAMEndPoints iamEP = new IAMEndPoints(iamConf);
+        IAMEndPoints iamEP = IAMEndPointsManager.getIAMEndPointsInstance(
+                iamConf);
         String fullScopes = StringUtil.merge(IAMConstants.SCOPES_LOGIN, " ")
                 + " " + iamConf.oauthExtraScopes();
         if (isRefreshTokenRequested) {
@@ -317,7 +314,8 @@ public class IAMImpl implements IAM {
     public final Map<String, String> getTokenUserInfo(
             final long companyId, final String token) throws Exception {
         log.debug("User information retrieved from IAM");
-        IAMEndPoints iamEP = new IAMEndPoints(getIAMConfiguration(companyId));
+        IAMEndPoints iamEP = IAMEndPointsManager.getIAMEndPointsInstance(
+                getIAMConfiguration(companyId));
         UserInfoRequest userInfoReq = new UserInfoRequest(iamEP.getUserInfo(),
                 new BearerAccessToken(token));
         HTTPResponse userInfoHTTPResp = null;
@@ -721,7 +719,7 @@ public class IAMImpl implements IAM {
                 refreshToken);
         IAMEndPoints iamEP;
         try {
-            iamEP = new IAMEndPoints(getIAMConfiguration(user.getCompanyId()));
+            iamEP = IAMEndPointsManager.getIAMEndPointsInstance(iamConf);
         } catch (ConfigurationException e) {
             log.error(e);
             return null;
@@ -779,20 +777,15 @@ public class IAMImpl implements IAM {
      */
     private boolean isValidToken(final long companyId, final String token) {
         IAMEndPoints iamEP = null;
-        ConfigurableJWTProcessor<SecurityContext> jwtProcessor =
-                new DefaultJWTProcessor<SecurityContext>();
-        JWKSource<SecurityContext> keySource;
+        ConfigurableJWTProcessor<SecurityContext> jwtProcessor;
         try {
-            iamEP = new IAMEndPoints(getIAMConfiguration(companyId));
-            keySource = new RemoteJWKSet<SecurityContext>(iamEP.getJwkURI()
-                    .toURL());
-        } catch (MalformedURLException | ConfigurationException mue) {
+            iamEP = IAMEndPointsManager.getIAMEndPointsInstance(
+                    getIAMConfiguration(companyId));
+        } catch (ConfigurationException ce) {
             log.error("Impossible to access the jwk key");
             return false;
         }
-        jwtProcessor.setJWSKeySelector(
-                new JWSVerificationKeySelector<SecurityContext>(
-                        JWSAlgorithm.RS256, keySource));
+        jwtProcessor = iamEP.getJwtProcessor();
         JWTClaimsSet claimsSet;
         try {
             claimsSet = jwtProcessor.process(token, null);

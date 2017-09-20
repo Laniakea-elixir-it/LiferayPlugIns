@@ -41,6 +41,13 @@ public final class IAMConstants {
             "profile", "email");
 
     /**
+     * Refresh time of the end points and JWT keys refresh.
+     *
+     * Default 4 hours.
+     */
+    public static final int KEYS_REFRESH = 1000 * 60 * 60 * 4;
+
+    /**
      * Default constructor to avoid instances.
      */
     private IAMConstants() {
