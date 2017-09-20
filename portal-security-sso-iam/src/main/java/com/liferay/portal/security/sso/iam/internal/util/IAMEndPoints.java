@@ -34,6 +34,12 @@ import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.security.sso.iam.configuration.IAMConfiguration;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.jwk.source.RemoteJWKSet;
+import com.nimbusds.jose.proc.JWSVerificationKeySelector;
+import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
+import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
@@ -45,8 +51,6 @@ import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
  * The IAMEndPoints configuration reads the IAM end points from the
  * configuration. If the configuration URL is provided all the other URL are
  * discarded and the correct information are retrieved from the IAM service.
- *
- * @author Marco Fargetta
  */
 public class IAMEndPoints {
     /**
@@ -106,6 +110,18 @@ public class IAMEndPoints {
         }
         clientID = new ClientID(iamConf.appId());
         secret = new Secret(iamConf.appSecret());
+        jwtProcessor = new DefaultJWTProcessor<SecurityContext>();
+        JWKSource<SecurityContext> keySource;
+        try {
+            keySource = new RemoteJWKSet<SecurityContext>(jwkURI.toURL());
+            jwtProcessor.setJWSKeySelector(
+                    new JWSVerificationKeySelector<SecurityContext>(
+                            JWSAlgorithm.RS256, keySource));
+        } catch (MalformedURLException mue) {
+            log.error("Impossible to access the jwk key");
+            throw new ConfigurationException(
+                    "Problem to generate a JWT processor");
+        }
     }
 
     /**
@@ -135,7 +151,7 @@ public class IAMEndPoints {
     }
 
     /**
-     * Retrieve the OAuth metadata.
+     * Retrieves the OAuth metadata.
      *
      * @return The oidcMeta
      */
@@ -144,7 +160,7 @@ public class IAMEndPoints {
     }
 
     /**
-     * Retrieve The OAuth token URI.
+     * Retrieves The OAuth token URI.
      *
      * @return The tokenURI
      */
@@ -153,7 +169,7 @@ public class IAMEndPoints {
     }
 
     /**
-     * Retrieve The OAuth JWK URI.
+     * Retrieves The OAuth JWK URI.
      *
      * @return The jwkURI
      */
@@ -162,7 +178,7 @@ public class IAMEndPoints {
     }
 
     /**
-     * Retrieve the OAuth user info URI.
+     * Retrieves the OAuth user info URI.
      *
      * @return The userInfo
      */
@@ -171,7 +187,7 @@ public class IAMEndPoints {
     }
 
     /**
-     * Retrieve the OAuth issuer.
+     * Retrieves the OAuth issuer.
      *
      * @return The issuer
      */
@@ -180,7 +196,7 @@ public class IAMEndPoints {
     }
 
     /**
-     * Retrieve the OAuth client identifier.
+     * Retrieves the OAuth client identifier.
      *
      * @return The clientID
      */
@@ -189,7 +205,7 @@ public class IAMEndPoints {
     }
 
     /**
-     * Retrieve the OAuth client secret.
+     * Retrieves the OAuth client secret.
      *
      * @return The secret
      */
@@ -198,7 +214,7 @@ public class IAMEndPoints {
     }
 
     /**
-     * Retrieve the OAuth token validator.
+     * Retrieves the OAuth token validator.
      *
      * @return The validator
      */
@@ -207,12 +223,21 @@ public class IAMEndPoints {
     }
 
     /**
-     * Retrieve the OAuth authentication URI.
+     * Retrieves the OAuth authentication URI.
      *
      * @return The authURI
      */
     public final URI getAuthURI() {
         return authURI;
+    }
+
+    /**
+     * Retrieves the JWT processor.
+     *
+     * @return The processor
+     */
+    public final ConfigurableJWTProcessor<SecurityContext> getJwtProcessor() {
+        return jwtProcessor;
     }
 
     /**
@@ -259,6 +284,11 @@ public class IAMEndPoints {
      * The OAuth token validator.
      */
     private IDTokenValidator validator = null;
+
+    /**
+     * The JWT Processor.
+     */
+    private ConfigurableJWTProcessor<SecurityContext> jwtProcessor = null;
 
     /**
      * The logger.
