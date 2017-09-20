@@ -54,3 +54,20 @@ add a new resource. The button will open a new page with a form, depending on th
 Customisable application portlet provides direct access to selected applications and allows the user to list all submitted tasks and check their status.
 To submit new tasks it is needed only to fill all required fields in a *submission panel* and confirm it by pressing *Submit* button.
 ![Customisable Portlet](img/ca-portlet.png)
+
+## Kepler Status Portlet
+
+The portlet works only with users logged in using IAM authentication method. 
+![You must be logged in](img/you-must-be-logged-in.png)
+
+Once logged, user is prompted to provide name of the application.
+![Application name](img/application-name.png)
+
+Given invalid name, portlet presents a meaningful error message.
+![Error message](img/error-message.png)
+
+When the application is found, portlet will begin to query for all tasks of the current user which are of the application type.
+![Application query](img/application-query.png)
+
+The results are shown in a table. An icon distinguishing `DONE`, `ABORTED` and `RUNNING` tasks is shown next to the task's id and description. Rows of the table can be clicked to extend a panel with runtime data of the selected tasks.
+![Runtime data](img/runtime-data.png)
