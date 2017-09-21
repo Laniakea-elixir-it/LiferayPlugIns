@@ -314,6 +314,9 @@ public class IAMImpl implements IAM {
     public final Map<String, String> getTokenUserInfo(
             final long companyId, final String token) throws Exception {
         log.debug("User information retrieved from IAM");
+        if (!isValidToken(companyId, token)) {
+            throw new AuthException("The token is not valid");
+        }
         IAMEndPoints iamEP = IAMEndPointsManager.getIAMEndPointsInstance(
                 getIAMConfiguration(companyId));
         UserInfoRequest userInfoReq = new UserInfoRequest(iamEP.getUserInfo(),
