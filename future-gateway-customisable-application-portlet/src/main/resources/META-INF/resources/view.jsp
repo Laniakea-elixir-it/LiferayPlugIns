@@ -268,6 +268,10 @@
                             var out = $('#param_'+jsonArr[i].name).val();
                             paramJson.parameters[jsonArr[i].name] = out;
                             break;
+                        case "float":
+                            var out = parseFloat($('#param_'+jsonArr[i].name).val()).toFixed(2);
+                            paramJson.parameters[jsonArr[i].name] = out;
+                            break;
                         case "text":
                         default:
                             var out = $('#param_'+jsonArr[i].name).val();
