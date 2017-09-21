@@ -73,6 +73,7 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
         </portlet:renderURL>
         <script>
             var resource = 'tasks';
+            var filter = 'user=*'
             var columns = ['id', 'date', 'status', 'description'];
         </script>
     </c:otherwise>
@@ -89,7 +90,7 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
             function(obj) {
                 table = new Table('${FGURL}', document.getElementById('<portlet:namespace />ResourcesTable'), obj.token);
 				table.activateFilter('<portlet:namespace />fgResourceFilter', '<portlet:namespace />filterResources');
-                table.render(resource, columns, '<portlet:namespace />resourceDetails',
+                table.render(resource, columns, filter, '<portlet:namespace />resourceDetails',
                              '<portlet:namespace />movePage',
                              document.getElementById('<portlet:namespace />waitLoad'));
             }
@@ -98,7 +99,7 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
     Liferay.provide(
         window,
         '<portlet:namespace />resourceDetails',
-        function (id) {
+        function (id, filter) {
             var buttons;
             if(resource!='tasks') {
                 buttons = [{
@@ -118,7 +119,7 @@ String toolbarItem = ParamUtil.getString(renderRequest, "toolbarItem", "view-all
                     style: 'danger'
                  }];
             }
-            table.showDetails(id, resource, buttons);
+            table.showDetails(id, resource, filter, buttons);
         },
         []);
 
