@@ -17,7 +17,7 @@ class FgTable {
     this.token = token;
   }
 
-  render(resource, columns, detailsCallback, pageCallback,
+  render(resource, columns, filter, detailsCallback, pageCallback,
       waitElement, page=0, pageSize = 15) {
     this.resource = resource;
     this.columns = columns;
@@ -35,9 +35,12 @@ class FgTable {
     var headers = new MultiMap();
     headers.add('Authorization', 'Bearer ' + this.token);
     headers.add('content-type', 'application/json');
-
+    var filteredRes = resource;
+    if (filter) {
+    	filteredRes += '?' + filter;
+    }
     var resourcesCall = Ajax.request(
-        this.apiUrl + '/' + resource,
+        this.apiUrl + '/' + filteredRes,
         'GET', null, headers, null
     );
     resourcesCall.then(function(data) {
@@ -53,7 +56,7 @@ class FgTable {
           if (keyEntry == 'id') {
             entry[keyEntry] = '<a href="#' + entry[keyEntry] +
               '" onClick="' + detailsCallback + '(\'' +
-              entry[keyEntry] + '\')">' +
+              entry[keyEntry] + '\', \'' + filter + '\')">' +
               entry[keyEntry] + '</a>';
           }
           entry[keyEntry.capitalize()] = entry[keyEntry];
@@ -118,7 +121,7 @@ class FgTable {
     });
   }
 
-  showDetails(id, resource, buttons) {
+  showDetails(id, resource, filter, buttons) {
     if (this.token.substring(0, 4) == 'User' ||
         this.token.substring(0, 7) == 'No JSON') {
       var modalError = new Modal({
@@ -133,8 +136,11 @@ class FgTable {
     headers.add('Authorization', 'Bearer ' + this.token);
     headers.add('content-type', 'application/json');
 
-    var resourceDetailsCall = Ajax.request(this.apiUrl + '/' + resource +
-        '/' + id, 'GET', null, headers, null);
+    var url = this.apiUrl + '/' + resource + '/' + id;
+    if (filter) {
+    	url += '?' + filter;
+    }
+    var resourceDetailsCall = Ajax.request(url, 'GET', null, headers, null);
     resourceDetailsCall.then(function(data) {
       var date = new Date();
       var resourceId = resource + id + date.getTime();
