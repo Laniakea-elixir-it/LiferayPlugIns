@@ -197,7 +197,7 @@
                         $("#param_"+jsonArr[i].name).prop("maxLength",jsonArr[i].maxlength);
                       }
                       break;
-                    case "password":
+                    case "text":
                       if(jsonArr[i].maxlength) {
                         $("#param_"+jsonArr[i].name).prop("maxLength",jsonArr[i].maxlength);
                       }
