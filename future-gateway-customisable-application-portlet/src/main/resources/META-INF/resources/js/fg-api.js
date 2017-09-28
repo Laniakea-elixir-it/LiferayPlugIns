@@ -147,8 +147,10 @@ function updateIP(job_output_url, id) {
     headers : {
       'Authorization' : 'Bearer ' + token
     },
-    url : webapp_settings.apiserver_url + webapp_settings.apiserver_path + '/'
-        + webapp_settings.apiserver_ver + '/' + job_output_url,
+    url: webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
+        + '/' + job_output_url
+        : webapp_settings.apiserver_url + webapp_settings.apiserver_path
+            + '/' + webapp_settings.apiserver_ver + '/' + job_output_url,
     dataType : "json",
     success : function(data) {
       if (data.cluster_creds) {
@@ -181,6 +183,9 @@ function updateIP(job_output_url, id) {
        $("#zenodo_https_" + id).bind("click", function(){
           openNewWindow(data.zenodo_https_endpoint);
        })
+      }
+      if(data.endpoint) {
+        $("#ip_" + id).html('<div id="endpoint_ip_' + id + '" class="fakebutton btn btn-default btn-sm">' + data.endpoint + '</div>');
       }
     },
   });
@@ -311,6 +316,7 @@ function fillJobTable(data, current) {
       + '		<col/>'
       + '		<col/>'
       + '		<col/>'
+      + '   <col/>'
       + '	</colgroup>'
       + '	<thead>'
       + '           <tr>'
@@ -320,6 +326,7 @@ function fillJobTable(data, current) {
       + '                <th>Status</th>'
       + '                <th>Description</th>'
       + '                <th>Output</th>'
+      + '                <th>Runtime</th>'
       + '            </tr>'
       + '	</thead>'
       + '      <tbody id="jobRecords">'
