@@ -5,7 +5,15 @@
  * Adds the i-th job record
  */
 function openNewWindow(www_site) {
-  window.open(www_site);
+  var parser = document.createElement('a');
+  parser.href = www_site;
+  if (parser.hostname) {
+    window.open(www_site);
+  }
+  else {
+    window.open("http://" + www_site);
+  }
+  
 }
 function predicatBy(prop) {
   return function(a, b) {
@@ -141,14 +149,38 @@ function getApplicationInfra(appId, successCallback) {
       });
 }
 
+function updateRuntime(id) {
+  $.ajax({
+    type : "GET",
+    headers : {
+      'Authorization' : 'Bearer ' + token
+    },
+    url: webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
+        + '/tasks/' + id
+        : webapp_settings.apiserver_url + webapp_settings.apiserver_path
+            + '/' + webapp_settings.apiserver_ver + '/tasks/' + id,
+    dataType : "json",
+    success : function(data) {
+      if(data.runtime_data) {
+        $("#runtime_" + id).html('<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal_runtime">Show</button>');
+        $("#runtime_"+id).bind("click", function(){
+          $("#myModal_runtime_body").html('<pre>' + JSON.stringify(data.runtime_data, undefined, 2) + '</pre>');
+        });
+      }
+    },
+  });
+}
+
 function updateIP(job_output_url, id) {
   $.ajax({
     type : "GET",
     headers : {
       'Authorization' : 'Bearer ' + token
     },
-    url : webapp_settings.apiserver_url + webapp_settings.apiserver_path + '/'
-        + webapp_settings.apiserver_ver + '/' + job_output_url,
+    url: webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
+        + '/' + job_output_url
+        : webapp_settings.apiserver_url + webapp_settings.apiserver_path
+            + '/' + webapp_settings.apiserver_ver + '/' + job_output_url,
     dataType : "json",
     success : function(data) {
       if (data.cluster_creds) {
@@ -181,6 +213,12 @@ function updateIP(job_output_url, id) {
        $("#zenodo_https_" + id).bind("click", function(){
           openNewWindow(data.zenodo_https_endpoint);
        })
+      }
+      if(data.endpoint) {
+        $("#ip_" + id).html('<div id="endpoint_ip_' + id + '" class="fakebutton btn btn-default btn-sm">' + data.endpoint + '</div>');
+        $('#endpoint_ip_' + id).bind("click",function(){
+          openNewWindow(data.endpoint);
+        });
       }
     },
   });
@@ -238,13 +276,15 @@ function appendJobRecord(jobIndex, jrec, container) {
         + '" type="button" class="btn btn-default btn-sm"'
         + '      style="display:none;" onClick=clusterInfo(' + job_id + ')>'
         + '      <span class="glyphicon glyphicon-info-sign"></span>'
-        + '      </button>' + '  </td>' + '</tr>'
+        + '      </button>' + '  </td>'
+        + '<td><div id="runtime_' + job_id +'"></div></td></tr>'
         + '<tr class="tablesorter-childRow">' + '<td colspan="4">'
         + '<div class="row">' + '  <div class="col-sm-3"><b>Output</b></div>'
         + '  <div class="col-sm-3"></div>' + '  <div class="col-sm-3">'
         + del_btn + '</div>' + '</div>' + outFiles + '</td>' + '</tr>');
     ;
     if (job_status == 'DONE') {
+      updateRuntime(job_id);
       for (var i = 0; i < out_files.length; i++) {
         if (out_files[i].name == 'stdout.txt') {
           updateIP(out_files[i].url, job_id);
@@ -289,12 +329,12 @@ function cleanJob(job_id) {
           prepareJobTable();
         },
         error : function(jqXHR, textStatus, errorThrown) {
-          alert(jqXHR.status);
+          alert("Error deleting the task: " + job_id);
         }
       });
     },
     error : function(jqXHR, textStatus, errorThrown) {
-      alert(jqXHR.status);
+      alert("Error modifying the task: " + job_id);
     }
   });
 }
@@ -311,6 +351,7 @@ function fillJobTable(data, current) {
       + '		<col/>'
       + '		<col/>'
       + '		<col/>'
+      + '   <col/>'
       + '	</colgroup>'
       + '	<thead>'
       + '           <tr>'
@@ -320,6 +361,7 @@ function fillJobTable(data, current) {
       + '                <th>Status</th>'
       + '                <th>Description</th>'
       + '                <th>Output</th>'
+      + '                <th>Runtime</th>'
       + '            </tr>'
       + '	</thead>'
       + '      <tbody id="jobRecords">'
@@ -398,7 +440,7 @@ function prepareJobTable() {
         emptyJobTable();
     },
     error : function(jqXHR, textStatus, errorThrown) {
-      alert(jqXHR.status);
+      alert("Impossible to retrieve the task list");
     }
   });
 }
@@ -457,12 +499,12 @@ function submit(job_desc, paramJson) {
           prepareJobTable();
         },
         error : function(jqXHR, textStatus, errorThrown) {
-          alert(jqXHR.status);
+          alert("Error updating a file to the new task");
         }
       });
     },
     error : function(jqXHR, textStatus, errorThrown) {
-      alert(jqXHR.status);
+      alert("Error creating a new task");
     }
   });
 }
