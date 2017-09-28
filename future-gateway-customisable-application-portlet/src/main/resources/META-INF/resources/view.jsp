@@ -255,7 +255,9 @@
                                 paramJson.parameters[jsonArr[i].component_map.file] = onezoneid.substring(onezoneid.lastIndexOf('/') + 1);
                               }
                               if (jsonArr[i].component_map.provider) {
-                                paramJson.parameters[jsonArr[i].component_map.provider] = $('li[id="' + onezoneid + '"]').attr('provider');
+                                var providerUrl = $('li[id="' + onezoneid + '"]').attr('provider');
+                                var providerDNS = providerUrl.split("/")[2];
+                                paramJson.parameters[jsonArr[i].component_map.provider] = providerDNS.split(":")[0];
                               }
                               if (jsonArr[i].component_map.token) {
                                 token_to_update.push({param: jsonArr[i].component_map.token, element: jsonArr[i].name});
