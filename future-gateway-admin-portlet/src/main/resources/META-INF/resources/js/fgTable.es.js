@@ -37,7 +37,7 @@ class FgTable {
     headers.add('content-type', 'application/json');
     var filteredRes = resource;
     if (filter) {
-    	filteredRes += '?' + filter;
+      filteredRes += '?' + filter;
     }
     var resourcesCall = Ajax.request(
         this.apiUrl + '/' + filteredRes,
@@ -138,7 +138,7 @@ class FgTable {
 
     var url = this.apiUrl + '/' + resource + '/' + id;
     if (filter) {
-    	url += '?' + filter;
+      url += '?' + filter;
     }
     var resourceDetailsCall = Ajax.request(url, 'GET', null, headers, null);
     resourceDetailsCall.then(function(data) {
