@@ -1,4 +1,4 @@
 Bundle-Name: kepler-status-portlet
 Bundle-SymbolicName: kepler.status.portlet
-Bundle-Version: 2.2.0
+Bundle-Version: 2.2.1
 Export-Package: pl.psnc.indigo.kepler.status.portlet

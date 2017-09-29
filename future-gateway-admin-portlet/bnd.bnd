@@ -1,6 +1,6 @@
 Bundle-SymbolicName: future.gateway.admin.portlet
 Bundle-Name: FutureGateway Admin
-Bundle-Version: 2.2.0
+Bundle-Version: 2.2.1
 Export-Package:\
     it.infn.ct.indigo.futuregateway.server
 Liferay-Export-JS-Submodules: *
