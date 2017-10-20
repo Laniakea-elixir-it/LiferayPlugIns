@@ -40,7 +40,7 @@
             /*
              * Change variable below to change delay of check status loop
              */
-            var TimerDelay = 15000;
+            var TimerDelay = 30000;
 
             /*
              * Page initialization
@@ -396,12 +396,54 @@
         <p>Some text in the modal.</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <center>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </center>
       </div>
     </div>
 
   </div>
 </div>    
+<div class="modal fade modal-hidden" id="myModal_parameters" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Input Parameters</h4>
+      </div>
+      <div id="myModal_parameters_body" class="modal-body">
+        <p>Some text in the modal.</p>
+      </div>
+      <div class="modal-footer">
+        <center>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </center>
+      </div>
+    </div>
+  </div>
+</div> <div class="modal fade modal-hidden" id="confirmDeleteModal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <center>
+          <h4 class="modal-title">Warning</h4>
+        </center>
+      </div>
+      <div class="modal-body" id="modal-body">
+          <pre><center>Delete permanently ?</center></pre>
+      </div>
+      <div class="modal-footer">
+        <center>
+          <button type="button" class="btn btn-default" data-dismiss="modal" id="delete_button" onclick="cleanJob()">Yes</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+        </center>
+      </div>
+    </div>
+  </div>
+</div>
+
     <script>
             Liferay.Service(
                 '/iam.token/get-token',

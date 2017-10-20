@@ -171,7 +171,27 @@ function updateRuntime(id) {
   });
 }
 
-function updateIP(job_output_url, id) {
+function updateParameters(job_output_url, id) {
+  $.ajax({
+    type : "GET",
+    headers : {
+      'Authorization' : 'Bearer ' + token
+    },
+    url: webapp_settings.apiserver_endpoint ? webapp_settings.apiserver_endpoint
+        + '/' + job_output_url
+        : webapp_settings.apiserver_url + webapp_settings.apiserver_path
+            + '/' + webapp_settings.apiserver_ver + '/' + job_output_url,
+    dataType : "json",
+    success : function(data) {
+      $("#parameters_" + id).html('<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal_parameters">Show</button>');
+      $("#parameters_"+id).bind("click", function(){
+        $("#myModal_parameters_body").html('<pre>' + JSON.stringify(data, undefined, 2) + '</pre>');
+      });
+    },
+  });
+}
+
+ function updateIP(job_output_url, id) {
   $.ajax({
     type : "GET",
     headers : {
@@ -238,6 +258,7 @@ function appendJobRecord(jobIndex, jrec, container) {
   var job_description = jrec.description;
   var out_files = jrec.output_files;
   var outFiles = '';
+  var input_files = jrec.input_files;
   if (job_status == 'DONE') {
     del_btn = '<button id="cln_btn' + job_id + '"'
         + '        class="btn btn-xs btn-danger"' + '        type="button"'
@@ -264,12 +285,14 @@ function appendJobRecord(jobIndex, jrec, container) {
   if (job_status != 'CANCELLED'){
     container.append('<tr id="' + job_id + '">' + '   <td rowspan="2">'
         + '        <button id="job_btn' + job_id + '"'
-        + '        class="btn btn-default btn-xs toggle" onClick="cleanJob('
+        + '        class="btn btn-default btn-xs toggle" data-toggle="modal"' 
+        + '        data-target="#confirmDeleteModal" onClick="prepareCleanJob('
         + job_id + ')">'
         + '        <span class="glyphicon glyphicon-cloud-download"></span>'
-        + '        </button>' + '	</td>' + '  <td>' + job_date + '</td>'
-        + '  <td>' + job_lastchange + '</td>' + '  <td>' + job_status + '</td>'
-        + '  <td>' + job_description + '</td>'
+        + '        </button>' + '	</td>' 
+        + '<td><div id="parameters_' + job_id +'"></div></td>'
+        + '  <td>' + job_date + '</td>' + '  <td>' + job_lastchange + '</td>' 
+        + '  <td>' + job_status + '</td>' + '  <td>' + job_description + '</td>'
         + '  <td><div id="ip_' + job_id + '">'
         + '      <button type="button" class="btn btn-default btn-sm">N/A'
         + '</button></div>' + '<button id="job_info_' + job_id
@@ -283,8 +306,13 @@ function appendJobRecord(jobIndex, jrec, container) {
         + '  <div class="col-sm-3"></div>' + '  <div class="col-sm-3">'
         + del_btn + '</div>' + '</div>' + outFiles + '</td>' + '</tr>');
     ;
+    updateRuntime(job_id);
+    for (var i = 0; i < input_files.length; i++) {
+      if (input_files[i].name == 'parameters.json') {
+        updateParameters(input_files[i].url, job_id);
+      }
+    }
     if (job_status == 'DONE') {
-      updateRuntime(job_id);
       for (var i = 0; i < out_files.length; i++) {
         if (out_files[i].name == 'stdout.txt') {
           updateIP(out_files[i].url, job_id);
@@ -296,6 +324,10 @@ function appendJobRecord(jobIndex, jrec, container) {
 /*
  * Clean the specified job             
  */
+function prepareCleanJob(job_id) {
+    $("#delete_button").attr("onclick","cleanJob(" + job_id + ")");
+}
+
 function cleanJob(job_id) {
   $.ajax({
     type : "PATCH",
@@ -351,11 +383,13 @@ function fillJobTable(data, current) {
       + '		<col/>'
       + '		<col/>'
       + '		<col/>'
+      + '		<col/>'
       + '   <col/>'
       + '	</colgroup>'
       + '	<thead>'
       + '           <tr>'
       + '               <th>Delete</th>'
+      + '                <th>Parameters</th>'
       + '                <th>Submitted</th>'
       + '                <th>Modified</th>'
       + '                <th>Status</th>'
