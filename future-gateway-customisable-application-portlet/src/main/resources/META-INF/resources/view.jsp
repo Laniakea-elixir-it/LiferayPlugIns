@@ -40,7 +40,7 @@
             /*
              * Change variable below to change delay of check status loop
              */
-            var TimerDelay = 30000;
+            var TimerDelay = 100000;
 
             /*
              * Page initialization
