@@ -151,7 +151,8 @@ public class IAMLoginAction extends BaseStrutsAction {
 
         portletURL.setParameter("mvcRenderCommandName",
                 "/login/login_redirect");
-        portletURL.setWindowState(LiferayWindowState.POP_UP);
+        log.debug("mtangaro popup 1");
+        //portletURL.setWindowState(LiferayWindowState.POP_UP);
 
         response.sendRedirect(portletURL.toString());
     }
@@ -189,6 +190,7 @@ public class IAMLoginAction extends BaseStrutsAction {
         redirectURL.setParameter("emailAddress", user.getEmailAddress());
         redirectURL.setParameter("anonymousUser", Boolean.FALSE.toString());
         redirectURL.setPortletMode(PortletMode.VIEW);
+        log.debug("mtangaro popup 2");
         redirectURL.setWindowState(LiferayWindowState.POP_UP);
 
         portletURL.setParameter("redirect", redirectURL.toString());
@@ -198,6 +200,7 @@ public class IAMLoginAction extends BaseStrutsAction {
         portletURL.setParameter("firstName", user.getFirstName());
         portletURL.setParameter("lastName", user.getLastName());
         portletURL.setPortletMode(PortletMode.VIEW);
+        log.debug("mtangaro popup 3");
         portletURL.setWindowState(LiferayWindowState.POP_UP);
 
         response.sendRedirect(portletURL.toString());
